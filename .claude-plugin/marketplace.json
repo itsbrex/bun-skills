@@ -1,0 +1,27 @@
+{
+  "name": "bun-skills",
+  "owner": {
+    "name": "itsbrex",
+    "url": "https://github.com/itsbrex"
+  },
+  "metadata": {
+    "description": "Bun documentation packaged as Claude Code skills"
+  },
+  "plugins": [
+    {
+      "name": "bun-skills",
+      "source": "./",
+      "description": "Bun documentation as Claude Code skills: runtime, bundler, test runner, package manager, and every guide on bun.com/guides, synced from bun.com/docs/llms.txt.",
+      "version": "1.0.0",
+      "author": {
+        "name": "itsbrex",
+        "url": "https://github.com/itsbrex"
+      },
+      "homepage": "https://github.com/itsbrex/bun-skills#readme",
+      "repository": "https://github.com/itsbrex/bun-skills",
+      "license": "MIT",
+      "category": "development",
+      "keywords": ["bun", "javascript", "typescript", "runtime", "bundler", "test-runner", "package-manager", "documentation"]
+    }
+  ]
+}

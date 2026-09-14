@@ -1,7 +1,9 @@
 ---
 name: sync-bun-skills
-description: This skill should be used when the user asks to "update the Bun skills", "sync skills with bun.com", "refresh the Bun docs skills", "pull the latest Bun guides", "regenerate skills from llms.txt", or "check for new Bun docs pages" in the bun-skills repository. Runs the repo sync pipeline (bun.com/docs/llms.txt markdown exports plus a Lightpanda render of bun.com/guides), resolves warnings, validates, and commits the result.
-argument-hint: "[--dry-run] [--prune] [--no-browser]"
+description: This skill should be used when the user asks to "update the Bun skills", "sync skills with bun.com", "refresh the Bun docs skills", "pull the latest Bun guides", "regenerate skills from llms.txt", or "check for new Bun docs pages" in the bun-skills repository. Previews changes from bun.com/docs/llms.txt and a Lightpanda render of bun.com/guides, then applies, validates, and commits them; stops after the preview when the user only asks to check.
+argument-hint: "[--dry-run] [--prune] [--no-browser] [--concurrency N]"
+metadata:
+  internal: true
 ---
 
 # Sync Bun skills
@@ -12,50 +14,68 @@ Regenerate `skills/bun-*/SKILL.md` from the live Bun docs, then validate and com
 
 `bun run sync` runs `scripts/sync-skills.ts`:
 
-1. Fetch https://bun.com/docs/llms.txt. Each `https://bun.com/docs/<path>.md` entry becomes `skills/bun-<path with / replaced by ->/SKILL.md`, with frontmatter `name: Bun <title>` and `description: <llms.txt description, else title>`, followed by the page's markdown export.
-2. Fetch section landing pages (`<section>/index` in llms.txt) from `<section>.md`, because `<section>/index.md` returns 404.
-3. Generate `bun-guides-index` instead of fetching it (the live page is a `<GuidesList />` JSX stub). Category headings come from https://bun.com/guides rendered by the bundled Lightpanda browser (`scripts/lib/lightpanda.ts`). If Lightpanda fails, the script reads the page with a plain fetch, and if that fails it titles categories from guide paths.
-4. Write only files whose content changed. Name collisions and long names resolve through `NAME_OVERRIDES` in `scripts/sync-skills.ts`.
-5. Write a JSON report to `.cache/sync-report.json` (`created`, `updated`, `unchanged`, `failed`, `stale`, `warnings`, `guidesSource`).
-
-Shared helpers live in `scripts/lib/docs.ts` (llms.txt parsing, URL mapping, SKILL.md rendering) and `scripts/lib/guides.ts` (guides page parsing).
+1. Fetch https://bun.com/docs/llms.txt. Each `https://bun.com/docs/<path>.md` entry becomes `skills/bun-<path with / replaced by ->/SKILL.md`. The `name` comes from `NAME_OVERRIDES` (keyed by docs path, for example `"runtime/http/cookies"`), else `Bun <title>`. The `description` is the llms.txt description, else the title. The body is the page's markdown export.
+2. Fetch section landing pages (`<section>/index`) from `https://bun.com/docs/<section>.md`, and `index` from `https://bun.com/docs.md` (see `markdownUrlFor` in `scripts/lib/docs.ts`).
+3. Generate `bun-guides-index`. Category headings come from https://bun.com/guides rendered by the Lightpanda binary that `@lightpanda/browser` downloads to `~/.cache/lightpanda-node/lightpanda` (override with `LIGHTPANDA_EXECUTABLE_PATH`). If Lightpanda fails, the script reads the page with a plain fetch. If both fail, it keeps the existing index skill and reports it as failed.
+4. Rewrite `<tag>` in descriptions as `{tag}`. Truncate names over 64 characters and descriptions over 1024 characters at a word boundary, with a warning.
+5. Write only files whose content changed. Report directories absent from llms.txt as stale. `--prune` deletes them (with the `trash` CLI when installed), but refuses when stale directories exceed 10% of pages, because that signals broken llms.txt parsing.
+6. Write `.cache/sync-report.json` with `dryRun`, `guidesSource`, `created`, `updated`, `unchanged`, `failed`, `stale`, `pruned`, and `warnings`. The script deletes the old report first, so a missing report means the run crashed.
 
 ## Steps
 
-1. Check the tree with `git status --short`. If unrelated uncommitted changes exist, stop and ask before continuing.
-2. Run `bun install`. The postinstall step downloads the Lightpanda binary when missing.
-3. Preview with `bun run sync --dry-run`. Read the printed summary and `.cache/sync-report.json`. Confirm `guidesSource` is `lightpanda`.
-4. Apply with `bun run sync`. For each directory listed as stale, confirm the page left the docs (`curl -sI https://bun.com/docs/<path>.md` returns 404 and the path is absent from llms.txt), then run `bun run sync --prune`.
-5. Resolve every warning using the table below, then rerun `bun run sync` until warnings are gone or explained.
-6. Run `bun run validate` and require `problems: 0`. Follow the `validate-bun-skills` skill to fix failures.
-7. Review `git status --short` and `git diff --stat`. Open one created skill and one updated skill to spot-check the content.
-8. Update skill counts in `README.md` when skills were added or removed.
-9. Bump `version` in `.claude-plugin/plugin.json` and the matching plugin entry in `.claude-plugin/marketplace.json`: minor for added or removed skills, patch for content-only refreshes.
-10. Commit in logical groups that match the repo history: removed skills, new skills, guides index, refreshed skills, then scripts, docs, and the version bump.
+Append `--no-browser` and `--concurrency N` from `$ARGUMENTS` to every `bun run sync` command below.
 
-## Warnings and failures
+1. Run `git status --short`. If unrelated uncommitted changes exist, stop and ask.
+2. Run `bun install`. Postinstall downloads Lightpanda when missing.
+3. Preview with `bun run sync --dry-run`. Read the printed summary and `.cache/sync-report.json`. Confirm `guidesSource` is `lightpanda` (or `fetch` with `--no-browser`). If `$ARGUMENTS` contains `--dry-run` or the user only asked to check or preview, report the results and stop.
+4. If `created`, `updated`, `stale`, `failed`, and `warnings` are all empty, report that the skills are current and stop. Do not bump the version or commit.
+5. Resolve warnings and failures with the tables below. After changing `scripts/`, run `bun run typecheck` and repeat step 3.
+6. Apply with `bun run sync`, adding `--prune` when the preview listed stale directories. Before pruning, spot-check one stale directory: search llms.txt for its last word (`curl -s https://bun.com/docs/llms.txt | grep -i '<word>'`). If the page is still listed, llms.txt parsing is broken; fix `LLMS_ENTRY_RE` and do not prune.
+7. Follow the `validate-bun-skills` skill: `bun run validate` must print `problems: 0` and `bun run validate:plugin` must pass.
+8. Review `git status --short` and `git diff --stat`. Open one created and one updated skill to spot-check the content.
+9. Update the `**319 skills**` and `all 190 guides` counts in `README.md` when skills or guides were added or removed.
+10. Bump `version` in `.claude-plugin/plugin.json` and the matching plugin entry in `.claude-plugin/marketplace.json`: minor for added or removed skills, patch for content-only refreshes.
+11. Commit in logical groups: script changes, removed skills, new skills, guides index, refreshed skills, then docs and the version bump.
+
+## Warnings
+
+| Warning | Action |
+| --- | --- |
+| `Lightpanda render failed (...); fell back to plain fetch` | Run `bun run lightpanda:upgrade` and repeat the preview. Keep the nightly build: stable Lightpanda 0.4.0 times out loading bun.com. On platforms Lightpanda does not support, use `--no-browser`. Output is unaffected while `guidesSource` is `fetch`. |
+| `Lightpanda render of https://bun.com/guides had no guide categories; fell back to plain fetch` | The page markup changed. Update `parseGuideCategories` in `scripts/lib/guides.ts` (each `<h3>` heading owns the guide links after it). |
+| `no guide categories found on https://bun.com/guides; ...` or `plain fetch of https://bun.com/guides failed (...)` | `guidesSource` is `none` and `bun-guides-index` was kept unchanged. Fix `parseGuideCategories` or the network problem, then rerun. |
+| `<path>: name "..." is over 64 chars, truncated to "..."; add a NAME_OVERRIDES entry` | Add a readable entry of 64 characters or fewer, keyed by the docs path shown. |
+| `duplicate skill name "...": <path>, <path> (add NAME_OVERRIDES entries keyed by docs path)` | Add section-qualified names, for example `"runtime/http/cookies": "Bun HTTP Cookies"`. |
+| `<path>: description is over 1024 chars, truncated` | No action needed; mention it in the summary. |
+| `<path>: description contains an unpaired < or >` | `bun run validate` will fail. Extend `descriptionFor` in `scripts/sync-skills.ts` to handle the character, run `bun run typecheck`, and rerun. |
+| `guides on https://bun.com/guides missing from llms.txt (no skill generated): ...` | Those guides have no listed markdown export. Mention them; no code change. |
+| `guide category guides/<x> is not on https://bun.com/guides; titled from its path` | Check that the heading reads well in `bun-guides-index`; titles come from `titleFromSlug` in `scripts/lib/guides.ts`. |
+| `stale directories (N) exceed 10% of pages; refusing to prune (check LLMS_ENTRY_RE)` | llms.txt parsing is likely broken. Compare llms.txt lines with `LLMS_ENTRY_RE` in `scripts/lib/docs.ts`. |
+
+## Failures
+
+Failed pages keep their existing `SKILL.md`, and the command exits with code 1.
 
 | Output | Action |
 | --- | --- |
-| `Lightpanda render failed (...); fell back to plain fetch` | Output is still correct. Run `bun run lightpanda:upgrade` and rerun. Keep the nightly build: stable Lightpanda 0.4.0 times out loading bun.com. |
-| `duplicate skill name "..."` | Add `NAME_OVERRIDES` entries with section-qualified names (for example `Bun HTTP Cookies`), then rerun. |
-| `"..." is over 64 chars, truncated to "..."` | Add a readable `NAME_OVERRIDES` entry of 64 characters or fewer. |
-| `guides on https://bun.com/guides missing from llms.txt` | The guide has no listed markdown export, so no skill exists for it. Mention it in the summary; no code change. |
-| `guide category guides/<x> is not on https://bun.com/guides` | A new category appeared in llms.txt only. Check its heading in `bun-guides-index` reads well. |
-| `failed: bun-...: GET ... failed: HTTP 404` | The markdown export moved. Compare the page URL with `markdownUrlFor` in `scripts/lib/docs.ts` and extend the mapping. |
-| `no pages parsed from https://bun.com/docs/llms.txt` | The llms.txt format changed. Update `LLMS_ENTRY_RE` in `scripts/lib/docs.ts`. |
+| `error: GET https://bun.com/docs/llms.txt failed: ...; nothing was written` | Network problem or bun.com outage. Retry later. |
+| `error: no pages parsed from https://bun.com/docs/llms.txt; ...` | The llms.txt format changed. Update `LLMS_ENTRY_RE` in `scripts/lib/docs.ts`. |
+| `bun-...: GET ... failed: HTTP 404` | The export URL moved. Compare it with `markdownUrlFor` in `scripts/lib/docs.ts`. If the page also 404s in a browser, llms.txt lists a dead link; report it upstream instead. |
+| `bun-...: GET ... failed: HTTP 429`, `HTTP 5xx`, or a network error | Transient after 4 attempts. Rerun with `--concurrency 4`. |
+| `bun-...: ... returned HTML, not markdown` or `returned an empty body` | Check the export URL from `markdownUrlFor`. If the page is broken upstream, report it and leave the existing skill. |
+| `bun-guides-index: guide categories unavailable from https://bun.com/guides; kept the existing skill` | See the `guidesSource` `none` warning above. |
 
 ## Flags
 
 | Flag | Effect |
 | --- | --- |
-| `--dry-run` | Report changes without writing files |
-| `--prune` | Delete stale skill directories (uses the `trash` CLI when installed) |
+| `--dry-run` | Report changes without writing skill files (the report is still written) |
+| `--prune` | Delete stale skill directories |
 | `--no-browser` | Skip Lightpanda and read the guides page with a plain fetch |
 | `--concurrency N` | Parallel downloads, default 12 |
 
-`bun run update` runs sync and validate in sequence without flags.
+`bun run update` runs sync and then validate, without flags. Validate does not run when sync exits with code 1.
 
 ## Report back
 
-Summarize: counts of created, updated, unchanged, failed, and pruned skills; names of new and removed skills; the guides source; any remaining warnings; and the commits created.
+Summarize: counts of created, updated, unchanged, failed, and pruned skills; names of new and removed skills; the guides source; remaining warnings; and the commits created.

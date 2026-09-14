@@ -11,7 +11,7 @@ This repo converts the Bun documentation (https://bun.com/docs) into agent skill
 - `scripts/lib/guides.ts`: reads guide categories from https://bun.com/guides and renders the `bun-guides-index` skill.
 - `scripts/lib/lightpanda.ts` and `scripts/ensure-lightpanda.ts`: download and run the Lightpanda browser.
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: plugin and marketplace manifests. The repo root is the plugin.
-- `.claude/skills/sync-bun-skills` and `.claude/skills/validate-bun-skills`: maintainer skills for this repo. They are not part of the plugin.
+- `.claude/skills/sync-bun-skills` and `.claude/skills/validate-bun-skills`: maintainer skills for this repo. They are not part of the plugin, and `metadata.internal: true` hides them from `npx skills add`.
 - `.claude/CLAUDE.md`: imports this file for Claude Code. It stays out of the repo root because the root is the plugin root, where Claude Code's strict plugin validator rejects a CLAUDE.md.
 
 ## Commands

@@ -1,0 +1,21 @@
+{
+  "name": "bun-skills",
+  "private": true,
+  "type": "module",
+  "description": "Bun documentation converted to AI agent skills and packaged as a Claude Code plugin",
+  "license": "MIT",
+  "scripts": {
+    "sync": "bun scripts/sync-skills.ts",
+    "validate": "bun scripts/validate-skills.ts",
+    "update": "bun scripts/sync-skills.ts && bun scripts/validate-skills.ts",
+    "lightpanda:install": "bun scripts/ensure-lightpanda.ts",
+    "lightpanda:upgrade": "bun scripts/ensure-lightpanda.ts --upgrade",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "bun scripts/ensure-lightpanda.ts --soft"
+  },
+  "devDependencies": {
+    "@lightpanda/browser": "1.6.0",
+    "@types/bun": "^1.4.2",
+    "typescript": "^7.0.2"
+  }
+}

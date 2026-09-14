@@ -22,7 +22,7 @@ claude plugin marketplace add itsbrex/bun-skills
 claude plugin install bun-skills@bun-skills
 ```
 
-Claude Code keeps each skill's name and description in context and loads the full page only when a skill is used.
+The skill listing adds about 11.7k tokens to every session (see `claude plugin details bun-skills`). Claude Code loads a skill's full page only when the skill is used.
 
 ### Other agents
 
@@ -59,7 +59,7 @@ In Claude Code, open this repo and run `/sync-bun-skills` or `/validate-bun-skil
 ### How sync works
 
 1. Fetch [llms.txt](https://bun.com/docs/llms.txt) and download each page's markdown export (`https://bun.com/docs/<path>.md`). Section landing pages come from `<section>.md`.
-2. Render [bun.com/guides](https://bun.com/guides) with the bundled [Lightpanda](https://lightpanda.io) browser to read the guide categories for `bun-guides-index`. If Lightpanda fails, fall back to a plain fetch, then to titles derived from guide paths.
+2. Render [bun.com/guides](https://bun.com/guides) with the [Lightpanda](https://lightpanda.io) browser (downloaded by `bun install` through the pinned `@lightpanda/browser` package) to read the guide categories for `bun-guides-index`. If Lightpanda fails, fall back to a plain fetch, then to titles derived from guide paths.
 3. Write `SKILL.md` files whose content changed, report stale skills, and save a report to `.cache/sync-report.json`.
 
 ### Scripts
@@ -68,12 +68,13 @@ In Claude Code, open this repo and run `/sync-bun-skills` or `/validate-bun-skil
 | --- | --- |
 | `bun run sync` | Regenerate skills. Flags: `--dry-run`, `--prune`, `--no-browser`, `--concurrency N` |
 | `bun run validate` | Check frontmatter, name length and uniqueness, llms.txt coverage, and manifest versions. `--offline` skips coverage |
+| `bun run validate:plugin` | Run Claude Code's validator on both manifests (`--strict`) and `skills/`. Requires the `claude` CLI |
 | `bun run update` | `sync`, then `validate` |
 | `bun run typecheck` | Typecheck `scripts/` |
 | `bun run lightpanda:install` | Download Lightpanda if missing |
 | `bun run lightpanda:upgrade` | Download the latest Lightpanda nightly (stable 0.4.0 times out on bun.com) |
 
-Validate the plugin manifests with `claude plugin validate .` before publishing.
+Run `bun run validate` and `bun run validate:plugin` before publishing.
 
 ## Credits
 

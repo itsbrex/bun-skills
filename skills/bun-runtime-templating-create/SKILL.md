@@ -1,6 +1,6 @@
 ---
 name: Bun bun create
-description: Create a new Bun project from a React component, a `create-<template>` npm package, a GitHub repo, or a local template
+description: Create a new Bun project from a React component, a `create-{template}` npm package, a GitHub repo, or a local template
 ---
 
 # bun create

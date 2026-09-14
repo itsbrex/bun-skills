@@ -7,9 +7,9 @@ description: Enable TLS in Bun.serve
 
 > Enable TLS in Bun.serve
 
-Bun supports TLS out of the box, powered by [BoringSSL](https://boringssl.googlesource.com/boringssl). Enable TLS by passing in a value for `key` and `cert`; both are required to enable TLS.
+Bun's TLS support is built in, powered by [BoringSSL](https://boringssl.googlesource.com/boringssl). To enable TLS, pass both `key` and `cert`.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: {
     key: Bun.file("./key.pem"), // [!code ++]
@@ -18,9 +18,9 @@ Bun.serve({
 });
 ```
 
-The `key` and `cert` fields expect the *contents* of your TLS key and certificate, *not a path to it*. This can be a string, `BunFile`, `TypedArray`, or `Buffer`.
+The `key` and `cert` fields expect the _contents_ of your TLS key and certificate, _not a path to it_. Each can be a string, `BunFile`, `TypedArray`, `Buffer`, or an array of those. Bun uses only the last key/cert pair in an array; to serve several certificates, pass an array of `tls` objects, each with a `serverName` (see [SNI](#server-name-indication-sni) below).
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: {
     key: Bun.file("./key.pem"), // BunFile
@@ -35,7 +35,7 @@ Bun.serve({
 
 If your private key is encrypted with a passphrase, provide a value for `passphrase` to decrypt it.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: {
     key: Bun.file("./key.pem"),
@@ -47,9 +47,9 @@ Bun.serve({
 
 ### CA Certificates
 
-Optionally, you can override the trusted CA certificates by passing a value for `ca`. By default, the server will trust the list of well-known CAs curated by Mozilla. When `ca` is specified, the Mozilla list is overwritten.
+Pass `ca` to override the trusted CA certificates. By default, the server trusts the list of well-known CAs curated by Mozilla; setting `ca` replaces that list.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: {
     key: Bun.file("./key.pem"), // path to TLS key
@@ -63,7 +63,7 @@ Bun.serve({
 
 To override Diffie-Hellman parameters:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: {
     dhParamsFile: "/path/to/dhparams.pem", // path to Diffie Hellman parameters // [!code ++]
@@ -71,13 +71,13 @@ Bun.serve({
 });
 ```
 
-***
+---
 
 ## Server name indication (SNI)
 
 To configure the server name indication (SNI) for the server, set the `serverName` field in the `tls` object.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: {
     serverName: "my-server.com", // SNI // [!code ++]
@@ -87,7 +87,7 @@ Bun.serve({
 
 To allow multiple server names, pass an array of objects to `tls`, each with a `serverName` field.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   tls: [
     {

@@ -7,13 +7,13 @@ description: Bun provides a fast API for resolving routes against file-system pa
 
 > Bun provides a fast API for resolving routes against file-system paths
 
-This API is primarily intended for library authors. At the moment only Next.js-style file-system routing is supported, but other styles may be added in the future.
+This API is intended primarily for library authors. It supports only Next.js-style file-system routing.
 
 ## Next.js-style
 
-The `FileSystemRouter` class can resolve routes against a `pages` directory. (The Next.js 13 `app` directory is not yet supported.) Consider the following `pages` directory:
+The `FileSystemRouter` class resolves routes against a `pages` directory. (The Next.js 13 `app` directory is not supported.) Consider the following `pages` directory:
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 pages
 ├── index.tsx
 ├── settings.tsx
@@ -23,9 +23,9 @@ pages
 └── [[...catchall]].tsx
 ```
 
-The `FileSystemRouter` can be used to resolve routes against this directory:
+To resolve routes against this directory:
 
-```ts router.ts theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts router.ts
 const router = new Bun.FileSystemRouter({
   style: "nextjs",
   dir: "./pages",
@@ -41,31 +41,31 @@ router.match("/");
   kind: "exact",
   name: "/",
   pathname: "/",
-  src: "https://mydomain.com/_next/static/pages/index.tsx"
+  src: "https://mydomain.com/_next/static/index.tsx"
 }
 ```
 
-Query parameters will be parsed and returned in the `query` property.
+The router parses query parameters and returns them in the `query` property.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 router.match("/settings?foo=bar");
 
 // =>
 {
   filePath: "/Users/colinmcd94/Documents/bun/fun/pages/settings.tsx",
-  kind: "dynamic",
+  kind: "exact",
   name: "/settings",
   pathname: "/settings?foo=bar",
-  src: "https://mydomain.com/_next/static/pages/settings.tsx",
+  src: "https://mydomain.com/_next/static/settings.tsx",
   query: {
     foo: "bar"
   }
 }
 ```
 
-The router will automatically parse URL parameters and return them in the `params` property:
+The router parses URL parameters and returns them in the `params` property:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 router.match("/blog/my-cool-post");
 
 // =>
@@ -74,28 +74,28 @@ router.match("/blog/my-cool-post");
   kind: "dynamic",
   name: "/blog/[slug]",
   pathname: "/blog/my-cool-post",
-  src: "https://mydomain.com/_next/static/pages/blog/[slug].tsx",
+  src: "https://mydomain.com/_next/static/blog/[slug].tsx",
   params: {
     slug: "my-cool-post"
   }
 }
 ```
 
-The `.match()` method also accepts `Request` and `Response` objects. The `url` property will be used to resolve the route.
+The `.match()` method also accepts `Request` and `Response` objects; the router uses their `url` property to resolve the route.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 router.match(new Request("https://example.com/blog/my-cool-post"));
 ```
 
-The router will read the directory contents on initialization. To re-scan the files, use the `.reload()` method.
+The router reads the directory contents on initialization. To re-scan the files, use the `.reload()` method.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 router.reload();
 ```
 
 ## Reference
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 interface Bun {
   class FileSystemRouter {
     constructor(params: {

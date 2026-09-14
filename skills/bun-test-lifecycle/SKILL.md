@@ -7,7 +7,7 @@ description: Learn how to use beforeAll, beforeEach, afterEach, and afterAll lif
 
 > Learn how to use beforeAll, beforeEach, afterEach, and afterAll lifecycle hooks in Bun tests
 
-The test runner supports the following lifecycle hooks. This is useful for loading test fixtures, mocking data, and configuring the test environment.
+The test runner supports the following lifecycle hooks. Use them to load test fixtures, mock data, and configure the test environment.
 
 | Hook             | Description                                                |
 | ---------------- | ---------------------------------------------------------- |
@@ -21,7 +21,7 @@ The test runner supports the following lifecycle hooks. This is useful for loadi
 
 Perform per-test setup and teardown logic with `beforeEach` and `afterEach`.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { beforeEach, afterEach, test } from "bun:test";
 
 beforeEach(() => {
@@ -41,13 +41,13 @@ test("example test", () => {
 
 ## Per-Scope Setup and Teardown
 
-Perform per-scope setup and teardown logic with `beforeAll` and `afterAll`. The scope is determined by where the hook is defined.
+Perform per-scope setup and teardown logic with `beforeAll` and `afterAll`. Where you define the hook determines its scope.
 
 ### Scoped to a Describe Block
 
 To scope the hooks to a particular describe block:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { describe, beforeAll, afterAll, test } from "bun:test";
 
 describe("test group", () => {
@@ -75,7 +75,7 @@ describe("test group", () => {
 
 To scope the hooks to an entire test file:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { describe, beforeAll, afterAll, test } from "bun:test";
 
 beforeAll(() => {
@@ -97,9 +97,9 @@ describe("test group", () => {
 
 ### `onTestFinished`
 
-Use `onTestFinished` to run a callback after a single test completes. It runs after all `afterEach` hooks.
+Use `onTestFinished` to run a callback after a single test completes. The callback runs after all `afterEach` hooks.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, onTestFinished } from "bun:test";
 
 test("cleanup after test", () => {
@@ -116,7 +116,7 @@ Not supported in concurrent tests; use `test.serial` instead.
 
 To scope the hooks to an entire multi-file test run, define the hooks in a separate file.
 
-```ts title="setup.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="setup.ts" icon="/icons/typescript.svg"
 import { beforeAll, afterAll } from "bun:test";
 
 beforeAll(() => {
@@ -134,13 +134,13 @@ afterAll(() => {
 
 Then use `--preload` to run the setup script before any test files.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun test --preload ./setup.ts
 ```
 
-To avoid typing `--preload` every time you run tests, it can be added to your `bunfig.toml`:
+To avoid typing `--preload` every time you run tests, add it to your `bunfig.toml`:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 preload = ["./setup.ts"]
 ```
@@ -149,7 +149,7 @@ preload = ["./setup.ts"]
 
 ### Database Setup
 
-```ts title="database-setup.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="database-setup.ts" icon="/icons/typescript.svg"
 import { beforeAll, afterAll, beforeEach, afterEach } from "bun:test";
 import { createConnection, closeConnection, clearDatabase } from "./db";
 
@@ -176,7 +176,7 @@ beforeEach(async () => {
 
 ### API Server Setup
 
-```ts title="server-setup.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="server-setup.ts" icon="/icons/typescript.svg"
 import { beforeAll, afterAll } from "bun:test";
 import { startServer, stopServer } from "./server";
 
@@ -198,7 +198,7 @@ afterAll(async () => {
 
 ### Mock Setup
 
-```ts title="mock-setup.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="mock-setup.ts" icon="/icons/typescript.svg"
 import { beforeEach, afterEach } from "bun:test";
 import { mock } from "bun:test";
 
@@ -212,7 +212,7 @@ beforeEach(() => {
 
 afterEach(() => {
   // Clear all mocks after each test
-  mock.restore();
+  mock.clearAllMocks();
 });
 ```
 
@@ -220,8 +220,8 @@ afterEach(() => {
 
 All lifecycle hooks support async functions:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-import { beforeAll, afterAll, test } from "bun:test";
+```ts title="test.ts" icon="/icons/typescript.svg"
+import { beforeAll, afterAll, test, expect } from "bun:test";
 
 beforeAll(async () => {
   // Async setup
@@ -243,9 +243,9 @@ test("async test", async () => {
 
 ## Nested Hooks
 
-Hooks can be nested and will run in the appropriate order:
+You can nest hooks. They run in the following order:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { describe, beforeAll, beforeEach, afterEach, afterAll, test } from "bun:test";
 
 beforeAll(() => console.log("File beforeAll"));
@@ -270,7 +270,7 @@ describe("outer describe", () => {
 });
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 // Output order:
 // File beforeAll
 // Outer beforeAll
@@ -287,9 +287,9 @@ describe("outer describe", () => {
 
 ## Error Handling
 
-If a lifecycle hook throws an error, it will affect test execution:
+If a `beforeAll` hook throws, the test runner skips every test in the hook's scope:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { beforeAll, test } from "bun:test";
 
 beforeAll(() => {
@@ -302,9 +302,9 @@ test("this test will be skipped", () => {
 });
 ```
 
-For better error handling:
+To log a setup failure and still fail the suite:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { beforeAll, test, expect } from "bun:test";
 
 beforeAll(async () => {
@@ -321,7 +321,7 @@ beforeAll(async () => {
 
 ### Keep Hooks Simple
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Good: Simple, focused setup
 beforeEach(() => {
   clearLocalStorage();
@@ -339,7 +339,7 @@ beforeEach(async () => {
 
 ### Use Appropriate Scope
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Good: File-level setup for shared resources
 beforeAll(async () => {
   await startTestServer();
@@ -353,7 +353,7 @@ beforeEach(() => {
 
 ### Clean Up Resources
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { afterAll, afterEach } from "bun:test";
 
 afterEach(() => {

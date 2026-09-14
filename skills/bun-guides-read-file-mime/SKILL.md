@@ -7,17 +7,17 @@ description: Get the MIME type of a file
 
 The `Bun.file()` function accepts a path and returns a `BunFile` instance. The `BunFile` class extends `Blob`, so use the `.type` property to read the MIME type.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const file = Bun.file("./package.json");
-file.type; // application/json
+file.type; // application/json;charset=utf-8
 
-const file = Bun.file("./index.html");
-file.type; // text/html
+const html = Bun.file("./index.html");
+html.type; // text/html;charset=utf-8
 
-const file = Bun.file("./image.png");
-file.type; // image/png
+const image = Bun.file("./image.png");
+image.type; // image/png
 ```
 
-***
+---
 
-Refer to [API > File I/O](/runtime/file-io) for more information on working with `BunFile`.
+See [File I/O](/runtime/file-io) for more on working with `BunFile`.

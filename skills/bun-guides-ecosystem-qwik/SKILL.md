@@ -7,13 +7,13 @@ description: Build an app with Qwik and Bun
 
 Initialize a new Qwik app with `bunx create-qwik`.
 
-The `create-qwik` package detects when you are using `bunx` and will automatically install dependencies using `bun`.
+The `create-qwik` package detects when you are using `bunx` and installs dependencies with `bun`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun create qwik
 ```
 
-```txts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
       ............
     .::: :--------:.
    .::::  .:-------:.
@@ -28,7 +28,7 @@ bun create qwik
              ...::::
 
 
-┌  Let's create a  Qwik App  ✨ (v1.2.10)
+┌  Let's create a  Qwik App  ✨ (v1.20.0)
 │
 ◇  Where would you like to create your new project? (Use '.' or './' for current directory)
 │  ./my-app
@@ -36,7 +36,7 @@ bun create qwik
 ●  Creating new project in  /path/to/my-app  ... 🐇
 │
 ◇  Select a starter
-│  Basic App
+│  Playground App (Qwik City + Qwik)
 │
 ◇  Would you like to install bun dependencies?
 │  Yes
@@ -86,30 +86,30 @@ bun create qwik
 
 ```
 
-***
+---
 
 Run `bun run dev` to start the development server.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun run dev
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-$ vite--mode ssr
+```txt
+$ vite --mode ssr
 
-VITE v4.4.7  ready in 1190 ms
+VITE v7.3.1   ssr   ready in 433 ms
 
 ➜  Local:   http://localhost:5173/
 ➜  Network: use --host to expose
-➜  press h to show help
+➜  press h + enter to show help
 ```
 
-***
+---
 
-Open [http://localhost:5173](http://localhost:5173) with your browser to see the result. Qwik will hot-reload your app as you edit your source files.
+Open [http://localhost:5173](http://localhost:5173) in your browser to see the result. Qwik hot-reloads your app as you edit your source files.
 
 <Frame>![Qwik screenshot](https://github.com/oven-sh/bun/assets/3084745/ec35f2f7-03dd-4c90-851e-fb4ad150bb28)</Frame>
 
-***
+---
 
-Refer to the [Qwik docs](https://qwik.dev/docs/getting-started/) for complete documentation.
+See the [Qwik docs](https://qwik.dev/docs/getting-started/) to learn more.

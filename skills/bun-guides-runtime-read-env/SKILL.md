@@ -5,34 +5,36 @@ description: Read environment variables
 
 # Read environment variables
 
-The current environment variables can be accessed via `process.env`.
+Access the current environment variables with `process.env`.
 
-```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts index.ts icon="/icons/typescript.svg"
 process.env.API_TOKEN; // => "secret"
 ```
 
-***
+---
 
-Bun also exposes these variables via `Bun.env`, which is a simple alias of `process.env`.
+Bun also exposes these variables as `Bun.env`, an alias of `process.env`.
 
-```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts index.ts icon="/icons/typescript.svg"
 Bun.env.API_TOKEN; // => "secret"
 ```
 
-***
+---
 
-To print all currently-set environment variables to the command line, run `bun --print process.env`. This is useful for debugging.
+To print all currently-set environment variables, run `bun --print process.env`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun --print process.env
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-BAZ=stuff
-FOOBAR=aaaaaa
-<lots more lines>
+```txt
+ProcessEnv {
+  BAZ: "stuff",
+  FOOBAR: "aaaaaa",
+  <lots more lines>
+}
 ```
 
-***
+---
 
-See [Docs > Runtime > Environment variables](/runtime/environment-variables) for more information on using environment variables with Bun.
+See [Environment variables](/runtime/environment-variables).

@@ -5,11 +5,11 @@ description: Build a simple WebSocket server
 
 # Build a simple WebSocket server
 
-Start a simple WebSocket server using [`Bun.serve`](/runtime/http/server).
+Start a WebSocket server with [`Bun.serve`](/runtime/http/server).
 
-Inside `fetch`, we attempt to upgrade incoming `ws:` or `wss:` requests to WebSocket connections.
+Inside `fetch`, `server.upgrade()` attempts to upgrade incoming `ws:` or `wss:` requests to WebSocket connections.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 const server = Bun.serve({
   fetch(req, server) {
     const success = server.upgrade(req);

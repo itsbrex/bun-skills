@@ -7,11 +7,11 @@ description: Develop complex monorepos with multiple independent packages
 
 > Develop complex monorepos with multiple independent packages
 
-Bun supports [`workspaces`](https://docs.npmjs.com/cli/v9/using-npm/workspaces?v=true#description) in `package.json`. Workspaces make it easy to develop complex software as a *monorepo* consisting of several independent packages.
+Bun supports [`workspaces`](https://docs.npmjs.com/cli/v9/using-npm/workspaces?v=true#description) in `package.json`. With workspaces, you develop several independent packages in a single repository, a _monorepo_.
 
-It's common for a monorepo to have the following structure:
+A monorepo commonly has this structure:
 
-```txt File Tree icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt File Tree icon="folder-tree"
 <root>
 ├── README.md
 ├── bun.lock
@@ -32,9 +32,9 @@ It's common for a monorepo to have the following structure:
         └── tsconfig.json
 ```
 
-In the root `package.json`, the `"workspaces"` key is used to indicate which subdirectories should be considered packages/workspaces within the monorepo. It's conventional to place all the workspace in a directory called `packages`.
+The `"workspaces"` key in the root `package.json` lists the subdirectories to treat as workspaces. By convention, they live in a directory called `packages`.
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "name": "my-project",
   "version": "1.0.0",
@@ -46,11 +46,11 @@ In the root `package.json`, the `"workspaces"` key is used to indicate which sub
 ```
 
 <Note>
-  **Glob support** — Bun supports full glob syntax in `"workspaces"`, including negative patterns (e.g.
-  `!**/excluded/**`). See [here](/runtime/glob#supported-glob-patterns) for a comprehensive list of supported syntax.
+  **Glob support** — Bun supports full glob syntax in `"workspaces"`, including negative patterns such as
+  `!**/excluded/**`. See [supported glob patterns](/runtime/glob#supported-glob-patterns).
 </Note>
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "name": "my-project",
   "version": "1.0.0",
@@ -58,9 +58,9 @@ In the root `package.json`, the `"workspaces"` key is used to indicate which sub
 }
 ```
 
-Each workspace has it's own `package.json`. When referencing other packages in the monorepo, semver or workspace protocols (e.g. `workspace:*`) can be used as the version field in your `package.json`.
+Each workspace has its own `package.json`. To reference another package in the monorepo, use a semver range or the workspace protocol (for example `workspace:*`) as the version in your `package.json`.
 
-```json packages/pkg-a/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json packages/pkg-a/package.json icon="file-json"
 {
   "name": "pkg-a",
   "version": "1.0.0",
@@ -70,9 +70,9 @@ Each workspace has it's own `package.json`. When referencing other packages in t
 }
 ```
 
-`bun install` will install dependencies for all workspaces in the monorepo, de-duplicating packages if possible. If you only want to install dependencies for specific workspaces, you can use the `--filter` flag.
+`bun install` installs dependencies for all workspaces in the monorepo, de-duplicating packages if possible. To install dependencies for specific workspaces only, use the `--filter` flag.
 
-```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash
 # Install dependencies for all workspaces starting with `pkg-` except for `pkg-c`
 bun install --filter "pkg-*" --filter "!pkg-c"
 
@@ -80,7 +80,7 @@ bun install --filter "pkg-*" --filter "!pkg-c"
 bun install --filter "./packages/pkg-*" --filter "!pkg-c" # or --filter "!./packages/pkg-c"
 ```
 
-When publishing, `workspace:` versions are replaced by the package's `package.json` version,
+When publishing, Bun replaces `workspace:` versions with the package's `package.json` version:
 
 ```
 "workspace:*" -> "1.0.1"
@@ -88,32 +88,67 @@ When publishing, `workspace:` versions are replaced by the package's `package.js
 "workspace:~" -> "~1.0.1"
 ```
 
-Setting a specific version takes precedence over the package's `package.json` version,
+A specific version takes precedence over the package's `package.json` version:
 
 ```
 "workspace:1.0.2" -> "1.0.2" // Even if current version is 1.0.1
 ```
 
-Workspaces have a couple major benefits.
+Workspaces have a few major benefits.
 
-* **Code can be split into logical parts.** If one package relies on another, you can simply add it as a dependency in `package.json`. If package `b` depends on `a`, `bun install` will install your local `packages/a` directory into `node_modules` instead of downloading it from the npm registry.
-* **Dependencies can be de-duplicated.** If `a` and `b` share a common dependency, it will be *hoisted* to the root `node_modules` directory. This reduces redundant disk usage and minimizes "dependency hell" issues associated with having multiple versions of a package installed simultaneously.
-* **Run scripts in multiple packages.** You can use the [`--filter` flag](/pm/filter) to easily run `package.json` scripts in multiple packages in your workspace, , or `--workspaces` to run scripts across all workspaces.
+- **Split code into logical parts.** If one package relies on another, add it as a dependency in `package.json`. If package `b` depends on `a`, `bun install` installs your local `packages/a` directory into `node_modules` instead of downloading it from the npm registry.
+- **Bun can de-duplicate dependencies.** If `a` and `b` share a common dependency, Bun _hoists_ it to the root `node_modules` directory. This saves disk space and minimizes the "dependency hell" of multiple versions of a package installed at once.
+- **Run scripts in multiple packages.** Use the [`--filter` flag](/pm/filter) to run `package.json` scripts in several packages at once, or `--workspaces` to run scripts across all workspaces.
+
+## Self-contained workspaces
+
+With the hoisted linker, dependencies shared by several workspaces are hoisted to the root
+`node_modules`. Some tools cannot follow that: Electron packagers and serverless bundlers walk,
+prune and repackage _one workspace's_ `node_modules` and expect every dependency to be physically
+present under it. Mark such a workspace as self-contained, either in its own `package.json`
+(the same key Yarn uses; only the `"workspaces"` value changes the layout):
+
+```json title="apps/desktop/package.json" icon="file-json"
+{
+  "name": "desktop",
+  "installConfig": { "hoistingLimits": "workspaces" }
+}
+```
+
+or from the root `package.json`, next to the workspace globs:
+
+```json title="package.json" icon="file-json"
+{
+  "workspaces": {
+    "packages": ["apps/*", "packages/*"],
+    "selfContained": ["apps/desktop"]
+  }
+}
+```
+
+(entries are workspace paths or package names)
+
+For that workspace `bun install` then behaves as a hoisting barrier — nothing it depends on,
+directly or transitively (including through other workspaces it depends on), is placed above
+`apps/desktop/node_modules`, so that directory is a complete tree — and materializes those
+packages as real copies instead of hardlinks / clones from the cache, so tools that rewrite them
+cannot affect the cache or other projects. All other workspaces keep hoisting to the root as usual. The lockfile does not record the setting. Bun reads it from `package.json` on every install, `--frozen-lockfile` included, so the lockfile is the same with and without it.
+This setting has no effect with the isolated linker, where every package already resolves only its
+own dependencies.
 
 ## Share versions with Catalogs
 
-When many packages need the same dependency versions, catalogs let you define
-those versions once in the root `package.json` and reference them from your
-workspaces using the `catalog:` protocol. Updating the catalog automatically
-updates every package that references it. See
-[Catalogs](/pm/catalogs) for details.
+When many packages need the same dependency versions, define those versions once
+in a catalog in the root `package.json` and reference them from your workspaces
+with the `catalog:` protocol. Updating the catalog updates every package that
+references it. See [Catalogs](/pm/catalogs).
 
 <Note>
-  ⚡️ **Speed** — Installs are fast, even for big monorepos. Bun installs the [Remix](https://github.com/remix-run/remix) monorepo in about `500ms` on Linux.
+⚡️ **Speed** — Installs are fast, even for big monorepos. Bun installs the [Remix](https://github.com/remix-run/remix) monorepo in about `500ms` on Linux.
 
-  * 28x faster than `npm install`
-  * 12x faster than `yarn install` (v1)
-  * 8x faster than `pnpm install`
+- 28x faster than `npm install`
+- 12x faster than `yarn install` (v1)
+- 8x faster than `pnpm install`
 
-  <Image src="https://user-images.githubusercontent.com/709451/212829600-77df9544-7c9f-4d8d-a984-b2cd0fd2aa52.png" />
+<Image src="https://user-images.githubusercontent.com/709451/212829600-77df9544-7c9f-4d8d-a984-b2cd0fd2aa52.png" />
 </Note>

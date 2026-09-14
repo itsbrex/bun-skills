@@ -13,55 +13,54 @@ Build a minimal HTTP server with `Bun.serve`, run it locally, then evolve it by 
 
 <Info>Prerequisites: Bun installed and available on your `PATH`. See [installation](/installation) for setup.</Info>
 
-***
+---
 
 <Steps>
   <Step title="Step 1">
+
     Initialize a new project with `bun init`.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun init my-app
     ```
 
-    It'll prompt you to pick a template, either `Blank`, `React`, or `Library`. For this guide, we'll pick `Blank`.
+    `bun init` prompts you to pick a template: `Blank`, `React`, or `Library`. For this guide, pick `Blank`.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun init my-app
     ```
-
-    ```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```txt
     ✓ Select a project template: Blank
 
-    - .gitignore
-    - CLAUDE.md
-    - .cursor/rules/use-bun-instead-of-node-vite-npm-pnpm.mdc -> CLAUDE.md
-    - index.ts
-    - tsconfig.json (for editor autocomplete)
-    - README.md
+    + .gitignore
+    + CLAUDE.md
+    + .cursor/rules/use-bun-instead-of-node-vite-npm-pnpm.mdc -> CLAUDE.md
+    + index.ts
+    + tsconfig.json (for editor autocomplete)
+    + README.md
     ```
 
-    This automatically creates a `my-app` directory with a basic Bun app.
+    The new `my-app` directory contains a basic Bun app.
+
   </Step>
-
   <Step title="Step 2">
-    Run the `index.ts` file using `bun run index.ts`.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    Run `index.ts` with `bun run`.
+
+    ```bash terminal icon="terminal"
     cd my-app
     bun run index.ts
     ```
-
-    ```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```txt
     Hello via Bun!
     ```
 
-    You should see a console output saying `"Hello via Bun!"`.
   </Step>
-
   <Step title="Step 3">
+
     Replace the contents of `index.ts` with the following code:
 
-    ```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts index.ts icon="/icons/typescript.svg"
     const server = Bun.serve({
       port: 3000,
       routes: {
@@ -72,30 +71,30 @@ Build a minimal HTTP server with `Bun.serve`, run it locally, then evolve it by 
     console.log(`Listening on ${server.url}`);
     ```
 
-    Run the `index.ts` file again using `bun run index.ts`.
+    Run `index.ts` again.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun run index.ts
     ```
-
-    ```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-    Listening on http://localhost:3000
+    ```txt
+    Listening on http://localhost:3000/
     ```
 
-    Visit [`http://localhost:3000`](http://localhost:3000) to test the server. You should see a simple page that says `"Bun!"`.
+    Visit [`http://localhost:3000`](http://localhost:3000) to test the server. You should see a page that says `"Bun!"`.
 
     <Accordion title="Seeing TypeScript errors on Bun?">
-      If you used `bun init`, Bun will have automatically installed Bun's TypeScript declarations and configured your `tsconfig.json`. If you're trying out Bun in an existing project, you may see a type error on the `Bun` global.
+
+      `bun init` installs Bun's TypeScript declarations and configures your `tsconfig.json`. If you're trying out Bun in an existing project, you may see a type error on the `Bun` global.
 
       To fix this, first install `@types/bun` as a dev dependency.
 
-      ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+      ```bash terminal icon="terminal"
       bun add -d @types/bun
       ```
 
       Then add the following to your `compilerOptions` in `tsconfig.json`:
 
-      ```json tsconfig.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+      ```json tsconfig.json icon="file-json"
       {
         "compilerOptions": {
           "lib": ["ESNext"],
@@ -109,20 +108,22 @@ Build a minimal HTTP server with `Bun.serve`, run it locally, then evolve it by 
         }
       }
       ```
-    </Accordion>
-  </Step>
 
+    </Accordion>
+
+  </Step>
   <Step title="Step 4">
+
     Install the `figlet` package and its type declarations. Figlet is a utility for converting strings into ASCII art.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun add figlet
     bun add -d @types/figlet # TypeScript users only
     ```
 
     Update `index.ts` to use `figlet` in `routes`.
 
-    ```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts index.ts icon="/icons/typescript.svg"
     import figlet from 'figlet'; // [!code ++]
 
     const server = Bun.serve({
@@ -139,31 +140,31 @@ Build a minimal HTTP server with `Bun.serve`, run it locally, then evolve it by 
     console.log(`Listening on ${server.url}`);
     ```
 
-    Run the `index.ts` file again using `bun run index.ts`.
+    Run `index.ts` again.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun run index.ts
     ```
-
-    ```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-    Listening on http://localhost:3000
+    ```txt
+    Listening on http://localhost:3000/
     ```
 
-    Visit [`http://localhost:3000/figlet`](http://localhost:3000/figlet) to test the server. You should see a simple page that says `"Bun!"` in ASCII art.
+    Visit [`http://localhost:3000/figlet`](http://localhost:3000/figlet) to test the server. You should see a page that says `"Bun!"` in ASCII art.
 
-    ```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```txt
     ____              _
     | __ ) _   _ _ __ | |
     |  _ \| | | | '_ \| |
     | |_) | |_| | | | |_|
     |____/ \__,_|_| |_(_)
     ```
+
   </Step>
-
   <Step title="Step 5">
-    Let's add some HTML. Create a new file called `index.html` and add the following code:
 
-    ```html index.html icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    Now add some HTML. Create a new file called `index.html`:
+
+    ```html index.html icon="file-code"
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -179,7 +180,7 @@ Build a minimal HTTP server with `Bun.serve`, run it locally, then evolve it by 
 
     Then, import this file in `index.ts` and serve it from the root `/` route.
 
-    ```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts index.ts icon="/icons/typescript.svg"
     import figlet from 'figlet';
     import index from './index.html'; // [!code ++]
 
@@ -197,31 +198,33 @@ Build a minimal HTTP server with `Bun.serve`, run it locally, then evolve it by 
     console.log(`Listening on ${server.url}`);
     ```
 
-    Run the `index.ts` file again using `bun run index.ts`.
+    Run `index.ts` again.
 
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun run index.ts
     ```
-
-    ```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-    Listening on http://localhost:3000
+    ```txt
+    Listening on http://localhost:3000/
     ```
 
     Visit [`http://localhost:3000`](http://localhost:3000) to test the server. You should see the static HTML page.
+
   </Step>
+
 </Steps>
 
-🎉 Congratulations! You've built a simple HTTP server with Bun and installed a package.
+You've built an HTTP server with Bun and installed a package.
 
-***
+---
 
 ## Run a script
 
 Bun can also execute `"scripts"` from your `package.json`. Add the following script:
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+{/* prettier-ignore */}
+```json package.json icon="file-json"
 {
-  "name": "quickstart",
+  "name": "my-app",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -232,19 +235,19 @@ Bun can also execute `"scripts"` from your `package.json`. Add the following scr
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^7"
   }
 }
 ```
 
 Then run it with `bun run start`.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun run start
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-Listening on http://localhost:3000
+```txt
+Listening on http://localhost:3000/
 ```
 
 <Note>⚡️ **Performance** — `bun run` is roughly 28x faster than `npm run` (6ms vs 170ms of overhead).</Note>

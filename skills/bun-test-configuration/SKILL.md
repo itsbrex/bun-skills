@@ -1,19 +1,19 @@
 ---
 name: Bun Test configuration
-description: Learn how to configure Bun test behavior using bunfig.toml and command-line options
+description: Configure bun test behavior with bunfig.toml and command-line options
 ---
 
 # Test configuration
 
-> Learn how to configure Bun test behavior using bunfig.toml and command-line options
+> Configure bun test behavior with bunfig.toml and command-line options
 
-Configure `bun test` via `bunfig.toml` file and command-line options. This page documents the available configuration options for `bun test`.
+Configure `bun test` with `bunfig.toml` and command-line options.
 
 ## Configuration File
 
-You can configure `bun test` behavior by adding a `[test]` section to your `bunfig.toml` file:
+To configure `bun test` in `bunfig.toml`, add a `[test]` section:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 # Options go here
 ```
@@ -22,22 +22,16 @@ You can configure `bun test` behavior by adding a `[test]` section to your `bunf
 
 ### root
 
-The `root` option specifies a root directory for test discovery, overriding the default behavior of scanning from the project root.
+The `root` option sets the directory Bun scans for tests, instead of the project root.
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 root = "src"  # Only scan for tests in the src directory
 ```
 
-This is useful when you want to:
-
-* Limit test discovery to specific directories
-* Exclude certain parts of your project from test scanning
-* Organize tests in a specific subdirectory structure
-
 #### Examples
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 # Only run tests in the src directory
 root = "src"
@@ -51,22 +45,22 @@ root = "tests"
 
 ### Preload Scripts
 
-Load scripts before running tests using the `preload` option:
+The `preload` option loads scripts before the tests run:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 preload = ["./test-setup.ts", "./global-mocks.ts"]
 ```
 
 This is equivalent to using `--preload` on the command line:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun test --preload ./test-setup.ts --preload ./global-mocks.ts
 ```
 
 #### Common Preload Use Cases
 
-```ts title="test-setup.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test-setup.ts" icon="/icons/typescript.svg"
 // Global test setup
 import { beforeAll, afterAll } from "bun:test";
 
@@ -81,7 +75,7 @@ afterAll(() => {
 });
 ```
 
-```ts title="global-mocks.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="global-mocks.ts" icon="/icons/typescript.svg"
 // Global mocks
 import { mock } from "bun:test";
 
@@ -95,30 +89,58 @@ mock.module("./external-api", () => ({
 }));
 ```
 
-## Timeouts
+### Path Ignore Patterns
 
-### Default Timeout
+`pathIgnorePatterns` excludes files and directories from test discovery entirely, using glob patterns. Unlike `coveragePathIgnorePatterns`, which only affects coverage reports, `pathIgnorePatterns` prevents Bun from discovering matching paths and running them as tests.
 
-Set the default timeout for all tests:
+Use it when your project contains submodules, vendored code, or other directories with `*.test.ts` files that you don't want `bun test` to pick up.
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
-timeout = 10000  # 10 seconds (default is 5000ms)
+# Single pattern
+pathIgnorePatterns = "vendor/**"
+
+# Multiple patterns
+pathIgnorePatterns = [
+  "vendor/**",
+  "submodules/**",
+  "fixtures/**"
+]
 ```
 
-This applies to all tests unless overridden by individual test timeouts:
+This is equivalent to using `--path-ignore-patterns` on the command line:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-// This test will use the default timeout from bunfig.toml
-test("uses default timeout", () => {
-  // test implementation
-});
-
-// This test overrides the default timeout
-test("custom timeout", () => {
-  // test implementation
-}, 30000); // 30 seconds
+```bash terminal icon="terminal"
+bun test --path-ignore-patterns 'vendor/**' --path-ignore-patterns 'fixtures/**'
 ```
+
+Bun prunes directories matching a pattern during scanning and never traverses their contents, so ignoring a large directory tree is cheap.
+
+#### Common Use Cases
+
+```toml title="bunfig.toml" icon="settings"
+[test]
+pathIgnorePatterns = [
+  # Git submodules with their own test suites
+  "submodules/**",
+
+  # Vendored dependencies
+  "vendor/**",
+  "third-party/**",
+
+  # Test fixtures that look like tests but aren't
+  "fixtures/**",
+  "**/test-data/**",
+
+  # Integration / E2E tests you want to run separately
+  "**/integration/**",
+  "e2e/**"
+]
+```
+
+<Note>
+  Command-line `--path-ignore-patterns` flags override the `bunfig.toml` value entirely. Bun does not merge the two.
+</Note>
 
 ## Reporters
 
@@ -126,14 +148,14 @@ test("custom timeout", () => {
 
 Configure the JUnit reporter output file path directly in the config file:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test.reporter]
 junit = "path/to/junit.xml"  # Output path for JUnit XML report
 ```
 
 This complements the `--reporter=junit` and `--reporter-outfile` CLI flags:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # Equivalent command line usage
 bun test --reporter=junit --reporter-outfile=./junit.xml
 ```
@@ -142,14 +164,14 @@ bun test --reporter=junit --reporter-outfile=./junit.xml
 
 You can use multiple reporters simultaneously:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # CLI approach
 bun test --reporter=junit --reporter-outfile=./junit.xml
 
 # Config file approach
 ```
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test.reporter]
 junit = "./reports/junit.xml"
 
@@ -165,53 +187,45 @@ coverageReporter = ["text", "lcov"]
 
 Enable the `--smol` memory-saving mode specifically for the test runner:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 smol = true  # Reduce memory usage during test runs
 ```
 
 This is equivalent to using the `--smol` flag on the command line:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun test --smol
 ```
 
 The `smol` mode reduces memory usage by:
 
-* Using less memory for the JavaScript heap
-* Being more aggressive about garbage collection
-* Reducing buffer sizes where possible
+- Using less memory for the JavaScript heap
+- Being more aggressive about garbage collection
+- Reducing buffer sizes where possible
 
-This is useful for:
-
-* CI environments with limited memory
-* Large test suites that consume significant memory
-* Development environments with memory constraints
+Use it in memory-constrained environments, such as CI runners, or for large test suites.
 
 ## Test execution
 
 ### concurrentTestGlob
 
-Automatically run test files matching a glob pattern with concurrent test execution enabled. This is useful for gradually migrating test suites to concurrent execution or for running specific test types concurrently.
+Run test files matching a glob pattern with concurrent test execution enabled.
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 concurrentTestGlob = "**/concurrent-*.test.ts"  # Run files matching this pattern concurrently
 ```
 
-Test files matching this pattern will behave as if the `--concurrent` flag was passed, running all tests within those files concurrently. This allows you to:
+Test files matching the pattern behave as if you passed the `--concurrent` flag: every test in those files runs concurrently. Use this to migrate a test suite to concurrent execution gradually, or to run one kind of test (say, integration tests) concurrently while the rest stay sequential.
 
-* Gradually migrate your test suite to concurrent execution
-* Run integration tests concurrently while keeping unit tests sequential
-* Separate fast concurrent tests from tests that require sequential execution
-
-The `--concurrent` CLI flag will override this setting when specified, forcing all tests to run concurrently regardless of the glob pattern.
+The `--concurrent` CLI flag overrides this setting, forcing all tests to run concurrently regardless of the glob pattern.
 
 #### randomize
 
 Run tests in random order to identify tests with hidden dependencies:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 randomize = true
 ```
@@ -220,7 +234,7 @@ randomize = true
 
 Specify a seed for reproducible random test order. Requires `randomize = true`:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 randomize = true
 seed = 2444615283
@@ -228,20 +242,20 @@ seed = 2444615283
 
 #### retry
 
-Default retry count for all tests. Failed tests will be retried up to this many times. Per-test `{ retry: N }` overrides this value. Default `0` (no retries).
+Default retry count for all tests. Bun retries a failed test up to this many times. Per-test `{ retry: N }` overrides this value. Default `0` (no retries).
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 retry = 3
 ```
 
-The `--retry` CLI flag will override this setting when specified.
+The `--retry` CLI flag overrides this setting.
 
 #### rerunEach
 
 Re-run each test file multiple times to identify flaky tests:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 rerunEach = 3
 ```
@@ -250,7 +264,7 @@ rerunEach = 3
 
 ### Basic Coverage Settings
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 # Enable coverage by default
 coverage = true
@@ -264,31 +278,31 @@ coverageDir = "./coverage"
 
 ### Skip Test Files from Coverage
 
-Exclude files matching test patterns (e.g., `*.test.ts`) from the coverage report:
+Exclude files matching test patterns (for example `*.test.ts`) from the coverage report:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 coverageSkipTestFiles = true  # Exclude test files from coverage reports
 ```
 
 ### Coverage Thresholds
 
-The coverage threshold can be specified either as a number or as an object with specific thresholds:
+Specify the coverage threshold as a single number or as an object with per-metric thresholds:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
-# Simple threshold - applies to lines, functions, and statements
+# Simple threshold - applies to lines and functions
 coverageThreshold = 0.8
 
 # Detailed thresholds
-coverageThreshold = { lines = 0.9, functions = 0.8, statements = 0.85 }
+coverageThreshold = { lines = 0.9, functions = 0.8 }
 ```
 
-Setting any of these enables `fail_on_low_coverage`, causing the test run to fail if coverage is below the threshold.
+Setting a threshold makes `bun test` exit with code 1 when coverage is enabled and any file's line or function coverage is below it. Bun accepts the `statements` key but does not currently enforce it. The check applies with any coverage reporter.
 
 #### Threshold Examples
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 # Require 90% coverage across the board
 coverageThreshold = 0.9
@@ -296,8 +310,7 @@ coverageThreshold = 0.9
 # Different requirements for different metrics
 coverageThreshold = {
   lines = 0.85,      # 85% line coverage
-  functions = 0.90,  # 90% function coverage
-  statements = 0.80  # 80% statement coverage
+  functions = 0.90   # 90% function coverage
 }
 ```
 
@@ -305,7 +318,7 @@ coverageThreshold = {
 
 Exclude specific files or file patterns from coverage reports using glob patterns:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 # Single pattern
 coveragePathIgnorePatterns = "**/*.spec.ts"
@@ -321,11 +334,11 @@ coveragePathIgnorePatterns = [
 ]
 ```
 
-Files matching any of these patterns will be excluded from coverage calculation and reporting. See the [coverage documentation](/test/code-coverage) for more details and examples.
+Bun excludes files matching any of these patterns from coverage calculation and reporting. See [Code coverage](/test/code-coverage).
 
 #### Common Ignore Patterns
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 coveragePathIgnorePatterns = [
   # Test files
@@ -360,9 +373,9 @@ coveragePathIgnorePatterns = [
 
 ### Sourcemap Handling
 
-Internally, Bun transpiles every file. That means code coverage must also go through sourcemaps before they can be reported. We expose this as a flag to allow you to opt out of this behavior, but it will be confusing because during the transpilation process, Bun may move code around and change variable names. This option is mostly useful for debugging coverage issues.
+Bun transpiles every file, so coverage results pass through sourcemaps before they're reported. `coverageIgnoreSourcemaps` opts out of this, but the results are confusing: during transpilation, Bun may move code around and rename variables. The option is mostly useful for debugging coverage issues.
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 coverageIgnoreSourcemaps = true  # Don't use sourcemaps for coverage analysis
 ```
@@ -374,9 +387,9 @@ coverageIgnoreSourcemaps = true  # Don't use sourcemaps for coverage analysis
 
 ## Install Settings Inheritance
 
-The `bun test` command inherits relevant network and installation configuration (registry, cafile, prefer, exact, etc.) from the `[install]` section of `bunfig.toml`. This is important if tests need to interact with private registries or require specific install behaviors triggered during the test run.
+`bun test` inherits network and installation configuration (such as `registry`, `cafile`, `prefer`, and `exact`) from the `[install]` section of `bunfig.toml`. This matters if your tests reach a private registry or trigger installs during the run.
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [install]
 # These settings are inherited by bun test
 registry = "https://npm.company.com/"
@@ -386,30 +399,23 @@ prefer = "offline"
 [test]
 # Test-specific configuration
 coverage = true
-timeout = 10000
 ```
 
 ## Environment Variables
 
-Environment variables for tests should be set using `.env` files. Bun automatically loads `.env` files from your project root. For test-specific variables, create a `.env.test` file:
+Set environment variables for tests with `.env` files, which Bun loads from your project root automatically. For test-specific variables, create a `.env.test` file, which `bun test` loads automatically:
 
-```ini title=".env.test" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ini title=".env.test" icon="settings"
 NODE_ENV=test
 DATABASE_URL=postgresql://localhost:5432/test_db
 LOG_LEVEL=error
 ```
 
-Then load it with `--env-file`:
-
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun test --env-file=.env.test
-```
-
 ## Complete Configuration Example
 
-Here's a comprehensive example showing all available test configuration options:
+An example showing the available test configuration options:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [install]
 # Install settings inherited by tests
 registry = "https://registry.npmjs.org/"
@@ -419,16 +425,16 @@ exact = true
 # Test discovery
 root = "src"
 preload = ["./test-setup.ts", "./global-mocks.ts"]
+pathIgnorePatterns = ["vendor/**", "submodules/**"]
 
 # Execution settings
-timeout = 10000
 smol = true
 
 # Coverage configuration
 coverage = true
 coverageReporter = ["text", "lcov"]
 coverageDir = "./coverage"
-coverageThreshold = { lines = 0.85, functions = 0.90, statements = 0.80 }
+coverageThreshold = { lines = 0.85, functions = 0.90 }
 coverageSkipTestFiles = true
 coveragePathIgnorePatterns = [
   "**/*.spec.ts",
@@ -449,76 +455,13 @@ junit = "./reports/junit.xml"
 
 Command-line options always override configuration file settings:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
-timeout = 5000
 coverage = false
 ```
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-# These CLI flags override the config file
-bun test --timeout 10000 --coverage
-# timeout will be 10000ms and coverage will be enabled
-```
-
-## Conditional Configuration
-
-You can use different configurations for different environments:
-
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
-[test]
-# Default test configuration
-coverage = false
-timeout = 5000
-
-# Override for CI environment
-[test.ci]
-coverage = true
-coverageThreshold = 0.8
-timeout = 30000
-```
-
-Then in CI:
-
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-# Use CI-specific settings
-bun test --config=ci
-```
-
-## Validation and Troubleshooting
-
-### Invalid Configuration
-
-Bun will warn about invalid configuration options:
-
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
-[test]
-invalidOption = true  # This will generate a warning
-```
-
-### Common Configuration Issues
-
-1. **Path Resolution**: Relative paths in config are resolved relative to the config file location
-2. **Pattern Matching**: Glob patterns use standard glob syntax
-3. **Type Mismatches**: Ensure numeric values are not quoted unless they should be strings
-
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
-[test]
-# Correct
-timeout = 10000
-
-# Incorrect - will be treated as string
-timeout = "10000"
-```
-
-### Debugging Configuration
-
-To see what configuration is being used:
-
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-# Show effective configuration
-bun test --dry-run
-
-# Verbose output to see configuration loading
-bun test --verbose
+```bash terminal icon="terminal"
+# This CLI flag overrides the config file
+bun test --coverage
+# coverage will be enabled
 ```

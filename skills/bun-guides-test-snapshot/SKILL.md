@@ -5,9 +5,9 @@ description: Use snapshot testing in `bun test`
 
 # Use snapshot testing in `bun test`
 
-Bun's test runner supports Jest-style snapshot testing via `.toMatchSnapshot()`.
+Bun's test runner supports Jest-style snapshot testing with `.toMatchSnapshot()`.
 
-```ts snap.test.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts snap.test.ts icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("snapshot", () => {
@@ -15,15 +15,15 @@ test("snapshot", () => {
 });
 ```
 
-***
+---
 
-The first time this test is executed, Bun will evaluate the value passed into `expect()` and write it to disk in a directory called `__snapshots__` that lives alongside the test file. (Note the `snapshots: +1 added` line in the output.)
+The first time this test runs, Bun evaluates the value passed into `expect()` and writes it to a `__snapshots__` directory alongside the test file. (Note the `snapshots: +1 added` line in the output.)
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun test test/snap
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 test/snap.test.ts:
 ✓ snapshot [1.48ms]
 
@@ -31,26 +31,26 @@ test/snap.test.ts:
  0 fail
  snapshots: +1 added
  1 expect() calls
-Ran 1 tests across 1 files. [82.00ms]
+Ran 1 test across 1 file. [82.00ms]
 ```
 
-***
+---
 
 The `__snapshots__` directory contains a `.snap` file for each test file in the directory.
 
-```txt File Tree icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt File Tree icon="folder-tree"
 test
 ├── __snapshots__
 │   └── snap.test.ts.snap
 └── snap.test.ts
 ```
 
-***
+---
 
-The `snap.test.ts.snap` file is a JavaScript file that exports a serialized version of the value passed into `expect()`. The `{foo: "bar"}` object has been serialized to JSON.
+The `snap.test.ts.snap` file is a JavaScript file that exports a serialized version of the value passed into `expect()`. Bun pretty-prints the `{foo: "bar"}` object in Jest's snapshot format, which is not strict JSON (note the trailing comma).
 
-```js snap.test.ts.snap icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
-// Bun Snapshot v1, https://bun.com/docs/test/snapshots
+```js snap.test.ts.snap icon="file-code"
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`snapshot 1`] = `
 {
@@ -59,15 +59,15 @@ exports[`snapshot 1`] = `
 `;
 ```
 
-***
+---
 
-Later, when this test file is executed again, Bun will read the snapshot file and compare it to the value passed into `expect()`. If the values are different, the test will fail.
+On later runs, Bun reads the snapshot file and compares it to the value passed into `expect()`. If they differ, the test fails.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun test
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 bun test v1.3.3 (9c68abdb)
 test/snap.test.ts:
 ✓ snapshot [1.05ms]
@@ -75,18 +75,18 @@ test/snap.test.ts:
  1 pass
  0 fail
  1 snapshots, 1 expect() calls
-Ran 1 tests across 1 files. [101.00ms]
+Ran 1 test across 1 file. [101.00ms]
 ```
 
-***
+---
 
 To update snapshots, use the `--update-snapshots` flag.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun test --update-snapshots
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 bun test v1.3.3 (9c68abdb)
 test/snap.test.ts:
 ✓ snapshot [0.86ms]
@@ -95,9 +95,9 @@ test/snap.test.ts:
  0 fail
  snapshots: +1 added  # the snapshot was regenerated
  1 expect() calls
-Ran 1 tests across 1 files. [102.00ms]
+Ran 1 test across 1 file. [102.00ms]
 ```
 
-***
+---
 
-See [Docs > Test Runner > Snapshots](/test/snapshots) for complete documentation on snapshots with the Bun test runner.
+See [Snapshots](/test/snapshots).

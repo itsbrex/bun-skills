@@ -5,11 +5,11 @@ description: Set per-socket contextual data on a WebSocket
 
 # Set per-socket contextual data on a WebSocket
 
-When building a WebSocket server, it's typically necessary to store some identifying information or context associated with each connected client.
+A WebSocket server typically needs to store some identifying information or context for each connected client.
 
-With [Bun.serve()](/runtime/http/websockets#contextual-data), this "contextual data" is set when the connection is initially upgraded by passing a `data` parameter in the `server.upgrade()` call.
+With [Bun.serve()](/runtime/http/websockets#contextual-data), set this "contextual data" by passing a `data` parameter to `server.upgrade()` when upgrading the connection.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 Bun.serve({
   fetch(req, server) {
     const success = server.upgrade(req, {
@@ -30,17 +30,17 @@ Bun.serve({
     async message(ws, message) {
       // the contextual data is available as the `data` property
       // on the WebSocket instance
-      console.log(`Received ${message} from ${ws.data.socketId}}`);
+      console.log(`Received ${message} from ${ws.data.socketId}`);
     },
   },
 });
 ```
 
-***
+---
 
 It's common to read cookies/headers from the incoming request to identify the connecting client.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 type WebSocketData = {
   createdAt: number;
   token: string;

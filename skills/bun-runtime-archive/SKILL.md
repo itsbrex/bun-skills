@@ -7,13 +7,13 @@ description: Create and extract tar archives with Bun's fast native implementati
 
 > Create and extract tar archives with Bun's fast native implementation
 
-Bun provides a fast, native implementation for working with tar archives through `Bun.Archive`. It supports creating archives from in-memory data, extracting archives to disk, and reading archive contents without extraction.
+`Bun.Archive` is Bun's native API for tar archives. It creates archives from in-memory data, extracts archives to disk, and reads archive contents without extraction.
 
 ## Quickstart
 
 **Create an archive from files:**
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const archive = new Bun.Archive({
   "hello.txt": "Hello, World!",
   "data.json": JSON.stringify({ foo: "bar" }),
@@ -26,7 +26,7 @@ await Bun.write("bundle.tar", archive);
 
 **Extract an archive:**
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const tarball = await Bun.file("package.tar.gz").bytes();
 const archive = new Bun.Archive(tarball);
 const entryCount = await archive.extract("./output");
@@ -35,7 +35,7 @@ console.log(`Extracted ${entryCount} entries`);
 
 **Read archive contents without extracting:**
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const tarball = await Bun.file("package.tar.gz").bytes();
 const archive = new Bun.Archive(tarball);
 const files = await archive.files();
@@ -49,7 +49,7 @@ for (const [path, file] of files) {
 
 Use `new Bun.Archive()` to create an archive from an object where keys are file paths and values are file contents. By default, archives are uncompressed:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // Creates an uncompressed tar archive (default)
 const archive = new Bun.Archive({
   "README.md": "# My Project",
@@ -60,12 +60,12 @@ const archive = new Bun.Archive({
 
 File contents can be:
 
-* **Strings** - Text content
-* **Blobs** - Binary data
-* **ArrayBufferViews** (e.g., `Uint8Array`) - Raw bytes
-* **ArrayBuffers** - Raw binary data
+- **Strings** - Text content
+- **Blobs** - Binary data
+- **ArrayBufferViews** (such as `Uint8Array`) - Raw bytes
+- **ArrayBuffers** - Raw binary data
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const data = "binary data";
 const arrayBuffer = new ArrayBuffer(8);
 
@@ -81,7 +81,7 @@ const archive = new Bun.Archive({
 
 Use `Bun.write()` to write an archive to disk:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // Write uncompressed tar (default)
 const archive = new Bun.Archive({
   "file1.txt": "content1",
@@ -98,7 +98,7 @@ await Bun.write("output.tar.gz", compressed);
 
 Get the archive data as bytes or a Blob:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const archive = new Bun.Archive({ "hello.txt": "Hello, World!" });
 
 // As Uint8Array
@@ -119,13 +119,13 @@ const gzippedBlob = await gzipped.blob();
 
 Create an archive from existing tar/tar.gz data:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // From a file
 const tarball = await Bun.file("package.tar.gz").bytes();
 const archiveFromFile = new Bun.Archive(tarball);
 ```
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // From a fetch response
 const response = await fetch("https://example.com/archive.tar.gz");
 const archiveFromFetch = new Bun.Archive(await response.blob());
@@ -135,24 +135,24 @@ const archiveFromFetch = new Bun.Archive(await response.blob());
 
 Use `.extract()` to write all files to a directory:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const tarball = await Bun.file("package.tar.gz").bytes();
 const archive = new Bun.Archive(tarball);
 const count = await archive.extract("./extracted");
 console.log(`Extracted ${count} entries`);
 ```
 
-The target directory is created automatically if it doesn't exist. Existing files are overwritten. The returned count includes files, directories, and symlinks (on POSIX systems).
+`extract()` creates the target directory if it doesn't exist and overwrites existing files. The returned count includes files, directories, and symlinks (on POSIX systems).
 
-**Note**: On Windows, symbolic links in archives are always skipped during extraction. Bun does not attempt to create them regardless of privilege level. On Linux and macOS, symlinks are extracted normally.
+**Note**: On Windows, Bun always skips symbolic links during extraction, regardless of privilege level. On Linux and macOS, Bun extracts symlinks normally.
 
-**Security note**: Bun.Archive validates paths during extraction, rejecting absolute paths (POSIX `/`, Windows drive letters like `C:\` or `C:/`, and UNC paths like `\\server\share`). Path traversal components (`..`) are normalized away (e.g., `dir/sub/../file` becomes `dir/file`) to prevent directory escape attacks.
+**Security note**: Bun.Archive validates paths during extraction. It rejects absolute paths (POSIX `/`, Windows drive letters like `C:\` or `C:/`, and UNC paths like `\\server\share`) and unsafe symlink targets. It normalizes away path traversal components (`..`) to prevent directory escape attacks: `dir/sub/../file` becomes `dir/file`.
 
 ### Filtering Extracted Files
 
-Use glob patterns to extract only specific files. Patterns are matched against archive entry paths normalized to use forward slashes (`/`). Positive patterns specify what to include, and negative patterns (prefixed with `!`) specify what to exclude. Negative patterns are applied after positive patterns, so **using only negative patterns will match nothing** (you must include a positive pattern like `**` first):
+Use glob patterns to extract only specific files. Bun matches patterns against archive entry paths normalized to use forward slashes (`/`). Positive patterns specify what to include, and negative patterns (prefixed with `!`) specify what to exclude. When you pass only negative patterns, Bun includes all entries that don't match them:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const tarball = await Bun.file("package.tar.gz").bytes();
 const archive = new Bun.Archive(tarball);
 
@@ -165,9 +165,9 @@ const multiCount = await archive.extract("./extracted", {
 });
 ```
 
-Use negative patterns (prefixed with `!`) to exclude files. When mixing positive and negative patterns, entries must match at least one positive pattern and not match any negative pattern:
+When mixing positive and negative patterns, entries must match at least one positive pattern and no negative pattern:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // Extract everything except node_modules
 const distCount = await archive.extract("./extracted", {
   glob: ["**", "!node_modules/**"],
@@ -183,9 +183,9 @@ const srcCount = await archive.extract("./extracted", {
 
 ### Get All Files
 
-Use `.files()` to get archive contents as a `Map` of `File` objects without extracting to disk. Unlike `extract()` which processes all entry types, `files()` returns only regular files (no directories):
+Use `.files()` to get archive contents as a `Map` of `File` objects without extracting to disk. Unlike `extract()`, which processes all entry types, `files()` returns only regular files (no directories):
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const tarball = await Bun.file("package.tar.gz").bytes();
 const archive = new Bun.Archive(tarball);
 const files = await archive.files();
@@ -198,18 +198,18 @@ for (const [path, file] of files) {
 
 Each `File` object includes:
 
-* `name` - The file path within the archive (always uses forward slashes `/` as separators)
-* `size` - File size in bytes
-* `lastModified` - Modification timestamp
-* Standard `Blob` methods: `text()`, `arrayBuffer()`, `stream()`, etc.
+- `name` - The file path within the archive (always uses forward slashes `/` as separators)
+- `size` - File size in bytes
+- `lastModified` - Modification timestamp
+- Standard `Blob` methods such as `text()`, `arrayBuffer()`, and `stream()`
 
-**Note**: `files()` loads file contents into memory. For large archives, consider using `extract()` to write directly to disk instead.
+**Note**: `files()` loads file contents into memory. For large archives, use `extract()` to write directly to disk instead.
 
 ### Error Handling
 
 Archive operations can fail due to corrupted data, I/O errors, or invalid paths. Use try/catch to handle these cases:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 try {
   const tarball = await Bun.file("package.tar.gz").bytes();
   const archive = new Bun.Archive(tarball);
@@ -233,18 +233,14 @@ try {
 
 Common error scenarios:
 
-* **Corrupted/truncated archives** - `new Archive()` loads the archive data; errors may be deferred until read/extract operations
-* **Permission denied** - `extract()` throws if the target directory is not writable
-* **Disk full** - `extract()` throws if there's insufficient space
-* **Invalid paths** - Operations throw for malformed file paths
-
-The count returned by `extract()` includes all successfully written entries (files, directories, and symlinks on POSIX systems).
-
-**Security note**: Bun.Archive automatically validates paths during extraction. Absolute paths (POSIX `/`, Windows drive letters, UNC paths) and unsafe symlink targets are rejected. Path traversal components (`..`) are normalized away to prevent directory escape.
+- **Corrupted/truncated archives** - `new Bun.Archive()` loads the archive data; Bun may defer errors until read/extract operations
+- **Permission denied** - `extract()` throws if the target directory is not writable
+- **Disk full** - `extract()` throws if there's insufficient space
+- **Invalid paths** - Operations throw for malformed file paths
 
 For additional security with untrusted archives, you can enumerate and validate paths before extraction:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const archive = new Bun.Archive(untrustedData);
 const files = await archive.files();
 
@@ -264,9 +260,9 @@ for (const [path] of files) {
 await archive.extract("./safe-output");
 ```
 
-When using `files()` with a glob pattern, an empty `Map` is returned if no files match:
+When called with a glob pattern, `files()` returns an empty `Map` if no files match:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const matches = await archive.files("*.nonexistent");
 if (matches.size === 0) {
   console.log("No matching files found");
@@ -277,7 +273,7 @@ if (matches.size === 0) {
 
 Pass a glob pattern to filter which files are returned:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // Get only TypeScript files
 const tsFiles = await archive.files("**/*.ts");
 
@@ -291,22 +287,22 @@ const jsonFiles = await archive.files("**/*.json");
 const codeFiles = await archive.files(["**/*.ts", "**/*.js"]);
 ```
 
-Supported glob patterns (subset of [Bun.Glob](/docs/api/glob) syntax):
+Supported glob patterns (subset of [Bun.Glob](/runtime/glob) syntax):
 
-* `*` - Match any characters except `/`
-* `**` - Match any characters including `/`
-* `?` - Match single character
-* `[abc]` - Match character set
-* `{a,b}` - Match alternatives
-* `!pattern` - Exclude files matching pattern (negation). Must be combined with positive patterns; using only negative patterns matches nothing.
+- `*` - Match any characters except `/`
+- `**` - Match any characters including `/`
+- `?` - Match single character
+- `[abc]` - Match character set
+- `{a,b}` - Match alternatives
+- `!pattern` - Exclude files matching pattern (negation). When you pass only negative patterns, Bun includes all files not matching them.
 
-See [Bun.Glob](/docs/api/glob) for the full glob syntax including escaping and advanced patterns.
+See [Bun.Glob](/runtime/glob) for the full glob syntax including escaping and advanced patterns.
 
 ## Compression
 
 Bun.Archive creates uncompressed tar archives by default. Use `{ compress: "gzip" }` to enable gzip compression:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // Default: uncompressed tar
 const archive = new Bun.Archive({ "hello.txt": "Hello, World!" });
 
@@ -321,17 +317,17 @@ const compressed = new Bun.Archive({ "hello.txt": "Hello, World!" }, { compress:
 const maxCompression = new Bun.Archive({ "hello.txt": "Hello, World!" }, { compress: "gzip", level: 12 });
 ```
 
-The options accept:
+The `options` argument accepts:
 
-* No options or `undefined` - Uncompressed tar (default)
-* `{ compress: "gzip" }` - Enable gzip compression at level 6
-* `{ compress: "gzip", level: number }` - Gzip with custom level 1-12 (1 = fastest, 12 = smallest)
+- No options or `undefined` - Uncompressed tar (default)
+- `{ compress: "gzip" }` - Enable gzip compression at level 6
+- `{ compress: "gzip", level: number }` - Gzip with custom level 1-12 (1 = fastest, 12 = smallest)
 
 ## Examples
 
 ### Bundle Project Files
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 import { Glob } from "bun";
 
 // Collect source files
@@ -354,7 +350,7 @@ await Bun.write("bundle.tar.gz", archive);
 
 ### Extract and Process npm Package
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const response = await fetch("https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz");
 const archive = new Bun.Archive(await response.blob());
 
@@ -370,7 +366,7 @@ if (packageJson) {
 
 ### Create Archive from Directory
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -402,9 +398,9 @@ await Bun.write("my-project.tar.gz", archive);
 
 ## Reference
 
-> **Note**: The following type signatures are simplified for documentation purposes. See [`packages/bun-types/bun.d.ts`](https://github.com/oven-sh/bun/blob/main/packages/bun-types/bun.d.ts) for the full type definitions.
+> **Note**: The following type signatures are simplified. See [`packages/bun-types/bun.d.ts`](https://github.com/oven-sh/bun/blob/main/packages/bun-types/bun.d.ts) for the full type definitions.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 type ArchiveInput =
   | Record<string, string | Blob | Bun.ArrayBufferView | ArrayBufferLike>
   | Blob

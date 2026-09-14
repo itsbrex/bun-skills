@@ -5,16 +5,16 @@ description: Common HTTP server usage
 
 # Common HTTP server usage
 
-This starts an HTTP server listening on port `3000`. It demonstrates basic routing with a number of common responses and also handles POST data from standard forms or as JSON.
+This code starts an HTTP server listening on port `3000`. It demonstrates basic routing with common responses and handles POST data from standard forms or as JSON.
 
 See [`Bun.serve`](/runtime/http/server) for details.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 const server = Bun.serve({
   async fetch(req) {
     const path = new URL(req.url).pathname;
 
-    // respond with text/html
+    // respond with text/plain
     if (path === "/") return new Response("Welcome to Bun!");
 
     // redirect

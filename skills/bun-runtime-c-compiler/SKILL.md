@@ -9,15 +9,15 @@ description: Compile and run C from JavaScript with low overhead
 
 `bun:ffi` has experimental support for compiling and running C from JavaScript with low overhead.
 
-***
+---
 
 ## Usage (cc in `bun:ffi`)
 
-See the [introduction blog post](https://bun.com/blog/compile-and-run-c-in-js) for more information.
+See the [introduction blog post](https://bun.com/blog/compile-and-run-c-in-js) for background.
 
 JavaScript:
 
-```ts hello.ts icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts hello.ts icon="file-code"
 import { cc } from "bun:ffi";
 import source from "./hello.c" with { type: "file" };
 
@@ -38,60 +38,61 @@ console.log("What is the answer to the universe?", hello());
 
 C source:
 
-```c hello.c theme={"theme":{"light":"github-light","dark":"dracula"}}
+```c hello.c
 int hello() {
   return 42;
 }
 ```
 
-When you run `hello.js`, it will print:
+Running `hello.ts` prints:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun hello.js
+```sh terminal icon="terminal"
+bun hello.ts
 What is the answer to the universe? 42
 ```
 
-Under the hood, `cc` uses [TinyCC](https://bellard.org/tcc/) to compile the C code and then link it with the JavaScript runtime, efficiently converting types in-place.
+`cc` uses [TinyCC](https://bellard.org/tcc/) to compile the C code, then links it with the JavaScript runtime, converting types in-place.
 
 ### Primitive types
 
-The same `FFIType` values in [`dlopen`](/runtime/ffi) are supported in `cc`.
+`cc` supports the same `FFIType` values as [`dlopen`](/runtime/ffi), except `buffer_length`. Only `cc` supports `napi_env` and `napi_value`.
 
-| `FFIType`   | C Type         | Aliases                     |
-| ----------- | -------------- | --------------------------- |
-| cstring     | `char*`        |                             |
-| function    | `(void*)(*)()` | `fn`, `callback`            |
-| ptr         | `void*`        | `pointer`, `void*`, `char*` |
-| i8          | `int8_t`       | `int8_t`                    |
-| i16         | `int16_t`      | `int16_t`                   |
-| i32         | `int32_t`      | `int32_t`, `int`            |
-| i64         | `int64_t`      | `int64_t`                   |
-| i64\_fast   | `int64_t`      |                             |
-| u8          | `uint8_t`      | `uint8_t`                   |
-| u16         | `uint16_t`     | `uint16_t`                  |
-| u32         | `uint32_t`     | `uint32_t`                  |
-| u64         | `uint64_t`     | `uint64_t`                  |
-| u64\_fast   | `uint64_t`     |                             |
-| f32         | `float`        | `float`                     |
-| f64         | `double`       | `double`                    |
-| bool        | `bool`         |                             |
-| char        | `char`         |                             |
-| napi\_env   | `napi_env`     |                             |
-| napi\_value | `napi_value`   |                             |
+| `FFIType`  | C Type         | Aliases                     |
+| ---------- | -------------- | --------------------------- |
+| buffer     | `char*`        |                             |
+| cstring    | `char*`        |                             |
+| function   | `(void*)(*)()` | `fn`, `callback`            |
+| ptr        | `void*`        | `pointer`, `void*`, `char*` |
+| i8         | `int8_t`       | `int8_t`                    |
+| i16        | `int16_t`      | `int16_t`                   |
+| i32        | `int32_t`      | `int32_t`, `int`            |
+| i64        | `int64_t`      | `int64_t`, `isize`          |
+| i64_fast   | `int64_t`      |                             |
+| u8         | `uint8_t`      | `uint8_t`                   |
+| u16        | `uint16_t`     | `uint16_t`                  |
+| u32        | `uint32_t`     | `uint32_t`                  |
+| u64        | `uint64_t`     | `uint64_t`, `usize`         |
+| u64_fast   | `uint64_t`     |                             |
+| f32        | `float`        | `float`                     |
+| f64        | `double`       | `double`                    |
+| bool       | `bool`         |                             |
+| char       | `char`         |                             |
+| napi_env   | `napi_env`     |                             |
+| napi_value | `napi_value`   |                             |
 
 ### Strings, objects, and non-primitive types
 
-To make it easier to work with strings, objects, and other non-primitive types that don't map 1:1 to C types, `cc` supports N-API.
+For strings, objects, and other non-primitive types that don't map 1:1 to C types, `cc` supports N-API.
 
-To pass or receive a JavaScript values without any type conversions from a C function, you can use `napi_value`.
+Use `napi_value` to pass or receive JavaScript values from a C function without any type conversions.
 
 You can also pass a `napi_env` to receive the N-API environment used to call the JavaScript function.
 
 #### Returning a C string to JavaScript
 
-For example, if you have a string in C, you can return it to JavaScript like this:
+For example, to return a string from C to JavaScript:
 
-```ts hello.ts theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts hello.ts
 import { cc } from "bun:ffi";
 import source from "./hello.c" with { type: "file" };
 
@@ -112,7 +113,7 @@ const result = hello();
 
 And in C:
 
-```c hello.c theme={"theme":{"light":"github-light","dark":"dracula"}}
+```c hello.c
 #include <node/node_api.h>
 
 napi_value hello(napi_env env) {
@@ -122,9 +123,9 @@ napi_value hello(napi_env env) {
 }
 ```
 
-You can also use this to return other types like objects and arrays:
+The same approach returns other types like objects and arrays:
 
-```c hello.c theme={"theme":{"light":"github-light","dark":"dracula"}}
+```c hello.c
 #include <node/node_api.h>
 
 napi_value hello(napi_env env) {
@@ -136,12 +137,12 @@ napi_value hello(napi_env env) {
 
 ### `cc` Reference
 
-#### `library: string[]`
+#### `library: string | string[]`
 
-The `library` array is used to specify the libraries that should be linked with the C code.
+Use `library` to specify the libraries to link with the C code.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
-type Library = string[];
+```ts
+type Library = string | string[];
 
 cc({
   source: "hello.c",
@@ -151,9 +152,9 @@ cc({
 
 #### `symbols`
 
-The `symbols` object is used to specify the functions and variables that should be exposed to JavaScript.
+Use the `symbols` object to specify the functions and variables to expose to JavaScript.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 type Symbols = {
   [key: string]: {
     args: FFIType[];
@@ -164,9 +165,9 @@ type Symbols = {
 
 #### `source`
 
-The `source` is a file path to the C code that should be compiled and linked with the JavaScript runtime.
+`source` is the path to the C code to compile and link with the JavaScript runtime.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 type Source = string | URL | BunFile;
 
 cc({
@@ -182,9 +183,9 @@ cc({
 
 #### `flags: string | string[]`
 
-The `flags` is an optional array of strings that should be passed to the TinyCC compiler.
+`flags` is an optional string or array of strings passed to the TinyCC compiler.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 type Flags = string | string[];
 ```
 
@@ -192,9 +193,9 @@ These are flags like `-I` for include directories and `-D` for preprocessor defi
 
 #### `define: Record<string, string>`
 
-The `define` is an optional object that should be passed to the TinyCC compiler.
+`define` is an optional object of preprocessor definitions passed to the TinyCC compiler.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 type Defines = Record<string, string>;
 
 cc({
@@ -205,4 +206,12 @@ cc({
 });
 ```
 
-These are preprocessor definitions passed to the TinyCC compiler.
+### Disabling `cc`
+
+Pass `--no-ffi-cc` to disable the C compiler for a process. Any call to `cc()` then throws an error with the code `ERR_FFI_CC_DISABLED`. The `--no-addons` flag also disables `cc()`, in addition to `process.dlopen`.
+
+```sh
+bun --no-ffi-cc ./app.ts
+```
+
+Workers inherit the setting from their parent. A Worker can also set it for itself with `execArgv: ["--no-ffi-cc"]`. Standalone executables can bake it in with `bun build --compile --compile-exec-argv="--no-ffi-cc"`.

@@ -1,5 +1,5 @@
 ---
-name: Bun Cookies
+name: Bun HTTP Cookies
 description: Work with cookies in HTTP requests and responses using Bun's built-in Cookie API.
 ---
 
@@ -7,13 +7,13 @@ description: Work with cookies in HTTP requests and responses using Bun's built-
 
 > Work with cookies in HTTP requests and responses using Bun's built-in Cookie API.
 
-Bun provides a built-in API for working with cookies in HTTP requests and responses. The `BunRequest` object includes a `cookies` property that provides a `CookieMap` for easily accessing and manipulating cookies. When using `routes`, `Bun.serve()` automatically tracks `request.cookies.set` and applies them to the response.
+Bun has a built-in API for working with cookies in HTTP requests and responses. The `BunRequest` object exposes a `cookies` property, a `CookieMap` for reading and modifying cookies. When using `routes`, `Bun.serve()` automatically tracks calls to `request.cookies.set` and applies them to the response.
 
 ## Reading cookies
 
 Read cookies from incoming requests using the `cookies` property on the `BunRequest` object:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   routes: {
     "/profile": req => {
@@ -35,7 +35,7 @@ Bun.serve({
 
 To set cookies, use the `set` method on the `CookieMap` from the `BunRequest` object.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   routes: {
     "/login": req => {
@@ -59,13 +59,11 @@ Bun.serve({
 });
 ```
 
-`Bun.serve()` automatically tracks modified cookies from the request and applies them to the response.
-
 ## Deleting cookies
 
 To delete a cookie, use the `delete` method on the `request.cookies` (`CookieMap`) object:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.serve({
   routes: {
     "/logout": req => {
@@ -80,4 +78,4 @@ Bun.serve({
 });
 ```
 
-Deleted cookies become a `Set-Cookie` header on the response with the `maxAge` set to `0` and an empty `value`.
+Deleted cookies become a `Set-Cookie` header on the response with the `Expires` attribute set to a date in the past and an empty `value`.

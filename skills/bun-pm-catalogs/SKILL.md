@@ -7,17 +7,17 @@ description: Share common dependency versions across multiple packages in a mono
 
 > Share common dependency versions across multiple packages in a monorepo
 
-Catalogs in Bun provide a straightforward way to share common dependency versions across multiple packages in a monorepo. Rather than specifying the same versions repeatedly in each workspace package, you define them once in the root package.json and reference them consistently throughout your project.
+**Catalogs** share dependency versions across the packages in a monorepo. Rather than repeating the same versions in each workspace package, you define them once in the root `package.json` and reference them throughout your project.
 
 ## Overview
 
-Unlike traditional dependency management where each workspace package needs to independently specify versions, catalogs let you:
+Instead of each workspace package specifying its own versions, you:
 
-1. Define version catalogs in the root package.json
-2. Reference these versions with a simple `catalog:` protocol
-3. Update all packages simultaneously by changing the version in just one place
+1. Define version catalogs in the root `package.json`
+2. Reference those versions with the `catalog:` protocol
+3. Update every package at once by changing the version in one place
 
-This is especially useful in large monorepos where dozens of packages need to use the same version of key dependencies.
+Catalogs matter most in large monorepos where dozens of packages depend on the same versions of key dependencies.
 
 ## How to Use Catalogs
 
@@ -42,7 +42,7 @@ my-monorepo/
 
 In your root-level `package.json`, add a `catalog` or `catalogs` field within the `workspaces` object:
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "name": "my-monorepo",
   "workspaces": {
@@ -61,13 +61,13 @@ In your root-level `package.json`, add a `catalog` or `catalogs` field within th
 }
 ```
 
-If you put `catalog` or `catalogs` at the top level of the `package.json` file, that will work too.
+`catalog` and `catalogs` also work at the top level of `package.json`.
 
 ### 2. Reference Catalog Versions in Workspace Packages
 
 In your workspace packages, use the `catalog:` protocol to reference versions:
 
-```json packages/app/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json packages/app/package.json icon="file-json"
 {
   "name": "app",
   "dependencies": {
@@ -78,7 +78,7 @@ In your workspace packages, use the `catalog:` protocol to reference versions:
 }
 ```
 
-```json packages/ui/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json packages/ui/package.json icon="file-json"
 {
   "name": "ui",
   "dependencies": {
@@ -88,9 +88,14 @@ In your workspace packages, use the `catalog:` protocol to reference versions:
   "devDependencies": {
     "jest": "catalog:testing",
     "testing-library": "catalog:testing"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
   }
 }
 ```
+
+`catalog:` references work in `dependencies`, `devDependencies`, `optionalDependencies`, `peerDependencies`, and as the value of a root [`overrides`](/pm/overrides) rule. A catalog reference behaves exactly as if the catalog's range were written inline.
 
 ### 3. Run Bun Install
 
@@ -102,16 +107,16 @@ Bun supports two ways to define catalogs:
 
 1. **`catalog`** (singular): A single default catalog for commonly used dependencies
 
-   ```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+   ```json package.json icon="file-json"
    "catalog": {
      "react": "^19.0.0",
      "react-dom": "^19.0.0"
    }
    ```
 
-   Reference with simply `catalog:`:
+   Reference with `catalog:`:
 
-   ```json packages/app/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+   ```json packages/app/package.json icon="file-json"
    "dependencies": {
      "react": "catalog:"
    }
@@ -119,7 +124,7 @@ Bun supports two ways to define catalogs:
 
 2. **`catalogs`** (plural): Multiple named catalogs for grouping dependencies
 
-   ```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+   ```json package.json icon="file-json"
    "catalogs": {
      "testing": {
        "jest": "30.0.0"
@@ -132,7 +137,7 @@ Bun supports two ways to define catalogs:
 
    Reference with `catalog:<name>`:
 
-   ```json packages/app/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+   ```json packages/app/package.json icon="file-json"
    "dependencies": {
      "jest": "catalog:testing",
      "tailwind": "catalog:ui"
@@ -141,18 +146,18 @@ Bun supports two ways to define catalogs:
 
 ## Benefits of Using Catalogs
 
-* **Consistency**: Ensures all packages use the same version of critical dependencies
-* **Maintenance**: Update a dependency version in one place instead of across multiple package.json files
-* **Clarity**: Makes it obvious which dependencies are standardized across your monorepo
-* **Simplicity**: No need for complex version resolution strategies or external tools
+- **Consistency**: All packages use the same version of critical dependencies
+- **Maintenance**: Update a dependency version in one place instead of across multiple `package.json` files
+- **Clarity**: Makes it obvious which dependencies are standardized across your monorepo
+- **Simplicity**: No extra version resolution strategies or external tools
 
 ## Real-World Example
 
-Here's a more comprehensive example for a React application:
+A larger example, for a React application:
 
 **Root package.json**
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "name": "react-monorepo",
   "workspaces": {
@@ -179,7 +184,7 @@ Here's a more comprehensive example for a React application:
 }
 ```
 
-```json packages/app/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json packages/app/package.json icon="file-json"
 {
   "name": "app",
   "dependencies": {
@@ -198,7 +203,7 @@ Here's a more comprehensive example for a React application:
 }
 ```
 
-```json packages/ui/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json packages/ui/package.json icon="file-json"
 {
   "name": "@monorepo/ui",
   "dependencies": {
@@ -212,7 +217,7 @@ Here's a more comprehensive example for a React application:
 }
 ```
 
-```json packages/utils/package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json packages/utils/package.json icon="file-json"
 {
   "name": "@monorepo/utils",
   "dependencies": {
@@ -226,9 +231,9 @@ Here's a more comprehensive example for a React application:
 
 ## Updating Versions
 
-To update versions across all packages, simply change the version in the root package.json:
+To update versions across all packages, change the version in the root package.json:
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 "catalog": {
   "react": "^19.1.0",  // Updated from ^19.0.0
   "react-dom": "^19.1.0"  // Updated from ^19.0.0
@@ -237,16 +242,26 @@ To update versions across all packages, simply change the version in the root pa
 
 Then run `bun install` to update all packages.
 
+## Adding to the catalog with `bun add`
+
+`bun add --catalog` adds the entry to the root catalog and writes `"catalog:"` to the current package; `--catalog=<name>` adds it to `catalogs.<name>` and writes `"catalog:<name>"`. Bun reuses an existing catalog entry unless you pass an explicit version. See [`bun add --catalog`](/pm/cli/add#--catalog).
+
+```bash terminal icon="terminal"
+bun add react --catalog
+```
+
+Even without the flag, `bun add react` (no version) writes `"catalog:"` when the default catalog already lists `react`. Pass a version to write a concrete range instead.
+
 ## Lockfile Integration
 
-Bun's lockfile tracks catalog versions, making it easy to ensure consistent installations across different environments. The lockfile includes:
+Bun's lockfile tracks catalog versions, so installs are consistent across environments. The lockfile includes:
 
-* The catalog definitions from your package.json
-* The resolution of each cataloged dependency
+- The catalog definitions from your package.json
+- The resolution of each cataloged dependency
 
-```json bun.lock(excerpt) icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json bun.lock(excerpt) icon="file-json"
 {
-  "lockfileVersion": 1,
+  "lockfileVersion": 2,
   "workspaces": {
     "": {
       "name": "react-monorepo",
@@ -281,16 +296,15 @@ Bun's lockfile tracks catalog versions, making it easy to ensure consistent inst
 
 ## Limitations and Edge Cases
 
-* Catalog references must match a dependency defined in either `catalog` or one of the named `catalogs`
-* Empty strings and whitespace in catalog names are ignored (treated as default catalog)
-* Invalid dependency versions in catalogs will fail to resolve during `bun install`
-* Catalogs are only available within workspaces; they cannot be used outside the monorepo
-
-Bun's catalog system provides a powerful yet simple way to maintain consistency across your monorepo without introducing additional complexity to your workflow.
+- Catalog references must match a dependency defined in either `catalog` or one of the named `catalogs`
+- Bun ignores empty strings and whitespace in catalog names and treats them as the default catalog
+- `catalog:default` is the same as `catalog:`. You can define the default catalog as either `catalog` or `catalogs.default`, but a package listed in both is an error
+- Invalid dependency versions in catalogs fail to resolve during `bun install`
+- `catalog:` only works in the root and workspace `package.json` files. Inside a published package it fails to resolve. Publish with `bun publish` or `bun pm pack`, which replace it with the real range (see [Publishing](#publishing))
 
 ## Publishing
 
-When you run `bun publish` or `bun pm pack`, Bun automatically replaces
-`catalog:` references in your `package.json` with the resolved version numbers.
-The published package includes regular semver strings and no longer depends on
-your catalog definitions.
+When you run `bun publish` or `bun pm pack`, Bun replaces `catalog:` references
+in your `package.json` with the resolved version numbers. The published package
+includes regular semver strings and no longer depends on your catalog
+definitions.

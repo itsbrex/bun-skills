@@ -7,14 +7,14 @@ description: Use `bun publish` to publish a package to the npm registry
 
 > Use `bun publish` to publish a package to the npm registry
 
-`bun publish` will automatically pack your package into a tarball, strip catalog and workspace protocols from the `package.json` (resolving versions if necessary), and publish to the registry specified in your configuration files. Both `bunfig.toml` and `.npmrc` files are supported.
+`bun publish` packs your package into a tarball and strips catalog and workspace protocols from the `package.json`, resolving versions if necessary. It then publishes to the registry specified in your configuration files. Both `bunfig.toml` and `.npmrc` files are supported.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 ## Publishing the package from the current working directory
 bun publish
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 bun publish v1.3.3 (ca7428e9)
 
 packed 203B package.json
@@ -34,30 +34,30 @@ Registry: http://localhost:4873/
  + publish-1@1.0.0
 ```
 
-Alternatively, you can pack and publish your package separately by using `bun pm pack` followed by `bun publish` with the path to the output tarball.
+To pack and publish separately, run `bun pm pack`, then `bun publish` with the path to the output tarball.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun pm pack
 ...
 bun publish ./package.tgz
 ```
 
 <Note>
-  `bun publish` will not run lifecycle scripts (`prepublishOnly/prepack/prepare/postpack/publish/postpublish`) if a
-  tarball path is provided. Scripts will only be run if the package is packed by `bun publish`.
+  `bun publish` does not run lifecycle scripts (`prepublishOnly/prepack/prepare/postpack/publish/postpublish`) if you
+  provide a tarball path. Scripts run only when `bun publish` packs the package itself.
 </Note>
 
 ### `--access`
 
-The `--access` flag can be used to set the access level of the package being published. The access level can be one of `public` or `restricted`. Unscoped packages are always public, and attempting to publish an unscoped package with `--access restricted` will result in an error.
+`--access` sets the access level of the package being published, either `public` or `restricted`. Unscoped packages are always public, and publishing an unscoped package with `--access restricted` is an error.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun publish --access public
 ```
 
-`--access` can also be set in the `publishConfig` field of your `package.json`.
+You can also set `--access` in the `publishConfig` field of your `package.json`.
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "publishConfig": {
     "access": "restricted"
@@ -69,13 +69,13 @@ bun publish --access public
 
 Set the tag of the package version being published. By default, the tag is `latest`. The initial version of a package is always given the `latest` tag in addition to the specified tag.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun publish --tag alpha
 ```
 
-`--tag` can also be set in the `publishConfig` field of your `package.json`.
+You can also set `--tag` in the `publishConfig` field of your `package.json`.
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "publishConfig": {
     "tag": "next"
@@ -85,9 +85,9 @@ bun publish --tag alpha
 
 ### `--dry-run`
 
-The `--dry-run` flag can be used to simulate the publish process without actually publishing the package. This is useful for verifying the contents of the published package without actually publishing the package.
+`--dry-run` runs the publish process without publishing the package, so you can verify what would be published.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun publish --dry-run
 ```
 
@@ -95,19 +95,19 @@ bun publish --dry-run
 
 Exit with code 0 instead of 1 if the package version already exists. Useful in CI/CD where jobs may be re-run.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun publish --tolerate-republish
 ```
 
 ### `--gzip-level`
 
-Specify the level of gzip compression to use when packing the package. Only applies to `bun publish` without a tarball path argument. Values range from `0` to `9` (default is `9`).
+Set the gzip compression level used when packing the package, from `0` to `9` (default `9`). Only applies to `bun publish` without a tarball path argument.
 
 ### `--auth-type`
 
-If you have 2FA enabled for your npm account, `bun publish` will prompt you for a one-time password. This can be done through a browser or the CLI. The `--auth-type` flag can be used to tell the npm registry which method you prefer. The possible values are `web` and `legacy`, with `web` being the default.
+If you have 2FA enabled for your npm account, `bun publish` prompts you for a one-time password, either through a browser or in the CLI. `--auth-type` tells the npm registry which method you prefer: `web` (the default) or `legacy`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun publish --auth-type legacy
 ...
 This operation requires a one-time password.
@@ -117,69 +117,76 @@ Enter OTP: 123456
 
 ### `--otp`
 
-Provide a one-time password directly to the CLI. If the password is valid, this will skip the extra prompt for a one-time password before publishing. Example usage:
+Provide a one-time password directly to the CLI. If the password is valid, `bun publish` skips the extra one-time password prompt before publishing:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun publish --otp 123456
 ```
 
 <Note>
-  `bun publish` respects the `NPM_CONFIG_TOKEN` environment variable which can be used when publishing in github actions
-  or automated workflows.
+  `bun publish` respects the `NPM_CONFIG_TOKEN` environment variable, useful when publishing from GitHub Actions or
+  other automated workflows.
 </Note>
 
-***
+---
 
 ## CLI Usage
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun publish dist
 ```
 
 ### Publishing Options
 
 <ParamField path="--access" type="string">
-  The `--access` flag can be used to set the access level of the package being published. The access level can be one of `public` or `restricted`. Unscoped packages are always public, and attempting to publish an unscoped package with `--access restricted` will result in an error.
+  Set the access level of the package being published, either `public` or `restricted`. Unscoped packages are always public; publishing an unscoped package with `--access restricted` is an error.
 
-  ```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --access public
-  ```
+```sh terminal icon="terminal"
+bun publish --access public
+```
 
-  `--access` can also be set in the `publishConfig` field of your `package.json`.
+You can also set `--access` in the `publishConfig` field of your `package.json`.
 
-  ```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  {
-    "publishConfig": {
-      "access": "restricted" // [!code ++]
-    }
+```json package.json icon="file-json"
+{
+  "publishConfig": {
+    "access": "restricted" // [!code ++]
   }
-  ```
+}
+```
+
 </ParamField>
 
 <ParamField path="--tag" type="string" default="latest">
-  Set the tag of the package version being published. By default, the tag is `latest`. The initial version of a package is always given the `latest` tag in addition to the specified tag.
+Set the tag of the package version being published. By default, the tag is `latest`. The initial version of a package is always given the `latest` tag in addition to the specified tag.
 
-  ```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --tag alpha
-  ```
+```sh terminal icon="terminal"
+bun publish --tag alpha
+```
 
-  `--tag` can also be set in the `publishConfig` field of your `package.json`.
+You can also set `--tag` in the `publishConfig` field of your `package.json`.
 
-  ```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  {
-    "publishConfig": {
-      "tag": "next" // [!code ++]
-    }
+```json package.json icon="file-json"
+{
+  "publishConfig": {
+    "tag": "next" // [!code ++]
   }
-  ```
+}
+```
+
 </ParamField>
 
-<ParamField path="--dry-run=<val>" type="string">
-  The `--dry-run` flag can be used to simulate the publish process without actually publishing the package. This is useful for verifying the contents of the published package without actually publishing the package.
+<ParamField path="--dry-run" type="boolean">
+Simulate the publish process without publishing the package, to verify its contents first.
 
-  ```sh  theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --dry-run
-  ```
+```sh
+bun publish --dry-run
+```
+
+</ParamField>
+
+<ParamField path="--tolerate-republish" type="boolean">
+  `bun publish` exits with code 0 instead of 1 when the version being published already exists in the registry.
 </ParamField>
 
 <ParamField path="--gzip-level" type="string" default="9">
@@ -188,28 +195,32 @@ bun publish dist
 </ParamField>
 
 <ParamField path="--auth-type" type="string" default="web">
-  If you have 2FA enabled for your npm account, `bun publish` will prompt you for a one-time password. This can be done through a browser or the CLI. The `--auth-type` flag can be used to tell the npm registry which method you prefer. The possible values are `web` and `legacy`, with `web` being the default.
 
-  ```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --auth-type legacy
-  ...
-  This operation requires a one-time password.
-  Enter OTP: 123456
-  ...
-  ```
+If you have 2FA enabled for your npm account, `bun publish` prompts you for a one-time password, either through a browser or the CLI. `--auth-type` tells the npm registry which method you prefer: `web` (the default) or `legacy`.
+
+```sh terminal icon="terminal"
+bun publish --auth-type legacy
+...
+This operation requires a one-time password.
+Enter OTP: 123456
+...
+```
+
 </ParamField>
 
-<ParamField path="--otp" type="string" default="web">
-  Provide a one-time password directly to the CLI. If the password is valid, this will skip the extra prompt for a one-time password before publishing. Example usage:
+<ParamField path="--otp" type="string">
 
-  ```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --otp 123456
-  ```
+Provide a one-time password directly to the CLI. A valid password skips the extra one-time password prompt before publishing.
 
-  <Note>
-    `bun publish` respects the `NPM_CONFIG_TOKEN` environment variable which can be used when publishing in github actions
-    or automated workflows.
-  </Note>
+```sh terminal icon="terminal"
+bun publish --otp 123456
+```
+
+<Note>
+  `bun publish` respects the `NPM_CONFIG_TOKEN` environment variable, so you can publish from GitHub Actions or other
+  automated workflows.
+</Note>
+
 </ParamField>
 
 ### Registry Configuration
@@ -217,10 +228,11 @@ bun publish dist
 #### Custom Registry
 
 <ParamField path="--registry" type="string">
-  Specify registry URL, overriding .npmrc and bunfig.toml
+  Use a specific registry by default, overriding .npmrc, bunfig.toml and environment variables. A registry configured
+  for the package's scope (`@scope:registry=` in .npmrc or `[install.scopes]` in bunfig.toml) still takes precedence.
 </ParamField>
 
-```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash
 bun publish --registry https://my-private-registry.com
 ```
 
@@ -235,16 +247,17 @@ bun publish --registry https://my-private-registry.com
 </ParamField>
 
 <CodeGroup>
-  ```bash Inline Certificate theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --ca "-----BEGIN CERTIFICATE-----..."
-  ```
+```bash Inline Certificate
+bun publish --ca "-----BEGIN CERTIFICATE-----..."
+```
 
-  ```bash Certificate File theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun publish --cafile ./ca-cert.pem
-  ```
+```bash Certificate File
+bun publish --cafile ./ca-cert.pem
+```
+
 </CodeGroup>
 
-### Publishing Options
+### General Options
 
 #### Dependency Management
 
@@ -271,8 +284,8 @@ bun publish --registry https://my-private-registry.com
 </ParamField>
 
 <Note>
-  **Lifecycle Scripts** — When providing a pre-built tarball, lifecycle scripts (prepublishOnly, prepack, etc.) are not
-  executed. Scripts only run when Bun packs the package itself.
+  **Lifecycle Scripts** — When you publish a pre-built tarball, Bun does not run lifecycle scripts such as
+  `prepublishOnly` and `prepack`; they only run when Bun packs the package itself.
 </Note>
 
 #### File Management
@@ -292,15 +305,16 @@ bun publish --registry https://my-private-registry.com
 #### Performance
 
 <ParamField path="--backend" type="string">
-  Platform optimizations: `clonefile` (default), `hardlink`, `symlink`, or `copyfile`
+  Platform optimizations: `clonefile` (default on macOS), `hardlink` (default on Linux and Windows), `symlink`, or
+  `copyfile`
 </ParamField>
 
 <ParamField path="--network-concurrency" type="number" default="48">
   Maximum concurrent network requests
 </ParamField>
 
-<ParamField path="--concurrent-scripts" type="number" default="5">
-  Maximum concurrent lifecycle scripts
+<ParamField path="--concurrent-scripts" type="number">
+  Maximum concurrent lifecycle scripts (default: 2x CPU cores)
 </ParamField>
 
 #### Output Control

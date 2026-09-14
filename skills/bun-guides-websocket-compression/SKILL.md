@@ -5,9 +5,9 @@ description: Enable compression for WebSocket messages
 
 # Enable compression for WebSocket messages
 
-Per-message compression can be enabled with the `perMessageDeflate` parameter. When set, all messages will be compressed using the [permessage-deflate](https://tools.ietf.org/html/rfc7692) WebSocket extension.
+Set the `perMessageDeflate` parameter to enable the [permessage-deflate](https://tools.ietf.org/html/rfc7692) WebSocket extension. Bun then negotiates compression with clients that support it. Messages sent with `ws.send()` are still uncompressed unless you opt in per message (see below).
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 Bun.serve({
   // ...
   websocket: {
@@ -17,14 +17,15 @@ Bun.serve({
 });
 ```
 
-***
+---
 
-To enable compression for individual messages, pass `true` as the second parameter to `ws.send()`.
+To enable compression for individual messages, pass `true` as the second parameter to `ws.send()`. This requires `perMessageDeflate` to be enabled; otherwise Bun sends the message uncompressed.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 Bun.serve({
   // ...
   websocket: {
+    perMessageDeflate: true,
     async message(ws, message) {
       // send a compressed message
       ws.send(message, true);

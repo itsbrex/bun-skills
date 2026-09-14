@@ -5,25 +5,27 @@ description: Using bun install with Artifactory
 
 # Using bun install with Artifactory
 
-[JFrog Artifactory](https://jfrog.com/artifactory/) is a package management system for npm, Docker, Maven, NuGet, Ruby, Helm, and more. It allows you to host your own private npm registry, npm packages, and other types of packages as well.
+[JFrog Artifactory](https://jfrog.com/artifactory/) is a package management system for npm, Docker, Maven, NuGet, Ruby, Helm, and more. You can use it to host your own private npm registry, along with other types of packages.
 
 To use it with `bun install`, add a `bunfig.toml` file to your project with the following contents:
 
-***
+---
 
 ### Configure with bunfig.toml
 
-Make sure to replace `MY_SUBDOMAIN` with your JFrog Artifactory subdomain, such as `jarred1234` and MY\_TOKEN with your JFrog Artifactory token.
+Replace `MY_SUBDOMAIN` with your JFrog Artifactory subdomain, such as `jarred1234`. Replace `MY_TOKEN` with your base64-encoded `username:password`. Bun sends this value as-is in a `Basic` `Authorization` header. To authenticate with a JFrog access token instead, use `_authToken=` in place of `_auth=`. Bun sends that value as a `Bearer` token.
 
-```toml bunfig.toml icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml bunfig.toml icon="settings"
 [install.registry]
 url = "https://MY_SUBDOMAIN.jfrog.io/artifactory/api/npm/npm/_auth=MY_TOKEN"
+# To authenticate with an access token instead
+# url = "https://MY_SUBDOMAIN.jfrog.io/artifactory/api/npm/npm/_authToken=MY_TOKEN"
 # You can use an environment variable here
 # url = "$NPM_CONFIG_REGISTRY"
 ```
 
-***
+---
 
 ### Configure with `$NPM_CONFIG_REGISTRY`
 
-Like with npm, you can use the `NPM_CONFIG_REGISTRY` environment variable to configure JFrog Artifactory with bun install.
+As with npm, you can set the `NPM_CONFIG_REGISTRY` environment variable to configure JFrog Artifactory for `bun install`.

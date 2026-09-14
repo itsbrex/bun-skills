@@ -7,94 +7,96 @@ description: Bun's fast native bundler for JavaScript, TypeScript, JSX, and more
 
 > Bun's fast native bundler for JavaScript, TypeScript, JSX, and more
 
-export const name_0 = undefined
-
-Bun's fast native bundler can be used via the `bun build` CLI command or the `Bun.build()` JavaScript API.
+Use Bun's native bundler through the `bun build` CLI command or the `Bun.build()` JavaScript API.
 
 ### At a Glance
 
-* JS API: `await Bun.build({ entrypoints, outdir })`
-* CLI: `bun build <entry> --outdir ./out`
-* Watch: `--watch` for incremental rebuilds
-* Targets: `--target browser|bun|node`
-* Formats: `--format esm|cjs|iife` (experimental for cjs/iife)
+- JS API: `await Bun.build({ entrypoints, outdir })`
+- CLI: `bun build <entry> --outdir ./out`
+- Watch: `--watch` for incremental rebuilds
+- Targets: `--target browser|bun|node`
+- Formats: `--format esm|cjs|iife` (experimental for cjs/iife)
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './build',
     });
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./build
     ```
   </Tab>
 </Tabs>
 
-It's fast. The numbers below represent performance on esbuild's [three.js benchmark](https://github.com/oven-sh/bun/tree/main/bench/bundle).
+It's fast. The following numbers are from esbuild's [three.js benchmark](https://github.com/oven-sh/bun/tree/main/bench/bundle).
 
 <Frame>
-  <img src="https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=0a549e542fceb7d51f84976fe1d151e4" caption="Bundling 10 copies of three.js from scratch, with sourcemaps and minification" data-og-width="2690" width="2690" data-og-height="1072" height="1072" data-path="images/bundler-speed.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?w=280&fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=c92e84677eb9da86699582482f7d0752 280w, https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?w=560&fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=de00bc18218a9e7e4a710f88ab82d6f7 560w, https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?w=840&fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=07d97d8810d903fe052476caddbc2646 840w, https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?w=1100&fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=6ad21a681255af55a711bbceccfef746 1100w, https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?w=1650&fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=8decffe83aa2e455b19b1c389214994e 1650w, https://mintcdn.com/bun-1dd33a4e/PY1574V41bdK8wNs/images/bundler-speed.png?w=2500&fit=max&auto=format&n=PY1574V41bdK8wNs&q=85&s=5db3e9a0ef08d32d43b64d35c7626895 2500w" />
+  <img
+    src="/images/bundler-speed.png"
+    caption="Bundling 10 copies of three.js from scratch, with sourcemaps and minification"
+  />
 </Frame>
 
 ## Why bundle?
 
-The bundler is a key piece of infrastructure in the JavaScript ecosystem. As a brief overview of why bundling is so important:
+Bundlers solve several problems:
 
-* **Reducing HTTP requests.** A single package in `node_modules` may consist of hundreds of files, and large applications may have dozens of such dependencies. Loading each of these files with a separate HTTP request becomes untenable very quickly, so bundlers are used to convert our application source code into a smaller number of self-contained "bundles" that can be loaded with a single request.
-* **Code transforms.** Modern apps are commonly built with languages or tools like TypeScript, JSX, and CSS modules, all of which must be converted into plain JavaScript and CSS before they can be consumed by a browser. The bundler is the natural place to configure these transformations.
-* **Framework features.** Frameworks rely on bundler plugins & code transformations to implement common patterns like file-system routing, client-server code co-location (think `getServerSideProps` or Remix loaders), and server components.
-* **Full-stack Applications.** Bun's bundler can handle both server and client code in a single command, enabling optimized production builds and single-file executables. With build-time HTML imports, you can bundle your entire application — frontend assets and backend server — into a single deployable unit.
-
-Let's jump into the bundler API.
+- **Reducing HTTP requests.** A single package in `node_modules` may consist of hundreds of files, and large applications may have dozens of such dependencies. Loading each of these files with a separate HTTP request becomes untenable, so bundlers convert your application source code into a smaller number of self-contained "bundles" that can be loaded with a single request.
+- **Code transforms.** Modern apps are commonly built with languages or tools like TypeScript, JSX, and CSS modules. All of these must be converted into plain JavaScript and CSS before a browser can consume them. The bundler is the natural place to configure these transformations.
+- **Framework features.** Frameworks rely on bundler plugins & code transformations to implement common patterns like file-system routing, client-server code co-location (think `getServerSideProps` or Remix loaders), and server components.
+- **Full-stack Applications.** Bun's bundler can handle both server and client code in a single command, enabling optimized production builds and single-file executables. With build-time HTML imports, you can bundle your entire application — frontend assets and backend server — into a single deployable unit.
 
 <Note>The Bun bundler is not intended to replace `tsc` for typechecking or generating type declarations.</Note>
 
 ## Basic example
 
-Let's build our first bundle. You have the following two files, which implement a simple client-side rendered React app.
+Build your first bundle. You have the following two files, which implement a client-side rendered React app.
 
 <CodeGroup>
-  ```tsx index.tsx icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  import * as ReactDOM from "react-dom/client";
-  import { Component } from "./Component";
 
-  const root = ReactDOM.createRoot(document.getElementById("root")!);
-  root.render(<Component message="Sup!" />);
-  ```
+```tsx index.tsx icon="/icons/typescript.svg"
+import * as ReactDOM from "react-dom/client";
+import { Component } from "./Component";
 
-  ```tsx Component.tsx icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  export function Component(props: { message: string }) {
-    return <h1>{props.message}</h1>;
-  }
-  ```
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+root.render(<Component message="Sup!" />);
+```
+
+```tsx Component.tsx icon="/icons/typescript.svg"
+export function Component(props: { message: string }) {
+  return <h1>{props.message}</h1>;
+}
+```
+
 </CodeGroup>
 
-Here, `index.tsx` is the "entrypoint" to our application. Commonly, this will be a script that performs some side effect, like starting a server or—in this case—initializing a React root. Because we're using TypeScript & JSX, we need to bundle our code before it can be sent to the browser.
+Here, `index.tsx` is the "entrypoint" to the application: the file the bundler starts from. Commonly, this is a script that performs some side effect, like starting a server or, in this case, initializing a React root. Because these files use TypeScript and JSX, the code must be bundled before it can be sent to the browser.
 
-To create our bundle:
+To create the bundle:
 
 <CodeGroup>
-  ```ts build.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  await Bun.build({
-    entrypoints: ["./index.tsx"],
-    outdir: "./out",
-  });
-  ```
 
-  ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun build ./index.tsx --outdir ./out
-  ```
+```ts build.ts icon="/icons/typescript.svg"
+await Bun.build({
+  entrypoints: ["./index.tsx"],
+  outdir: "./out",
+});
+```
+
+```bash terminal icon="terminal"
+bun build ./index.tsx --outdir ./out
+```
+
 </CodeGroup>
 
-For each file specified in `entrypoints`, Bun will generate a new bundle. This bundle will be written to disk in the `./out` directory (as resolved from the current working directory). After running the build, the file system looks like this:
+For each file specified in `entrypoints`, Bun generates a new bundle and writes it to the `./out` directory (as resolved from the current working directory). After running the build, the file system looks like this:
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
 ├── index.tsx
 ├── Component.tsx
@@ -102,9 +104,9 @@ For each file specified in `entrypoints`, Bun will generate a new bundle. This b
     └── index.js
 ```
 
-The contents of `out/index.js` will look something like this:
+The contents of `out/index.js` look something like this:
 
-```js title="out/index.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="out/index.js" icon="/icons/javascript.svg"
 // out/index.js
 // ...
 // ~20k lines of code
@@ -114,7 +116,7 @@ The contents of `out/index.js` will look something like this:
 // Component.tsx
 function Component(props) {
   return $jsxDEV(
-    "p",
+    "h1",
     {
       children: props.message,
     },
@@ -146,51 +148,53 @@ root.render(
 
 Like the runtime and test runner, the bundler supports watch mode natively.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun build ./index.tsx --outdir ./out --watch
 ```
 
 ## Content types
 
-Like the Bun runtime, the bundler supports an array of file types out of the box. The following table breaks down the bundler's set of standard "loaders". Refer to [Bundler > File types](/bundler/loaders) for full documentation.
+Like the Bun runtime, the bundler supports a range of file types by default. The following table lists the bundler's standard "loaders". See [loaders](/bundler/loaders).
 
-| Extensions                                            | Details                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `.js` `.jsx` `.cjs` `.mjs` `.mts` `.cts` `.ts` `.tsx` | Uses Bun's built-in transpiler to parse the file and transpile TypeScript/JSX syntax to vanilla JavaScript. The bundler executes a set of default transforms including dead code elimination and tree shaking. At the moment Bun does not attempt to down-convert syntax; if you use recently ECMAScript syntax, that will be reflected in the bundled code. |
-| `.json`                                               | JSON files are parsed and inlined into the bundle as a JavaScript object.<br /><br />`js<br/>import pkg from "./package.json";<br/>pkg.name; // => "my-package"<br/>`                                                                                                                                                                                        |
-| `.jsonc`                                              | JSON with comments. Files are parsed and inlined into the bundle as a JavaScript object.<br /><br />`js<br/>import config from "./config.jsonc";<br/>config.name; // => "my-config"<br/>`                                                                                                                                                                    |
-| `.toml`                                               | TOML files are parsed and inlined into the bundle as a JavaScript object.<br /><br />`js<br/>import config from "./bunfig.toml";<br/>config.logLevel; // => "debug"<br/>`                                                                                                                                                                                    |
-| `.yaml` `.yml`                                        | YAML files are parsed and inlined into the bundle as a JavaScript object.<br /><br />`js<br/>import config from "./config.yaml";<br/>config.name; // => "my-app"<br/>`                                                                                                                                                                                       |
-| `.txt`                                                | The contents of the text file are read and inlined into the bundle as a string.<br /><br />`js<br/>import contents from "./file.txt";<br/>console.log(contents); // => "Hello, world!"<br/>`                                                                                                                                                                 |
-| `.html`                                               | HTML files are processed and any referenced assets (scripts, stylesheets, images) are bundled.                                                                                                                                                                                                                                                               |
-| `.css`                                                | CSS files are bundled together into a single `.css` file in the output directory.                                                                                                                                                                                                                                                                            |
-| `.node` `.wasm`                                       | These files are supported by the Bun runtime, but during bundling they are treated as assets.                                                                                                                                                                                                                                                                |
+| Extensions                                            | Details                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.js` `.jsx` `.cjs` `.mjs` `.mts` `.cts` `.ts` `.tsx` | Uses Bun's built-in transpiler to parse the file and transpile TypeScript/JSX syntax to vanilla JavaScript. The bundler executes a set of default transforms including dead code elimination and tree shaking. Bun does not down-convert syntax; if you use recent ECMAScript syntax, it appears as-is in the bundled code. |
+| `.json`                                               | JSON files are parsed and inlined into the bundle as a JavaScript object.<br/><br/>`js<br/>import pkg from "./package.json";<br/>pkg.name; // => "my-package"<br/>`                                                                                                                                                         |
+| `.jsonc`                                              | JSON with comments. Files are parsed and inlined into the bundle as a JavaScript object.<br/><br/>`js<br/>import config from "./config.jsonc";<br/>config.name; // => "my-config"<br/>`                                                                                                                                     |
+| `.toml`                                               | TOML files are parsed and inlined into the bundle as a JavaScript object.<br/><br/>`js<br/>import config from "./bunfig.toml";<br/>config.logLevel; // => "debug"<br/>`                                                                                                                                                     |
+| `.yaml` `.yml`                                        | YAML files are parsed and inlined into the bundle as a JavaScript object.<br/><br/>`js<br/>import config from "./config.yaml";<br/>config.name; // => "my-app"<br/>`                                                                                                                                                        |
+| `.txt`                                                | The contents of the text file are read and inlined into the bundle as a string.<br/><br/>`js<br/>import contents from "./file.txt";<br/>console.log(contents); // => "Hello, world!"<br/>`                                                                                                                                  |
+| `.html`                                               | HTML files are processed and any referenced assets (scripts, stylesheets, images) are bundled.                                                                                                                                                                                                                              |
+| `.css`                                                | CSS files are bundled together into a single `.css` file in the output directory.                                                                                                                                                                                                                                           |
+| `.node` `.wasm`                                       | The Bun runtime supports these files, but the bundler treats them as assets.                                                                                                                                                                                                                                                |
 
 ### Assets
 
-If the bundler encounters an import with an unrecognized extension, it treats the imported file as an external file. The referenced file is copied as-is into `outdir`, and the import is resolved as a path to the file.
+If the bundler encounters an import with an unrecognized extension, it treats the imported file as an external file. The bundler copies the referenced file as-is into `outdir` and resolves the import as a path to the file.
 
 <CodeGroup>
-  ```ts Input icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  // bundle entrypoint
-  import logo from "./logo.svg";
-  console.log(logo);
-  ```
 
-  ```ts Output icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  // bundled output
-  var logo = "./logo-a7305bdef.svg";
-  console.log(logo);
-  ```
+```ts Input icon="/icons/typescript.svg"
+// bundle entrypoint
+import logo from "./logo.svg";
+console.log(logo);
+```
+
+```ts Output icon="/icons/javascript.svg"
+// bundled output
+var logo = "./logo-a7305bdef.svg";
+console.log(logo);
+```
+
 </CodeGroup>
 
-The exact behavior of the file loader is also impacted by [`naming`](#naming) and [`publicPath`](#publicpath).
+The exact behavior of the file loader also depends on [`naming`](#naming) and [`publicPath`](#publicpath).
 
-<Info>Refer to the [Bundler > Loaders](/bundler/loaders) page for more complete documentation on the file loader.</Info>
+<Info>See [loaders](/bundler/loaders) for more on the file loader.</Info>
 
 ### Plugins
 
-The behavior described in this table can be overridden or extended with plugins. Refer to the [Bundler > Loaders](/bundler/loaders) page for complete documentation.
+Plugins can override or extend the behavior described in this table. See [loaders](/bundler/loaders).
 
 ## API
 
@@ -198,20 +202,19 @@ The behavior described in this table can be overridden or extended with plugins.
 
 <Badge>Required</Badge>
 
-An array of paths corresponding to the entrypoints of our application. One bundle will be generated for each entrypoint.
+An array of paths corresponding to the entrypoints of your application. Bun generates one bundle per entrypoint.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     const result = await Bun.build({
       entrypoints: ["./index.ts"],
     });
     // => { success: boolean, outputs: BuildArtifact[], logs: BuildMessage[] }
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.ts
     ```
   </Tab>
@@ -219,15 +222,15 @@ An array of paths corresponding to the entrypoints of our application. One bundl
 
 ### files
 
-A map of file paths to their contents for in-memory bundling. This allows you to bundle virtual files that don't exist on disk, or override the contents of files that do exist. This option is only available in the JavaScript API.
+A map of file paths to their contents for in-memory bundling: bundle virtual files that don't exist on disk, or override the contents of files that do. This option is only available in the JavaScript API.
 
-File contents can be provided as a `string`, `Blob`, `TypedArray`, or `ArrayBuffer`.
+You can provide file contents as a `string`, `Blob`, `TypedArray`, or `ArrayBuffer`.
 
 #### Bundle entirely from memory
 
-You can bundle code without any files on disk by providing all sources via `files`:
+You can bundle code without any files on disk by providing all sources in `files`:
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 const result = await Bun.build({
   entrypoints: ["/app/index.ts"],
   files: {
@@ -247,13 +250,13 @@ const output = await result.outputs[0].text();
 console.log(output);
 ```
 
-When all entrypoints are in the `files` map, the current working directory is used as the root.
+When all entrypoints are in the `files` map, Bun uses the current working directory as the root.
 
 #### Override files on disk
 
-In-memory files take priority over files on disk. This lets you override specific files while keeping the rest of your codebase unchanged:
+In-memory files take priority over files on disk, so you can override specific files while keeping the rest of your codebase unchanged:
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 // Assume ./src/config.ts exists on disk with development settings
 await Bun.build({
   entrypoints: ["./src/index.ts"],
@@ -272,7 +275,7 @@ await Bun.build({
 
 Real files on disk can import virtual files, and virtual files can import real files:
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 // ./src/index.ts exists on disk and imports "./generated.ts"
 await Bun.build({
   entrypoints: ["./src/index.ts"],
@@ -287,15 +290,15 @@ await Bun.build({
 });
 ```
 
-This is useful for code generation, injecting build-time constants, or testing with mock modules.
+Use this for code generation, injecting build-time constants, or testing with mock modules.
 
 ### outdir
 
-The directory where output files will be written.
+The directory where output files are written.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     const result = await Bun.build({
       entrypoints: ['./index.ts'],
       outdir: './out'
@@ -303,17 +306,16 @@ The directory where output files will be written.
     // => { success: boolean, outputs: BuildArtifact[], logs: BuildMessage[] }
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.ts --outdir ./out
     ```
   </Tab>
 </Tabs>
 
-If `outdir` is not passed to the JavaScript API, bundled code will not be written to disk. Bundled files are returned in an array of `BuildArtifact` objects. These objects are Blobs with extra properties; see [Outputs](#outputs) for complete documentation.
+If you don't pass `outdir` to the JavaScript API, Bun does not write bundled code to disk. It returns the bundled files in an array of `BuildArtifact` objects. These objects are Blobs with extra properties; see [Outputs](#outputs).
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 const result = await Bun.build({
   entrypoints: ["./index.ts"],
 });
@@ -322,7 +324,7 @@ for (const res of result.outputs) {
   // Can be consumed as blobs
   await res.text();
 
-  // Bun will set Content-Type and Etag headers
+  // Bun sets Content-Type and Etag headers
   new Response(res);
 
   // Can be written manually, but you should use `outdir` in this case.
@@ -330,7 +332,7 @@ for (const res of result.outputs) {
 }
 ```
 
-When `outdir` is set, the `path` property on a `BuildArtifact` will be the absolute path to where it was written to.
+When `outdir` is set, the `path` property on a `BuildArtifact` is the absolute path it was written to.
 
 ### target
 
@@ -338,7 +340,7 @@ The intended execution environment for the bundle.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.ts'],
       outdir: './out',
@@ -346,51 +348,50 @@ The intended execution environment for the bundle.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.ts --outdir ./out --target browser
     ```
   </Tab>
 </Tabs>
 
-Depending on the target, Bun will apply different module resolution rules and optimizations.
+Depending on the target, Bun applies different module resolution rules and optimizations.
 
 <Card title="browser" icon="globe">
-  **Default.** For generating bundles that are intended for execution by a browser. Prioritizes the `"browser"` export
-  condition when resolving imports. Importing any built-in modules, like `node:events` or `node:path` will work, but
-  calling some functions, like `fs.readFile` will not work.
+  **Default.** For bundles that run in a browser. Prioritizes the `"browser"` export condition when resolving imports.
+  Importing built-in modules like `node:events` or `node:path` works, but calling some functions, like `fs.readFile`,
+  does not.
 </Card>
 
 <Card title="bun" icon="server">
-  For generating bundles that are intended to be run by the Bun runtime. In many cases, it isn't necessary to bundle server-side code; you can directly execute the source code without modification. However, bundling your server code can reduce startup times and improve running performance. This is the target to use for building full-stack applications with build-time HTML imports, where both server and client code are bundled together.
+For bundles that run in the Bun runtime. In many cases, it isn't necessary to bundle server-side code; you can directly execute the source code without modification. However, bundling your server code can reduce startup times and improve running performance. Use this target for full-stack applications with build-time HTML imports, where server and client code are bundled together.
 
-  All bundles generated with `target: "bun"` are marked with a special `// @bun` pragma, which indicates to the Bun runtime that there's no need to re-transpile the file before execution.
+All bundles generated with `target: "bun"` are marked with a `// @bun` pragma, which tells the Bun runtime that there's no need to re-transpile the file before execution.
 
-  If any entrypoints contains a Bun shebang (`#!/usr/bin/env bun`) the bundler will default to `target: "bun"` instead of `"browser"`.
+If any entrypoint contains a Bun shebang (`#!/usr/bin/env bun`), the bundler defaults to `target: "bun"` instead of `"browser"`.
 
-  When using `target: "bun"` and `format: "cjs"` together, the `// @bun @bun-cjs` pragma is added and the CommonJS wrapper function is not compatible with Node.js.
+When you use `target: "bun"` and `format: "cjs"` together, the bundler adds the `// @bun @bun-cjs` pragma, and the CommonJS wrapper function is not compatible with Node.js.
+
 </Card>
 
 <Card title="node" icon="node">
-  For generating bundles that are intended to be run by Node.js. Prioritizes the `"node"` export condition when
-  resolving imports, and outputs `.mjs`. In the future, this will automatically polyfill the Bun global and other
-  built-in `bun:*` modules, though this is not yet implemented.
+  For bundles that run in Node.js. Prioritizes the `"node"` export condition when resolving imports. Bun does not
+  polyfill the `Bun` global or the built-in `bun:*` modules.
 </Card>
 
 ### format
 
-Specifies the module format to be used in the generated bundles.
+Specifies the module format of the generated bundles.
 
 Bun defaults to `"esm"`, and provides experimental support for `"cjs"` and `"iife"`.
 
 #### format: "esm" - ES Module
 
-This is the default format, which supports ES Module syntax including top-level await, `import.meta`, and more.
+The default format. Supports ES Module syntax, including top-level await and `import.meta`.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -398,23 +399,22 @@ This is the default format, which supports ES Module syntax including top-level 
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --format esm
     ```
   </Tab>
 </Tabs>
 
-To use ES Module syntax in browsers, set `format` to `"esm"` and make sure your `<script type="module">` tag has `type="module"` set.
+To use ES Module syntax in browsers, set `format` to `"esm"` and load the bundle with a `<script type="module">` tag.
 
 #### format: "cjs" - CommonJS
 
-To build a CommonJS module, set `format` to `"cjs"`. When choosing `"cjs"`, the default target changes from `"browser"` (esm) to `"node"` (cjs). CommonJS modules transpiled with `format: "cjs"`, `target: "node"` can be executed in both Bun and Node.js (assuming the APIs in use are supported by both).
+To build a CommonJS module, set `format` to `"cjs"`. When you choose `"cjs"`, the default target changes from `"browser"` (esm) to `"node"` (cjs). CommonJS modules transpiled with `format: "cjs"`, `target: "node"` run in both Bun and Node.js (assuming both support the APIs in use).
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -422,9 +422,8 @@ To build a CommonJS module, set `format` to `"cjs"`. When choosing `"cjs"`, the 
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --format cjs
     ```
   </Tab>
@@ -432,51 +431,55 @@ To build a CommonJS module, set `format` to `"cjs"`. When choosing `"cjs"`, the 
 
 #### format: "iife" - IIFE
 
-TODO: document IIFE once we support globalNames.
+To build an IIFE bundle, set `format` to `"iife"`. Bun wraps the bundle in an immediately invoked function expression and does not support exposing its exports under a global name.
 
 ### `jsx`
 
-Configure JSX transform behavior. Allows fine-grained control over how JSX is compiled.
+Configures how JSX is compiled.
 
 **Classic runtime example** (uses `factory` and `fragment`):
 
 <CodeGroup>
-  ```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  await Bun.build({
-    entrypoints: ["./app.tsx"],
-    outdir: "./out",
-    jsx: {
-      factory: "h",
-      fragment: "Fragment",
-      runtime: "classic",
-    },
-  });
-  ```
 
-  ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  # JSX configuration is handled via bunfig.toml or tsconfig.json
-  bun build ./app.tsx --outdir ./out
-  ```
+```ts index.ts icon="/icons/typescript.svg"
+await Bun.build({
+  entrypoints: ["./app.tsx"],
+  outdir: "./out",
+  jsx: {
+    factory: "h",
+    fragment: "Fragment",
+    runtime: "classic",
+  },
+});
+```
+
+```bash terminal icon="terminal"
+# JSX configuration is handled via bunfig.toml or tsconfig.json
+bun build ./app.tsx --outdir ./out
+```
+
 </CodeGroup>
 
 **Automatic runtime example** (uses `importSource`):
 
 <CodeGroup>
-  ```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  await Bun.build({
-    entrypoints: ["./app.tsx"],
-    outdir: "./out",
-    jsx: {
-      importSource: "preact",
-      runtime: "automatic",
-    },
-  });
-  ```
 
-  ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  # JSX configuration is handled via bunfig.toml or tsconfig.json
-  bun build ./app.tsx --outdir ./out
-  ```
+```ts index.ts icon="/icons/typescript.svg"
+await Bun.build({
+  entrypoints: ["./app.tsx"],
+  outdir: "./out",
+  jsx: {
+    importSource: "preact",
+    runtime: "automatic",
+  },
+});
+```
+
+```bash terminal icon="terminal"
+# JSX configuration is handled via bunfig.toml or tsconfig.json
+bun build ./app.tsx --outdir ./out
+```
+
 </CodeGroup>
 
 ### splitting
@@ -485,7 +488,7 @@ Whether to enable code splitting.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -493,35 +496,38 @@ Whether to enable code splitting.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --splitting
     ```
   </Tab>
 </Tabs>
 
-When `true`, the bundler will enable code splitting. When multiple entrypoints both import the same file, module, or set of files/modules, it's often useful to split the shared code into a separate bundle. This shared bundle is known as a chunk. Consider the following files:
+When `true`, the bundler enables code splitting. When multiple entrypoints import the same file or module, the bundler can split that shared code into a separate bundle, known as a **chunk**. Consider the following files:
 
 <CodeGroup>
-  ```ts entry-a.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  import { shared } from "./shared.ts";
-  ```
 
-  ```ts entry-b.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  import { shared } from "./shared.ts";
-  ```
+```ts entry-a.ts icon="/icons/typescript.svg"
+import { shared } from "./shared.ts";
+console.log(shared);
+```
 
-  ```ts shared.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  export const shared = "shared";
-  ```
+```ts entry-b.ts icon="/icons/typescript.svg"
+import { shared } from "./shared.ts";
+console.log(shared);
+```
+
+```ts shared.ts icon="/icons/typescript.svg"
+export const shared = "shared";
+```
+
 </CodeGroup>
 
 To bundle `entry-a.ts` and `entry-b.ts` with code-splitting enabled:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./entry-a.ts', './entry-b.ts'],
       outdir: './out',
@@ -529,34 +535,105 @@ To bundle `entry-a.ts` and `entry-b.ts` with code-splitting enabled:
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./entry-a.ts ./entry-b.ts --outdir ./out --splitting
     ```
   </Tab>
 </Tabs>
 
-Running this build will result in the following files:
+Running this build with the JavaScript API results in the following files:
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
-├── entry-a.tsx
-├── entry-b.tsx
-├── shared.tsx
+├── entry-a.ts
+├── entry-b.ts
+├── shared.ts
 └── out
     ├── entry-a.js
     ├── entry-b.js
-    └── chunk-2fce6291bf86559d.js
+    └── chunk-dqmx6gc8.js
 ```
 
-The generated `chunk-2fce6291bf86559d.js` file contains the shared code. To avoid collisions, the file name automatically includes a content hash by default. This can be customized with [`naming`](#naming).
+The generated `chunk-dqmx6gc8.js` file contains the shared code. To avoid collisions, the file name includes a content hash by default. The `bun build` CLI names this chunk `entry-a-t268ez5g.js` instead of `chunk-<hash>.js`. Customize this with [`naming`](#naming).
+
+Each `import()` of a bundled JavaScript module also becomes its own chunk. Tree shaking applies to these chunks too: if every `import()` of a module lives in code that tree shaking removes — for example inside a function that is only called behind a [`define`](#define) or [`features`](#features) gate that evaluates to `false` — and nothing else in the live output imports the module, its chunk is not written and the module is absent from the [metafile](#metafile)'s `inputs` and `outputs`. Setting `treeShaking: false` keeps every `import()` chunk. This differs from esbuild, which emits a chunk for every reachable `import()` target.
+
+With `target: "bun"`, a `require()` of a bundled ES module becomes a chunk of its own as well. The call is emitted as `import.meta.require("./chunk-<hash>.js")` and stays synchronous — Bun evaluates the chunk when the call runs — so a `require()` inside a function that never runs keeps its module out of the startup working set entirely. Tree shaking treats these chunks like `import()` chunks. `require()` of a CommonJS module is unaffected and keeps returning `module.exports`. A `require()` cycle between such chunks follows Bun's runtime `require()` of an ES module: a module required again while its chunk is still being loaded sees the partially initialized CommonJS placeholder (`{}`) rather than the live bindings the in-chunk wrapper provides. For other targets — and with `splitRequire: false` (`--no-split-require`) — the required module is inlined into the calling chunk behind a lazy wrapper instead, because the call must return synchronously.
+
+#### Tree-shaking `import()` and `require()` results
+
+When the result of a string-literal `import()` or `require()` of an ES module is only ever used to read specific exports, the exports nobody reads are dropped from that module — and whatever only they depended on tree-shakes with them. This applies with and without `splitting`; the module is still loaded lazily, exactly where the call is written.
+
+```ts title="entry.ts" icon="/icons/typescript.svg"
+const { render } = await import("./markdown"); // keeps `render`
+import("./telemetry").then(t => t.init()); // keeps `init`
+const { parse } = require("./yaml"); // keeps `parse` (ES module targets only)
+await import("./polyfill"); // keeps only side effects
+```
+
+Recognized uses: destructuring (`const { a, b: c, ...rest } = await import(x)`, also `let`/`var` and `export const { a } = …`), property access on the awaited value or on a local holding it (`(await import(x)).a`, `const ns = await import(x); ns.a; const { b } = ns`), `.then(({ a }) => …)` / `.then(ns => ns.a)` with an arrow function, per-element destructuring of `await Promise.all([import(x), import(y)])`, the same shapes for `require()`, and a bare `import(x);` / `await import(x);` / `require(x);` statement (nothing observed).
+
+The module keeps every export as soon as one use can't be followed: the namespace is passed, returned, stored, spread or iterated (`() => import(x)`, `fn(ns)`, `{ ...ns }`, `Object.keys(ns)`), accessed with a computed key (or `?.` directly on the `await import(x)` expression), handed to a non-arrow `.then` callback, reached via `import * as ns` elsewhere, or read under a direct `eval`. CommonJS targets always keep everything. The imported module itself is always evaluated; only with `"sideEffects": false` can a module it merely re-exports from be skipped when none of those re-exports are observed.
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```ts title="build.ts" icon="/icons/typescript.svg"
+    await Bun.build({
+      entrypoints: ["./index.tsx"],
+      outdir: "./out",
+      target: "bun",
+      splitting: true,
+      splitRequire: false, // keep require()'d modules in the calling chunk
+    });
+    ```
+  </Tab>
+  <Tab title="CLI">
+    ```bash title="Terminal" icon="terminal"
+    bun build ./index.tsx --outdir ./out --target bun --splitting --no-split-require
+    ```
+  </Tab>
+</Tabs>
+
+### minChunkSize
+
+With `splitting`, also fold small side-effect-free chunks into a chunk that more entrypoints load.
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```ts title="build.ts" icon="/icons/typescript.svg"
+    await Bun.build({
+      entrypoints: ['./index.tsx'],
+      outdir: './out',
+      splitting: true,
+      minChunkSize: 16 * 1024, // default 0 (off)
+    })
+    ```
+  </Tab>
+  <Tab title="CLI">
+    ```bash terminal icon="terminal"
+    bun build ./index.tsx --outdir ./out --splitting --min-chunk-size=16384
+    ```
+  </Tab>
+</Tabs>
+
+Code splitting gives each distinct set of importers its own chunk, then folds chunks that are always loaded together: a module that `index.tsx` imports and that a lazily `import()`ed module also imports lives in `index.js`, and the lazy chunk imports it from there, because the lazy module can only load after `index.tsx` has run. That fold never makes an entrypoint load more code, so it is always on.
+
+`minChunkSize` goes further for chunks whose source files add up to fewer than this many bytes and whose modules run nothing at the top level: only declarations, `"sideEffects": false` in their `package.json`, a lazily initialized CommonJS/ESM wrapper, or an import of a CommonJS module (such as `react`) that is already initialized wherever the chunk's code ends up. Such a chunk folds into a chunk loaded by a superset of its importers. Everything it imports must already be loaded whenever that target is, or be side-effect free as well. The extra entrypoints then carry some unused definitions, capped at about 1.5% of what each entrypoint loaded to begin with. No side effect runs earlier than before and nothing lazy becomes eager. Because these rules bound what an entrypoint can end up loading, a large `minChunkSize` is reasonable.
+
+For `target: "browser"`, where every chunk is a request, 16 KiB is a good starting point.
+
+A chunk that absorbs other chunks exports the symbols those chunks' importers need. An entrypoint that has exports of its own never absorbs one, so its module namespace stays as written; an entrypoint without exports can. With `--compile`, nothing folds into the entrypoint's own chunk.
+
+### modulePreload
+
+With `splitting` and `target: "browser"`, the browser would otherwise discover a chunk's own imports only after downloading and parsing it, one level per round trip. Bun writes a `<link rel="modulepreload">` into HTML entrypoints for every chunk the page's script statically imports, and every `import()` first inserts one for each chunk its target statically imports (transitively), so the whole dependency chain downloads in parallel. Outside a document (workers, server-side) the `import()` helper does nothing. Inserted links copy the nonce from a `<meta property="csp-nonce" nonce="...">` tag if the page has one. Enabled by default; set `modulePreload: false` (`--no-module-preload`) to emit plain `import()` calls and no links.
 
 ### plugins
 
 A list of plugins to use during bundling.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 await Bun.build({
   entrypoints: ["./index.tsx"],
   outdir: "./out",
@@ -566,11 +643,11 @@ await Bun.build({
 });
 ```
 
-Bun implements a universal plugin system for both Bun's runtime and bundler. Refer to the [plugin documentation](/bundler/plugins) for complete documentation.
+The runtime and the bundler share Bun's plugin system. See [plugins](/bundler/plugins).
 
 ### env
 
-Controls how environment variables are handled during bundling. Internally, this uses `define` to inject environment variables into the bundle, but makes it easier to specify the environment variables to inject.
+Controls how environment variables are handled during bundling. Internally, this option uses `define` to inject environment variables into the bundle; `env` is a shorthand for specifying which ones.
 
 #### env: "inline"
 
@@ -578,7 +655,7 @@ Injects environment variables into the bundled output by converting `process.env
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -586,9 +663,8 @@ Injects environment variables into the bundled output by converting `process.env
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --env inline
     ```
   </Tab>
@@ -596,15 +672,15 @@ Injects environment variables into the bundled output by converting `process.env
 
 For the input below:
 
-```js title="input.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="input.js" icon="/icons/javascript.svg"
 // input.js
 console.log(process.env.FOO);
 console.log(process.env.BAZ);
 ```
 
-The generated bundle will contain the following code:
+The generated bundle contains the following code:
 
-```js title="output.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="output.js" icon="/icons/javascript.svg"
 // output.js
 console.log("bar");
 console.log("123");
@@ -612,11 +688,11 @@ console.log("123");
 
 #### env: "PUBLIC\_\*" (prefix)
 
-Inlines environment variables matching the given prefix (the part before the `*` character), replacing `process.env.FOO` with the actual environment variable value. This is useful for selectively inlining environment variables for things like public-facing URLs or client-side tokens, without worrying about injecting private credentials into output bundles.
+Inlines environment variables matching the given prefix (the part before the `*` character), replacing `process.env.FOO` with the actual environment variable value. Use a prefix to inline public values, like public-facing URLs or client-side tokens, without injecting private credentials into output bundles.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -626,9 +702,8 @@ Inlines environment variables matching the given prefix (the part before the `*`
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --env ACME_PUBLIC_*
     ```
   </Tab>
@@ -636,21 +711,21 @@ Inlines environment variables matching the given prefix (the part before the `*`
 
 For example, given the following environment variables:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 FOO=bar BAZ=123 ACME_PUBLIC_URL=https://acme.com
 ```
 
 And source code:
 
-```tsx index.tsx icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```tsx index.tsx icon="/icons/typescript.svg"
 console.log(process.env.FOO);
 console.log(process.env.ACME_PUBLIC_URL);
 console.log(process.env.BAZ);
 ```
 
-The generated bundle will contain the following code:
+The generated bundle contains the following code:
 
-```js title="output.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="output.js" icon="/icons/javascript.svg"
 console.log(process.env.FOO);
 console.log("https://acme.com");
 console.log(process.env.BAZ);
@@ -666,7 +741,7 @@ Specifies the type of sourcemap to generate.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -674,34 +749,31 @@ Specifies the type of sourcemap to generate.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-    bun build ./index.tsx --outdir ./out --sourcemap linked
+    ```bash terminal icon="terminal"
+    bun build ./index.tsx --outdir ./out --sourcemap=linked
     ```
   </Tab>
 </Tabs>
 
-| Value        | Description                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"none"`     | Default. No sourcemap is generated.                                                                                                                                                                                                                                                                                                                                                                 |
-| `"linked"`   | A separate `*.js.map` file is created alongside each `*.js` bundle using a `//# sourceMappingURL` comment to link the two. Requires `--outdir` to be set. The base URL of this can be customized with `--public-path`.<br /><br />`js<br/>// <bundled code here><br/><br/>//# sourceMappingURL=bundle.js.map<br/>`                                                                                  |
-| `"external"` | A separate `*.js.map` file is created alongside each `*.js` bundle without inserting a `//# sourceMappingURL` comment.<br /><br />Generated bundles contain a debug id that can be used to associate a bundle with its corresponding sourcemap. This `debugId` is added as a comment at the bottom of the file.<br /><br />`js<br/>// <generated bundle code><br/><br/>//# debugId=<DEBUG ID><br/>` |
-| `"inline"`   | A sourcemap is generated and appended to the end of the generated bundle as a base64 payload.<br /><br />`js<br/>// <bundled code here><br/><br/>//# sourceMappingURL=data:application/json;base64,<encoded sourcemap here><br/>`                                                                                                                                                                   |
+| Value        | Description                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"none"`     | Default. No sourcemap is generated.                                                                                                                                                                                                                                                                                                                                                             |
+| `"linked"`   | A separate `*.js.map` file is created alongside each `*.js` bundle using a `//# sourceMappingURL` comment to link the two. Requires `--outdir` to be set. You can customize the base URL in this comment with `--public-path`.<br/><br/>`js<br/>// <bundled code here><br/><br/>//# sourceMappingURL=bundle.js.map<br/>`                                                                        |
+| `"external"` | A separate `*.js.map` file is created alongside each `*.js` bundle without inserting a `//# sourceMappingURL` comment.<br/><br/>Generated bundles contain a debug id that can be used to associate a bundle with its corresponding sourcemap. This `debugId` is added as a comment at the bottom of the file.<br/><br/>`js<br/>// <generated bundle code><br/><br/>//# debugId=<DEBUG ID><br/>` |
+| `"inline"`   | A sourcemap is generated and appended to the end of the generated bundle as a base64 payload.<br/><br/>`js<br/>// <bundled code here><br/><br/>//# sourceMappingURL=data:application/json;base64,<encoded sourcemap here><br/>`                                                                                                                                                                 |
 
-The associated `*.js.map` sourcemap will be a JSON file containing an equivalent `debugId` property.
+The associated `*.js.map` sourcemap is a JSON file containing an equivalent `debugId` property.
 
 ### minify
 
 Whether to enable minification. Default `false`.
 
-<Note>When targeting `bun`, identifiers will be minified by default.</Note>
-
 To enable all minification options:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -709,9 +781,8 @@ To enable all minification options:
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --minify
     ```
   </Tab>
@@ -721,7 +792,7 @@ To granularly enable certain minifications:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -733,9 +804,8 @@ To granularly enable certain minifications:
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --minify-whitespace --minify-identifiers --minify-syntax
     ```
   </Tab>
@@ -747,7 +817,7 @@ A list of import paths to consider external. Defaults to `[]`.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -755,19 +825,18 @@ A list of import paths to consider external. Defaults to `[]`.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --external lodash --external react
     ```
   </Tab>
 </Tabs>
 
-An external import is one that will not be included in the final bundle. Instead, the import statement will be left as-is, to be resolved at runtime.
+An external import is not included in the final bundle. Instead, the bundler leaves the import statement as-is, to be resolved at runtime.
 
 For instance, consider the following entrypoint file:
 
-```tsx index.tsx icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```tsx index.tsx icon="/icons/typescript.svg"
 import _ from "lodash";
 import { z } from "zod";
 
@@ -775,11 +844,11 @@ const value = z.string().parse("Hello world!");
 console.log(_.upperCase(value));
 ```
 
-Normally, bundling `index.tsx` would generate a bundle containing the entire source code of the "zod" package. If instead, we want to leave the import statement as-is, we can mark it as external:
+Normally, bundling `index.tsx` would generate a bundle containing the entire source code of the "zod" package. To leave the import statement as-is instead, mark it as external:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -787,17 +856,16 @@ Normally, bundling `index.tsx` would generate a bundle containing the entire sou
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --external zod
     ```
   </Tab>
 </Tabs>
 
-The generated bundle will look something like this:
+The generated bundle looks something like this:
 
-```js title="out/index.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="out/index.js" icon="/icons/javascript.svg"
 import { z } from "zod";
 
 // ...
@@ -812,7 +880,7 @@ To mark all imports as external, use the wildcard `*`:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -820,9 +888,8 @@ To mark all imports as external, use the wildcard `*`:
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --external '*'
     ```
   </Tab>
@@ -830,20 +897,19 @@ To mark all imports as external, use the wildcard `*`:
 
 ### packages
 
-Control whether package dependencies are included to bundle or not. Possible values: `bundle` (default), `external`. Bun treats any import which path do not start with `.`, `..` or `/` as package.
+Controls whether package dependencies are included in the bundle. Possible values: `bundle` (default), `external`. Bun treats any import whose path does not start with `.`, `..`, or `/` as a package.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.ts'],
       packages: 'external',
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.ts --packages external
     ```
   </Tab>
@@ -851,11 +917,11 @@ Control whether package dependencies are included to bundle or not. Possible val
 
 ### naming
 
-Customizes the generated file names. Defaults to `./[dir]/[name].[ext]`.
+Customizes the generated file names. Defaults to `[dir]/[name].[ext]`.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -863,9 +929,8 @@ Customizes the generated file names. Defaults to `./[dir]/[name].[ext]`.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --entry-naming "[dir]/[name].[ext]"
     ```
   </Tab>
@@ -873,16 +938,16 @@ Customizes the generated file names. Defaults to `./[dir]/[name].[ext]`.
 
 By default, the names of the generated bundles are based on the name of the associated entrypoint.
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
 ├── index.tsx
 └── out
     └── index.js
 ```
 
-With multiple entrypoints, the generated file hierarchy will reflect the directory structure of the entrypoints.
+With multiple entrypoints, the generated file hierarchy reflects the directory structure of the entrypoints.
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
 ├── index.tsx
 └── nested
@@ -893,12 +958,12 @@ With multiple entrypoints, the generated file hierarchy will reflect the directo
         └── index.js
 ```
 
-The names and locations of the generated files can be customized with the `naming` field. This field accepts a template string that is used to generate the filenames for all bundles corresponding to entrypoints. where the following tokens are replaced with their corresponding values:
+The `naming` field customizes the names and locations of the generated files. It accepts a template string. Bun uses the template for all bundles that correspond to entrypoints and replaces the following tokens with their values:
 
-* `[name]` - The name of the entrypoint file, without the extension.
-* `[ext]` - The extension of the generated bundle.
-* `[hash]` - A hash of the bundle contents.
-* `[dir]` - The relative path from the project root to the parent directory of the source file.
+- `[name]` - The name of the entrypoint file, without the extension.
+- `[ext]` - The extension of the generated bundle.
+- `[hash]` - A hash of the bundle contents: 8 lowercase alphanumeric characters. If two outputs with different contents would print the same characters, both get enough extra characters to differ (as do the outputs that reference them). `[hash9]` through `[hash13]` set a wider minimum; `[hash13]` is the full 64-bit hash.
+- `[dir]` - The relative path from the project root to the parent directory of the source file.
 
 For example:
 
@@ -907,11 +972,11 @@ For example:
 | `./index.tsx`       | `index`  | `js`    | `a1b2c3d4` | `""` (empty string) |
 | `./nested/entry.ts` | `entry`  | `js`    | `c3d4e5f6` | `"nested"`          |
 
-We can combine these tokens to create a template string. For instance, to include the hash in the generated bundle names:
+Combine these tokens to create a template string. For instance, to include the hash in the generated bundle names:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -919,9 +984,8 @@ We can combine these tokens to create a template string. For instance, to includ
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --entry-naming 'files/[dir]/[name]-[hash].[ext]'
     ```
   </Tab>
@@ -929,7 +993,7 @@ We can combine these tokens to create a template string. For instance, to includ
 
 This build would result in the following file structure:
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
 ├── index.tsx
 └── out
@@ -937,11 +1001,11 @@ This build would result in the following file structure:
         └── index-a1b2c3d4.js
 ```
 
-When a string is provided for the `naming` field, it is used only for bundles that correspond to entrypoints. The names of chunks and copied assets are not affected. Using the JavaScript API, separate template strings can be specified for each type of generated file.
+When you provide a string for the `naming` field, Bun uses it only for bundles that correspond to entrypoints. The names of chunks and copied assets are not affected. In the JavaScript API, you can specify a separate template string for each type of generated file.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -954,9 +1018,8 @@ When a string is provided for the `naming` field, it is used only for bundles th
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out \
       --entry-naming '[dir]/[name].[ext]' \
       --chunk-naming '[name]-[hash].[ext]' \
@@ -971,7 +1034,7 @@ The root directory of the project.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./pages/a.tsx', './pages/b.tsx'],
       outdir: './out',
@@ -979,37 +1042,35 @@ The root directory of the project.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./pages/a.tsx ./pages/b.tsx --outdir ./out --root .
     ```
   </Tab>
 </Tabs>
 
-If unspecified, it is computed to be the first common ancestor of all entrypoint files. Consider the following file structure:
+If unspecified, Bun uses the first common ancestor of all entrypoint files as the root. Consider the following file structure:
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
 └── pages
   └── index.tsx
   └── settings.tsx
 ```
 
-We can build both entrypoints in the `pages` directory:
+Build both entrypoints in the `pages` directory:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```js  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```js
     await Bun.build({
       entrypoints: ['./pages/index.tsx', './pages/settings.tsx'],
       outdir: './out',
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash
     bun build ./pages/index.tsx ./pages/settings.tsx --outdir ./out
     ```
   </Tab>
@@ -1017,7 +1078,7 @@ We can build both entrypoints in the `pages` directory:
 
 This would result in a file structure like this:
 
-```text title="file system" icon="folder-tree" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="file system" icon="folder-tree"
 .
 └── pages
   └── index.tsx
@@ -1027,13 +1088,13 @@ This would result in a file structure like this:
   └── settings.js
 ```
 
-Since the `pages` directory is the first common ancestor of the entrypoint files, it is considered the project root. This means that the generated bundles live at the top level of the `out` directory; there is no `out/pages` directory.
+The `pages` directory is the first common ancestor of the entrypoint files, so Bun treats it as the project root. As a result, the generated bundles live at the top level of the `out` directory; there is no `out/pages` directory.
 
-This behavior can be overridden by specifying the `root` option:
+Override this by specifying the `root` option:
 
 <Tabs>
   <Tab title="JavaScript">
-    ```js  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```js
     await Bun.build({
       entrypoints: ['./pages/index.tsx', './pages/settings.tsx'],
       outdir: './out',
@@ -1041,15 +1102,14 @@ This behavior can be overridden by specifying the `root` option:
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash
     bun build ./pages/index.tsx ./pages/settings.tsx --outdir ./out --root .
     ```
   </Tab>
 </Tabs>
 
-By specifying `.` as `root`, the generated file structure will look like this:
+With `.` as `root`, the generated file structure looks like this:
 
 ```
 .
@@ -1064,33 +1124,35 @@ By specifying `.` as `root`, the generated file structure will look like this:
 
 ### publicPath
 
-A prefix to be appended to any import paths in bundled code.
+A prefix added to any import paths in bundled code.
 
-In many cases, generated bundles will contain no import statements. After all, the goal of bundling is to combine all of the code into a single file. However there are a number of cases with the generated bundles will contain import statements.
+In many cases, generated bundles contain no import statements; the goal of bundling is to combine all of the code into a single file. In a few cases, though, the generated bundles contain import statements:
 
-* **Asset imports** — When importing an unrecognized file type like `*.svg`, the bundler defers to the file loader, which copies the file into `outdir` as is. The import is converted into a variable
-* **External modules** — Files and modules can be marked as external, in which case they will not be included in the bundle. Instead, the import statement will be left in the final bundle.
-* **Chunking.** When `splitting` is enabled, the bundler may generate separate "chunk" files that represent code that is shared among multiple entrypoints.
+- **Asset imports** — When importing an unrecognized file type like `*.svg`, the bundler defers to the file loader, which copies the file into `outdir` as is. The import is converted into a variable.
+- **External modules** — Files and modules marked as external are not included in the bundle. Instead, the bundler leaves the import statement in the final bundle.
+- **Chunking.** When `splitting` is enabled, the bundler may generate separate "chunk" files that represent code that is shared among multiple entrypoints.
 
-In any of these cases, the final bundles may contain paths to other files. By default these imports are relative. Here is an example of a simple asset import:
+In any of these cases, the final bundles may contain paths to other files. By default these imports are relative. Here is an example of an asset import:
 
 <CodeGroup>
-  ```ts Input icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  import logo from "./logo.svg";
-  console.log(logo);
-  ```
 
-  ```ts Output icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  var logo = "./logo-a7305bdef.svg";
-  console.log(logo);
-  ```
+```ts Input icon="/icons/typescript.svg"
+import logo from "./logo.svg";
+console.log(logo);
+```
+
+```ts Output icon="/icons/javascript.svg"
+var logo = "./logo-a7305bdef.svg";
+console.log(logo);
+```
+
 </CodeGroup>
 
-Setting `publicPath` will prefix all file paths with the specified value.
+Setting `publicPath` prefixes all file paths with the specified value.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -1098,9 +1160,8 @@ Setting `publicPath` will prefix all file paths with the specified value.
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --public-path 'https://cdn.example.com/'
     ```
   </Tab>
@@ -1108,17 +1169,17 @@ Setting `publicPath` will prefix all file paths with the specified value.
 
 The output file would now look something like this.
 
-```js title="out/index.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="out/index.js" icon="/icons/javascript.svg"
 var logo = "https://cdn.example.com/logo-a7305bdef.svg";
 ```
 
 ### define
 
-A map of global identifiers to be replaced at build time. Keys of this object are identifier names, and values are JSON strings that will be inlined.
+A map of global identifiers to be replaced at build time. Keys of this object are identifiers or dotted property paths such as `process.env.NODE_ENV`, and values are JSON strings, identifiers, or property paths that are inlined.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -1129,9 +1190,8 @@ A map of global identifiers to be replaced at build time. Keys of this object ar
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --define STRING='"value"' --define nested.boolean=true
     ```
   </Tab>
@@ -1139,11 +1199,11 @@ A map of global identifiers to be replaced at build time. Keys of this object ar
 
 ### loader
 
-A map of file extensions to built-in loader names. This can be used to quickly customize how certain files are loaded.
+A map of file extensions to built-in loader names. Use this to customize how certain files are loaded.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -1154,9 +1214,8 @@ A map of file extensions to built-in loader names. This can be used to quickly c
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --loader .png:dataurl --loader .txt:file
     ```
   </Tab>
@@ -1164,11 +1223,11 @@ A map of file extensions to built-in loader names. This can be used to quickly c
 
 ### banner
 
-A banner to be added to the final bundle, this can be a directive like `"use client"` for react or a comment block such as a license for the code.
+A banner added to the final bundle. This can be a directive like `"use client"` for React, or a comment block such as a license.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -1176,9 +1235,8 @@ A banner to be added to the final bundle, this can be a directive like `"use cli
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --banner '"use client";'
     ```
   </Tab>
@@ -1186,11 +1244,11 @@ A banner to be added to the final bundle, this can be a directive like `"use cli
 
 ### footer
 
-A footer to be added to the final bundle, this can be something like a comment block for a license or just a fun easter egg.
+A footer added to the final bundle. This can be a comment block for a license or a fun easter egg.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -1198,9 +1256,8 @@ A footer to be added to the final bundle, this can be something like a comment b
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --footer '// built with love in SF'
     ```
   </Tab>
@@ -1208,11 +1265,11 @@ A footer to be added to the final bundle, this can be something like a comment b
 
 ### drop
 
-Remove function calls from a bundle. For example, `--drop=console` will remove all calls to `console.log`. Arguments to calls will also be removed, regardless of if those arguments may have side effects. Dropping `debugger` will remove all `debugger` statements.
+Removes function calls from a bundle. For example, `--drop=console` removes all calls to `console.log`. Bun also removes the arguments to dropped calls, even if they have side effects. Dropping `debugger` removes all `debugger` statements.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./index.tsx'],
       outdir: './out',
@@ -1220,9 +1277,8 @@ Remove function calls from a bundle. For example, `--drop=console` will remove a
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.tsx --outdir ./out --drop console --drop debugger
     ```
   </Tab>
@@ -1230,9 +1286,9 @@ Remove function calls from a bundle. For example, `--drop=console` will remove a
 
 ### features
 
-Enable compile-time feature flags for dead-code elimination. This provides a way to conditionally include or exclude code paths at bundle time using `import { feature } from "bun:bundle"`.
+Enable compile-time feature flags for dead code elimination: conditionally include or exclude code paths at bundle time using `import { feature } from "bun:bundle"`.
 
-```ts title="app.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="app.ts" icon="/icons/typescript.svg"
 import { feature } from "bun:bundle";
 
 if (feature("PREMIUM")) {
@@ -1248,7 +1304,7 @@ if (feature("DEBUG")) {
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ['./app.ts'],
       outdir: './out',
@@ -1256,48 +1312,47 @@ if (feature("DEBUG")) {
     })
     ```
   </Tab>
-
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./app.ts --outdir ./out --feature PREMIUM
     ```
   </Tab>
 </Tabs>
 
-The `feature()` function is replaced with `true` or `false` at bundle time. Combined with minification, unreachable code is eliminated:
+Bun replaces the `feature()` function with `true` or `false` at bundle time. When minification is also enabled, Bun eliminates the unreachable code:
 
-```ts title="Input" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="Input" icon="/icons/typescript.svg"
 import { feature } from "bun:bundle";
 const mode = feature("PREMIUM") ? "premium" : "free";
 ```
 
-```js title="Output (with --feature PREMIUM --minify)" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="Output (with --feature PREMIUM --minify)" icon="/icons/javascript.svg"
 var mode = "premium";
 ```
 
-```js title="Output (without --feature PREMIUM, with --minify)" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="Output (without --feature PREMIUM, with --minify)" icon="/icons/javascript.svg"
 var mode = "free";
 ```
 
 **Key behaviors:**
 
-* `feature()` requires a string literal argument — dynamic values are not supported
-* The `bun:bundle` import is completely removed from the output
-* Works with `bun build`, `bun run`, and `bun test`
-* Multiple flags can be enabled: `--feature FLAG_A --feature FLAG_B`
-* For type safety, augment the `Registry` interface to restrict `feature()` to known flags (see below)
+- `feature()` requires a string literal argument — dynamic values are not supported
+- Bun completely removes the `bun:bundle` import from the output
+- Works with `bun build`, `bun run`, and `bun test`
+- You can enable multiple flags: `--feature FLAG_A --feature FLAG_B`
+- For type safety, augment the `Registry` interface to restrict `feature()` to known flags
 
 **Use cases:**
 
-* Platform-specific code (`feature("SERVER")` vs `feature("CLIENT")`)
-* Environment-based features (`feature("DEVELOPMENT")`)
-* Gradual feature rollouts
-* A/B testing variants
-* Paid tier features
+- Platform-specific code (`feature("SERVER")` vs `feature("CLIENT")`)
+- Environment-based features (`feature("DEVELOPMENT")`)
+- Gradual feature rollouts
+- A/B testing variants
+- Paid tier features
 
 **Type safety:** By default, `feature()` accepts any string. To get autocomplete and catch typos at compile time, create an `env.d.ts` file (or add to an existing `.d.ts`) and augment the `Registry` interface:
 
-```ts title="env.d.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="env.d.ts" icon="/icons/typescript.svg"
 declare module "bun:bundle" {
   interface Registry {
     features: "DEBUG" | "PREMIUM" | "BETA_FEATURES";
@@ -1305,20 +1360,98 @@ declare module "bun:bundle" {
 }
 ```
 
-Ensure the file is included in your `tsconfig.json` (e.g., `"include": ["src", "env.d.ts"]`). Now `feature()` only accepts those flags, and invalid strings like `feature("TYPO")` become type errors.
+Ensure the file is included in your `tsconfig.json` (for example, `"include": ["src", "env.d.ts"]`). Now `feature()` only accepts those flags, and invalid strings like `feature("TYPO")` become type errors.
 
-### metafile
+### optimizeImports
 
-Generate metadata about the build in a structured format. The metafile contains information about all input files, output files, their sizes, imports, and exports. This is useful for:
+Skip parsing unused submodules of barrel files (re-export index files). When you import only a few named exports from a large library, normally the bundler parses every file the barrel re-exports. With `optimizeImports`, the bundler parses only the submodules you use.
 
-* **Bundle analysis**: Understand what's contributing to bundle size
-* **Visualization**: Feed into tools like [esbuild's bundle analyzer](https://esbuild.github.io/analyze/) or other visualization tools
-* **Dependency tracking**: See the full import graph of your application
-* **CI integration**: Track bundle size changes over time
+```ts title="build.ts" icon="/icons/typescript.svg"
+await Bun.build({
+  entrypoints: ["./app.ts"],
+  outdir: "./out",
+  optimizeImports: ["antd", "@mui/material", "lodash-es"],
+});
+```
+
+For example, `import { Button } from 'antd'` normally parses all ~3000 modules that `antd/index.js` re-exports. With `optimizeImports: ['antd']`, the bundler parses only the `Button` submodule.
+
+This works for **pure barrel files** — files where every named export is a re-export (`export { X } from './x'`). If a barrel file has any local exports (`export const foo = ...`), or if any importer uses `import *`, the bundler loads all submodules.
+
+The bundler always loads `export *` re-exports (it never defers them) to avoid circular resolution issues. It defers only named re-exports (`export { X } from './x'`) that no importer uses.
+
+**Automatic mode:** Packages with `"sideEffects": false` in their `package.json` get barrel optimization automatically — no `optimizeImports` config needed. Use `optimizeImports` for packages that don't have this field.
+
+**Plugins:** Resolve and load plugins work with barrel optimization. Deferred submodules go through the plugin pipeline when they are eventually loaded.
+
+### Re-exported namespaces
+
+Property reads on an import that turns out to be a module namespace are linked straight to the export they name, the same as a named import. This covers namespaces reached indirectly:
+
+Each of these shapes of `lib.ts` qualifies:
+
+```ts icon="/icons/typescript.svg"
+// import { z } from "./lib";  z.object()
+import * as z from "./external";
+export { z };
+```
+
+```ts icon="/icons/typescript.svg"
+// import z from "./lib";  z.object()
+import * as z from "./external";
+export default z;
+```
+
+```ts icon="/icons/typescript.svg"
+// import { ns } from "./lib";  ns.object()
+export * as ns from "./external";
+```
+
+```ts icon="/icons/typescript.svg"
+// import lib from "./lib";  lib.object()
+export function object() {}
+export * as default from "./lib";
+```
+
+In each case the member access compiles to a direct reference to `object`, the `exports` object for `./external` is not created unless something else uses the namespace as a value (`Object.keys(z)`, `{ ...z }`, passing `z` around), and the exports you don't touch are tree-shaken. One level is resolved (`ns.a.b` binds `a`). Calling a function this way passes `undefined` as `this`, as with `import * as ns; ns.fn()`.
+
+Assignments (`z.x = 1`), optional chains, and non-literal computed keys (`z[key]`) are left as property accesses; `z["object"]` is treated like `z.object`. `export default someImport` is followed only when it ends at a namespace; a default that snapshots a `let` export keeps snapshot semantics.
+
+The same applies to the default import of a CommonJS module whose `exports.x = ...` assignments the bundler lifted to ES module exports, such as `react` and `scheduler`. The default import of a CommonJS module is its `module.exports`, which is that module's namespace, so `import React from "react"; React.useState()` compiles to a direct call of the lifted `useState` binding. The namespace object is created only when `React` itself is used as a value, and it lists the exports in assignment order, like `module.exports` does. A write through it, `React.useLayoutEffect = React.useEffect`, assigns the lifted binding, so every importer sees the new value, the same as a write to `module.exports`. `React.default`, and `ns.default` on `import * as ns`, is the lifted `default` export when the module has one, and otherwise the namespace itself, as `module.exports` is in Node. A module that sets both `exports.__esModule` and `exports.default` keeps its CommonJS wrapper when the importer is not an ES module by type (`.mjs`, `.mts`, or `"type": "module"`), because the default import then depends on that flag at run time. An `import()` of a module that does not set both resolves to that same namespace object as `default`, with or without code splitting.
+
+### deprecatedNamespaceObjectSetters
+
+Default `true`. When a namespace object does have to be created, each property currently gets a getter and a setter; the setter accepts `ns.foo = value` without throwing (reads still return the module's binding). Set this to `false` to emit getter-only namespace objects, which is what a future Bun release will do unconditionally. The namespace of a lifted CommonJS module is not affected: it stands in for `module.exports`, so its setters assign the lifted bindings either way.
 
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
+    await Bun.build({
+      entrypoints: ['./index.tsx'],
+      outdir: './out',
+      deprecatedNamespaceObjectSetters: false,
+    })
+    ```
+  </Tab>
+  <Tab title="CLI">
+    ```bash terminal icon="terminal"
+    bun build ./index.tsx --outdir ./out --no-deprecated-namespace-object-setters
+    ```
+  </Tab>
+</Tabs>
+
+### metafile
+
+Generate metadata about the build in a structured format. The metafile describes every input and output file: sizes, imports, and exports. Use it for:
+
+- **Bundle analysis**: Understand what's contributing to bundle size
+- **Visualization**: Feed into tools like [esbuild's bundle analyzer](https://esbuild.github.io/analyze/)
+- **Dependency tracking**: See the full import graph of your application
+- **CI integration**: Track bundle size changes over time
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     const result = await Bun.build({
       entrypoints: ['./src/index.ts'],
       outdir: './dist',
@@ -1340,34 +1473,34 @@ Generate metadata about the build in a structured format. The metafile contains 
       await Bun.write('./dist/meta.json', JSON.stringify(result.metafile));
     }
     ```
-  </Tab>
 
+  </Tab>
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-    bun build ./src/index.ts --outdir ./dist --metafile ./dist/meta.json
+    ```bash terminal icon="terminal"
+    bun build ./src/index.ts --outdir ./dist --metafile=./dist/meta.json
     ```
   </Tab>
 </Tabs>
 
 #### Markdown metafile
 
-Use `--metafile-md` to generate a markdown metafile, which is LLM-friendly and easy to read in the terminal:
+Use `--metafile-md` to generate a markdown metafile, which is LLM-friendly and readable in the terminal:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun build ./src/index.ts --outdir ./dist --metafile-md ./dist/meta.md
+```bash terminal icon="terminal"
+bun build ./src/index.ts --outdir ./dist --metafile-md=./dist/meta.md
 ```
 
-Both `--metafile` and `--metafile-md` can be used together:
+You can use both `--metafile` and `--metafile-md` together:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun build ./src/index.ts --outdir ./dist --metafile ./dist/meta.json --metafile-md ./dist/meta.md
+```bash terminal icon="terminal"
+bun build ./src/index.ts --outdir ./dist --metafile=./dist/meta.json --metafile-md=./dist/meta.md
 ```
 
 #### `metafile` option formats
 
 In the JavaScript API, `metafile` accepts several forms:
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 // Boolean — include metafile in the result object
 await Bun.build({
   entrypoints: ["./src/index.ts"],
@@ -1395,7 +1528,7 @@ await Bun.build({
 
 The metafile structure contains:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 interface BuildMetafile {
   inputs: {
     [path: string]: {
@@ -1404,6 +1537,7 @@ interface BuildMetafile {
         path: string;
         kind: ImportKind;
         original?: string; // Original specifier before resolution
+        entryPoint?: string; // import() / require() split into another output file: the input that file was built from
         external?: boolean;
       }>;
       format?: "esm" | "cjs" | "json" | "css";
@@ -1428,7 +1562,7 @@ interface BuildMetafile {
 
 The `Bun.build` function returns a `Promise<BuildOutput>`, defined as:
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 interface BuildOutput {
   outputs: BuildArtifact[];
   success: boolean;
@@ -1437,7 +1571,7 @@ interface BuildOutput {
 }
 
 interface BuildArtifact extends Blob {
-  kind: "entry-point" | "chunk" | "asset" | "sourcemap";
+  kind: "entry-point" | "chunk" | "asset" | "sourcemap" | "bytecode";
   path: string;
   loader: Loader;
   hash: string | null;
@@ -1445,9 +1579,9 @@ interface BuildArtifact extends Blob {
 }
 ```
 
-The `outputs` array contains all the files that were generated by the build. Each artifact implements the Blob interface.
+The `outputs` array contains all the files generated by the build. Each artifact implements the Blob interface.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 const build = await Bun.build({
   /* */
 });
@@ -1461,17 +1595,17 @@ for (const output of build.outputs) {
 
 Each artifact also contains the following properties:
 
-| Property    | Description                                                                                                                                                  |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `kind`      | What kind of build output this file is. A build generates bundled entrypoints, code-split "chunks", sourcemaps, bytecode, and copied assets (like images).   |
-| `path`      | Absolute path to the file on disk                                                                                                                            |
-| `loader`    | The loader was used to interpret the file. See [Bundler > Loaders](/bundler/loaders) to see how Bun maps file extensions to the appropriate built-in loader. |
-| `hash`      | The hash of the file contents. Always defined for assets.                                                                                                    |
-| `sourcemap` | The sourcemap file corresponding to this file, if generated. Only defined for entrypoints and chunks.                                                        |
+| Property    | Description                                                                                                                                                |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kind`      | What kind of build output this file is. A build generates bundled entrypoints, code-split "chunks", sourcemaps, bytecode, and copied assets (like images). |
+| `path`      | Absolute path to the file on disk                                                                                                                          |
+| `loader`    | The loader used to interpret the file. See [loaders](/bundler/loaders) for how Bun maps file extensions to built-in loaders.                               |
+| `hash`      | The hash of the file contents. Always defined for assets.                                                                                                  |
+| `sourcemap` | The sourcemap file corresponding to this file, if generated. Only defined for entrypoints and chunks.                                                      |
 
 Similar to `BunFile`, `BuildArtifact` objects can be passed directly into `new Response()`.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 const build = await Bun.build({
   /* */
 });
@@ -1482,56 +1616,60 @@ const artifact = build.outputs[0];
 return new Response(artifact);
 ```
 
-The Bun runtime implements special pretty-printing of `BuildArtifact` object to make debugging easier.
+The Bun runtime pretty-prints `BuildArtifact` objects to help with debugging.
 
 <CodeGroup>
-  ```ts build.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  // build.ts
-  const build = await Bun.build({
-    /* */
-  });
 
-  const artifact = build.outputs[0];
-  console.log(artifact);
-  ```
+```ts build.ts icon="/icons/typescript.svg"
+// build.ts
+const build = await Bun.build({
+  /* */
+});
 
-  ```bash Shell output theme={"theme":{"light":"github-light","dark":"dracula"}}
-  bun run build.ts
+const artifact = build.outputs[0];
+console.log(artifact);
+```
 
-  BuildArtifact (entry-point) {
-    path: "./index.js",
-    loader: "tsx",
-    kind: "entry-point",
-    hash: "824a039620219640",
-    Blob (74756 bytes) {
-      type: "text/javascript;charset=utf-8"
+```bash Shell output
+bun run build.ts
+
+BuildArtifact (entry-point) {
+  path: "./index.js",
+  loader: "tsx",
+  kind: "entry-point",
+  hash: "824a039620219640",
+  Blob (74756 bytes) {
+    type: "text/javascript;charset=utf-8"
+  },
+  sourcemap: BuildArtifact (sourcemap) {
+    path: "./index.js.map",
+    loader: "file",
+    kind: "sourcemap",
+    hash: "e7178cda3e72e301",
+    Blob (24765 bytes) {
+      type: "application/json;charset=utf-8"
     },
-    sourcemap: BuildArtifact (sourcemap) {
-      path: "./index.js.map",
-      loader: "file",
-      kind: "sourcemap",
-      hash: "e7178cda3e72e301",
-      Blob (24765 bytes) {
-        type: "application/json;charset=utf-8"
-      },
-      sourcemap: null
-    }
+    sourcemap: null
   }
-  ```
+}
+```
+
 </CodeGroup>
 
 ## Bytecode
 
-The `bytecode: boolean` option can be used to generate bytecode for any JavaScript/TypeScript entrypoints. This can greatly improve startup times for large applications. Requires `"target": "bun"` and is dependent on a matching version of Bun.
+The `bytecode: boolean` option generates bytecode for any JavaScript/TypeScript entrypoints, which can greatly improve startup times for large applications. Requires `"target": "bun"` and a matching version of Bun.
 
-* **CommonJS**: Works with or without `compile: true`. Generates a `.jsc` file alongside each entrypoint.
-* **ESM**: Requires `compile: true`. Bytecode and module metadata are embedded in the standalone executable.
+- **CommonJS**: Works with or without `compile: true`. Generates a `.jsc` file alongside each entrypoint.
+- **ESM**: Requires `compile: true`. Bun embeds the bytecode and module metadata in the standalone executable.
 
 Without an explicit `format`, bytecode defaults to CommonJS.
 
+The `bytecodeDepth: number` option (a non-negative integer) limits how many levels of nested functions are compiled ahead of time (`0` = only each module's top-level code). Functions past the limit are compiled from source when first called. Defaults to all.
+
 <Tabs>
   <Tab title="JavaScript">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     // CommonJS bytecode (generates .jsc files)
     await Bun.build({
       entrypoints: ["./index.tsx"],
@@ -1548,16 +1686,17 @@ Without an explicit `format`, bytecode defaults to CommonJS.
       compile: true,
     })
     ```
-  </Tab>
 
+  </Tab>
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     # CommonJS bytecode
     bun build ./index.tsx --outdir ./out --bytecode
 
     # ESM bytecode (requires --compile)
     bun build ./index.tsx --outfile ./mycli --bytecode --format=esm --compile
     ```
+
   </Tab>
 </Tabs>
 
@@ -1565,18 +1704,18 @@ Without an explicit `format`, bytecode defaults to CommonJS.
 
 Bun supports "compiling" a JavaScript/TypeScript entrypoint into a standalone executable. This executable contains a copy of the Bun binary.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun build ./cli.tsx --outfile mycli --compile
 ./mycli
 ```
 
-Refer to [Bundler > Executables](/bundler/executables) for complete documentation.
+See [standalone executables](/bundler/executables).
 
 ## Logs and errors
 
-On failure, `Bun.build` returns a rejected promise with an `AggregateError`. This can be logged to the console for pretty printing of the error list, or programmatically read with a try/catch block.
+On failure, `Bun.build` returns a rejected promise with an `AggregateError`. Log it to the console to pretty-print the error list, or read it programmatically with a try/catch block.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 try {
   const result = await Bun.build({
     entrypoints: ["./index.tsx"],
@@ -1595,11 +1734,11 @@ try {
 }
 ```
 
-Most of the time, an explicit try/catch is not needed, as Bun will neatly print uncaught exceptions. It is enough to just use a top-level await on the `Bun.build` call.
+Most of the time, an explicit try/catch is not needed, as Bun prints uncaught exceptions. You can use a top-level await on the `Bun.build` call instead.
 
 Each item in `error.errors` is an instance of `BuildMessage` or `ResolveMessage` (subclasses of `Error`), containing detailed information for each error.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 class BuildMessage {
   name: string;
   position?: Position;
@@ -1617,7 +1756,7 @@ class ResolveMessage extends BuildMessage {
 
 On build success, the returned object contains a `logs` property, which contains bundler warnings and info messages.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 const result = await Bun.build({
   entrypoints: ["./index.tsx"],
   outdir: "./out",
@@ -1626,7 +1765,7 @@ const result = await Bun.build({
 if (result.logs.length > 0) {
   console.warn("Build succeeded with warnings:");
   for (const message of result.logs) {
-    // Bun will pretty print the message object
+    // Bun pretty-prints the message object
     console.warn(message);
   }
 }
@@ -1634,7 +1773,7 @@ if (result.logs.length > 0) {
 
 ## Reference
 
-```ts Typescript Definitions icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" expandable theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts Typescript Definitions icon="/icons/typescript.svg" expandable
 interface Bun {
   build(options: BuildOptions): Promise<BuildOutput>;
 }
@@ -1673,7 +1812,10 @@ interface BuildConfig {
         asset?: string;
       };
   root?: string; // project root
-  splitting?: boolean; // default true, enable code splitting
+  splitting?: boolean; // default false, enable code splitting
+  splitRequire?: boolean; // default true, with splitting and target "bun": require() of an ES module is a chunk too
+  minChunkSize?: number; // default 0, also fold side-effect-free chunks smaller than this many source bytes
+  modulePreload?: boolean; // default true, with splitting and target "browser": <link rel=modulepreload> the chunks an entrypoint or import() depends on
   plugins?: BunPlugin[];
   external?: string[];
   packages?: "bundle" | "external";
@@ -1718,6 +1860,12 @@ interface BuildConfig {
    * Force emitting @__PURE__ annotations even if minify.whitespace is true.
    */
   emitDCEAnnotations?: boolean;
+  /**
+   * Emit a setter per property on bundled module namespace objects (default).
+   * @deprecated set to `false` for getter-only namespace objects; this becomes
+   * the only behavior in a future release.
+   */
+  deprecatedNamespaceObjectSetters?: boolean;
 
   /**
    * Generate bytecode for the output. This can dramatically improve cold
@@ -1733,6 +1881,23 @@ interface BuildConfig {
    * @default false
    */
   bytecode?: boolean;
+  /**
+   * How many levels of nested functions to compile to bytecode ahead of time
+   * (a non-negative integer; `0` = only each module's top-level code).
+   * Only used when `bytecode: true`.
+   * @default undefined (all nested functions)
+   */
+  bytecodeDepth?: number;
+  /**
+   * Build-time optimizations for `bytecode` builds.
+   */
+  optimize?: {
+    /**
+     * Run JavaScriptCore's build-time optimization passes over the generated bytecode.
+     * @default true
+     */
+    bytecode?: boolean;
+  };
   /**
    * Add a banner to the bundled code such as "use client";
    */
@@ -1826,22 +1991,30 @@ declare class ResolveMessage {
 }
 ```
 
-***
+---
 
 ## CLI Usage
 
-```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash
 bun build <entry points>
 ```
 
 ### General Configuration
 
 <ParamField path="--production" type="boolean">
-  Set <code>NODE\_ENV=production</code> and enable minification
+  Set <code>NODE_ENV=production</code> and enable minification
 </ParamField>
 
 <ParamField path="--bytecode" type="boolean">
   Use a bytecode cache when compiling
+</ParamField>
+
+<ParamField path="--bytecode-depth" type="number">
+  How many levels of nested functions to compile to bytecode ahead of time (a non-negative integer). Defaults to all
+</ParamField>
+
+<ParamField path="--no-optimize-bytecode" type="boolean">
+  With <code>--bytecode</code>: skip the build-time bytecode optimization passes
 </ParamField>
 
 <ParamField path="--target" type="string" default="browser">
@@ -1853,8 +2026,8 @@ bun build <entry points>
 </ParamField>
 
 <ParamField path="--env" type="string" default="disable">
-  Inline environment variables into the bundle as <code>process.env.\${name_0}</code>. To inline variables matching a
-  prefix, use a glob like <code>FOO\_PUBLIC\_\*</code>
+  Inline environment variables into the bundle as <code>process.env.${name}</code>. To inline variables matching a
+  prefix, use a glob like <code>FOO_PUBLIC_*</code>
 </ParamField>
 
 ### Output & File Handling
@@ -1865,6 +2038,14 @@ bun build <entry points>
 
 <ParamField path="--outfile" type="string">
   Write output to a specific file
+</ParamField>
+
+<ParamField path="--metafile" type="string">
+  Write a JSON file with metadata about the build
+</ParamField>
+
+<ParamField path="--metafile-md" type="string">
+  Write a markdown file with a visualization of the module graph (LLM-friendly)
 </ParamField>
 
 <ParamField path="--sourcemap" type="string" default="none">
@@ -1908,12 +2089,31 @@ bun build <entry points>
   Enable code splitting for shared modules
 </ParamField>
 
+<ParamField path="--min-chunk-size" type="number">
+  With `--splitting`, also fold side-effect-free chunks smaller than this many source bytes into a chunk loaded by a
+  superset of their importers
+</ParamField>
+
+<ParamField path="--no-module-preload" type="boolean">
+  With `--splitting` and `--target browser`, don't emit `<link rel="modulepreload">` for the chunks an entrypoint or
+  `import()` depends on
+</ParamField>
+
 <ParamField path="--public-path" type="string">
-  Prefix to be added to import paths in bundled code
+  Prefix the bundler adds to import paths in bundled code
 </ParamField>
 
 <ParamField path="--external" type="string">
   Exclude modules from the bundle (supports wildcards). Alias: <code>-e</code>
+</ParamField>
+
+<ParamField path="--allow-unresolved" type="string" default="*">
+  Allow unresolved dynamic import()/require() specifiers matching these glob patterns. Pass <code>''</code> to allow
+  opaque specifiers
+</ParamField>
+
+<ParamField path="--reject-unresolved" type="boolean">
+  Fail the build on any dynamic import()/require() specifier that cannot be resolved at build time
 </ParamField>
 
 <ParamField path="--packages" type="string" default="bundle">
@@ -1932,6 +2132,11 @@ bun build <entry points>
 
 <ParamField path="--emit-dce-annotations" type="boolean" default="true">
   Re-emit Dead Code Elimination annotations. Disabled when <code>--minify-whitespace</code> is used
+</ParamField>
+
+<ParamField path="--no-deprecated-namespace-object-setters" type="boolean">
+  Emit getter-only module namespace objects (assigning to a property throws, like a real namespace). This becomes the
+  default in a future release
 </ParamField>
 
 <ParamField path="--minify" type="boolean">
@@ -1968,14 +2173,65 @@ bun build <entry points>
   Enable React Fast Refresh transform (for development testing)
 </ParamField>
 
+<ParamField path="--react-compiler" type="boolean">
+  Run the React Compiler over `.jsx`/`.tsx` files, automatically memoizing components and hooks. The bundler derives the
+  output mode from `--target` (`browser` → client, `bun`/`node` → ssr). Experimental.
+</ParamField>
+
 ### Standalone Executables
 
 <ParamField path="--compile" type="boolean">
-  Generate a standalone Bun executable containing the bundle. Implies <code>--production</code>
+  Generate a standalone Bun executable containing the bundle
 </ParamField>
 
 <ParamField path="--compile-exec-argv" type="string">
   Prepend arguments to the standalone executable’s <code>execArgv</code>
+</ParamField>
+
+<ParamField path="--compile-jit-policy" type="number" default="1">
+  JIT tier-up threshold scale the executable starts with; <code>1</code> is the normal JIT policy. See
+  <code>Bun.unsafe.setJITPolicy</code>
+</ParamField>
+
+<ParamField path="--compile-autoload-dotenv" type="boolean" default="true">
+  Enable autoloading of <code>.env</code> files in the standalone executable
+</ParamField>
+
+<ParamField path="--no-compile-autoload-dotenv" type="boolean">
+  Disable autoloading of <code>.env</code> files in the standalone executable
+</ParamField>
+
+<ParamField path="--compile-autoload-bunfig" type="boolean" default="true">
+  Enable autoloading of <code>bunfig.toml</code> in the standalone executable
+</ParamField>
+
+<ParamField path="--no-compile-autoload-bunfig" type="boolean">
+  Disable autoloading of <code>bunfig.toml</code> in the standalone executable
+</ParamField>
+
+<ParamField path="--compile-autoload-tsconfig" type="boolean" default="false">
+  Enable autoloading of <code>tsconfig.json</code> at runtime in the standalone executable
+</ParamField>
+
+<ParamField path="--no-compile-autoload-tsconfig" type="boolean">
+  Disable autoloading of <code>tsconfig.json</code> at runtime in the standalone executable
+</ParamField>
+
+<ParamField path="--compile-autoload-package-json" type="boolean" default="false">
+  Enable autoloading of <code>package.json</code> at runtime in the standalone executable
+</ParamField>
+
+<ParamField path="--no-compile-autoload-package-json" type="boolean">
+  Disable autoloading of <code>package.json</code> at runtime in the standalone executable
+</ParamField>
+
+<ParamField path="--compile-executable-path" type="string">
+  Path to a Bun executable to use for cross-compilation instead of downloading
+</ParamField>
+
+<ParamField path="--asset" type="string">
+  Embed a file or directory into the compiled executable under its basename; a directory keeps its internal tree, so{" "}
+  <code>--asset ./static/public</code> embeds <code>public/...</code> (requires <code>--compile</code>)
 </ParamField>
 
 ### Windows Executable Details

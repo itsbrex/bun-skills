@@ -5,32 +5,32 @@ description: Run a Shell Command
 
 # Run a Shell Command
 
-Bun Shell is a cross-platform bash-like shell built in to Bun.
+Bun Shell is a cross-platform bash-like shell built into Bun.
 
-It provides a simple way to run shell commands in JavaScript and TypeScript. To get started, import the `$` function from the `bun` package and use it to run shell commands.
+It runs shell commands from JavaScript and TypeScript. To get started, import the `$` function from the `bun` package.
 
-```ts foo.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts foo.ts icon="/icons/typescript.svg"
 import { $ } from "bun";
 
 await $`echo Hello, world!`; // => "Hello, world!"
 ```
 
-***
+---
 
 The `$` function is a tagged template literal that runs the command and returns a promise that resolves with the command's output.
 
-```ts foo.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts foo.ts icon="/icons/typescript.svg"
 import { $ } from "bun";
 
 const output = await $`ls -l`.text();
 console.log(output);
 ```
 
-***
+---
 
-To get each line of the output as an array, use the `lines` method.
+To iterate over each line of the output, use the `lines` method.
 
-```ts foo.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts foo.ts icon="/icons/typescript.svg"
 import { $ } from "bun";
 
 for await (const line of $`ls -l`.lines()) {
@@ -38,6 +38,6 @@ for await (const line of $`ls -l`.lines()) {
 }
 ```
 
-***
+---
 
-See [Docs > API > Shell](/runtime/shell) for complete documentation.
+See [Bun Shell](/runtime/shell).

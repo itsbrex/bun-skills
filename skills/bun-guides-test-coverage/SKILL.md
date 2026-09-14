@@ -5,19 +5,19 @@ description: Generate code coverage reports with the Bun test runner
 
 # Generate code coverage reports with the Bun test runner
 
-Bun's test runner supports built-in *code coverage reporting*. This makes it easy to see how much of the codebase is covered by tests and find areas that are not currently well-tested.
+Bun's test runner has built-in _code coverage reporting_. Use it to see how much of your codebase your tests cover, and where the gaps are.
 
-***
+---
 
-Pass the `--coverage` flag to `bun test` to enable this feature. This will print a coverage report after the test run.
+Pass the `--coverage` flag to `bun test` to print a coverage report after the test run.
 
-The coverage report lists the source files that were executed during the test run, the percentage of functions and lines that were executed, and the line ranges that were not executed during the run.
+The report lists the source files the tests executed, the percentage of functions and lines that ran, and the line ranges that never ran.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun test --coverage
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 
 test.test.ts:
 ✓ math > add [0.71ms]
@@ -26,7 +26,7 @@ test.test.ts:
 -------------|---------|---------|-------------------
 File         | % Funcs | % Lines | Uncovered Line #s
 -------------|---------|---------|-------------------
-All files    |   66.67 |   77.78 |
+All files    |   50.00 |   66.67 |
  math.ts     |   50.00 |   66.67 |
  random.ts   |   50.00 |   66.67 |
 -------------|---------|---------|-------------------
@@ -36,15 +36,15 @@ All files    |   66.67 |   77.78 |
  3 expect() calls
 ```
 
-***
+---
 
-To always enable coverage reporting by default, add the following line to your `bunfig.toml`:
+To enable coverage reporting by default, add the following to your `bunfig.toml`:
 
-```toml bunfig.toml icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml bunfig.toml icon="settings"
 [test]
 coverage = true # always enable coverage
 ```
 
-***
+---
 
-Refer to [Docs > Test runner > Coverage](/test/code-coverage) for complete documentation on code coverage reporting in Bun.
+See [Code coverage](/test/code-coverage).

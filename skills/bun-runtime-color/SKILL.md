@@ -7,13 +7,13 @@ description: Format colors as CSS, ANSI, numbers, hex strings, and more
 
 > Format colors as CSS, ANSI, numbers, hex strings, and more
 
-`Bun.color(input, outputFormat?)` leverages Bun's CSS parser to parse, normalize, and convert colors from user input to a variety of output formats, including:
+`Bun.color(input, outputFormat?)` uses Bun's CSS parser to parse, normalize, and convert colors from user input to any of these output formats:
 
 | Format       | Example                          |
 | ------------ | -------------------------------- |
 | `"css"`      | `"red"`                          |
 | `"ansi"`     | `"\x1b[38;2;255;0;0m"`           |
-| `"ansi-16"`  | `"\x1b[38;5;\tm"`                |
+| `"ansi-16"`  | `"\x1b[91m"`                     |
 | `"ansi-256"` | `"\x1b[38;5;196m"`               |
 | `"ansi-16m"` | `"\x1b[38;2;255;0;0m"`           |
 | `"number"`   | `0x1a2b3c`                       |
@@ -27,41 +27,41 @@ description: Format colors as CSS, ANSI, numbers, hex strings, and more
 | `"[rgb]"`    | `[ 255, 99, 71 ]`                |
 | `"[rgba]"`   | `[ 255, 99, 71, 255]`            |
 
-There are many different ways to use this API:
+Use it to:
 
-* Validate and normalize colors to persist in a database (`number` is the most database-friendly)
-* Convert colors to different formats
-* Colorful logging beyond the 16 colors many use today (use `ansi` if you don't want to figure out what the user's terminal supports, otherwise use `ansi-16`, `ansi-256`, or `ansi-16m` for how many colors the terminal supports)
-* Format colors for use in CSS injected into HTML
-* Get the `r`, `g`, `b`, and `a` color components as JavaScript objects or numbers from a CSS color string
+- Validate and normalize colors to persist in a database (`number` is the most database-friendly)
+- Convert colors to different formats
+- Color terminal output beyond the basic 16 colors (use `ansi` to auto-detect terminal color support, or `ansi-16`, `ansi-256`, or `ansi-16m` to target a specific color depth)
+- Format colors for use in CSS injected into HTML
+- Get the `r`, `g`, `b`, and `a` color components as JavaScript objects or numbers from a CSS color string
 
-You can think of this as an alternative to the popular npm packages [`color`](https://github.com/Qix-/color) and [`tinycolor2`](https://github.com/bgrins/TinyColor) except with full support for parsing CSS color strings and zero dependencies built directly into Bun.
+It's a built-in alternative to the npm packages [`color`](https://github.com/Qix-/color) and [`tinycolor2`](https://github.com/bgrins/TinyColor), with full support for parsing CSS color strings and zero dependencies.
 
 ### Flexible input
 
-You can pass in any of the following:
+`Bun.color` accepts any of the following:
 
-* Standard CSS color names like `"red"`
-* Numbers like `0xff0000`
-* Hex strings like `"#f00"`
-* RGB strings like `"rgb(255, 0, 0)"`
-* RGBA strings like `"rgba(255, 0, 0, 1)"`
-* HSL strings like `"hsl(0, 100%, 50%)"`
-* HSLA strings like `"hsla(0, 100%, 50%, 1)"`
-* RGB objects like `{ r: 255, g: 0, b: 0 }`
-* RGBA objects like `{ r: 255, g: 0, b: 0, a: 1 }`
-* RGB arrays like `[255, 0, 0]`
-* RGBA arrays like `[255, 0, 0, 255]`
-* LAB strings like `"lab(50% 50% 50%)"`
-* ... anything else that CSS can parse as a single color value
+- Standard CSS color names like `"red"`
+- Numbers like `0xff0000`
+- Hex strings like `"#f00"`
+- RGB strings like `"rgb(255, 0, 0)"`
+- RGBA strings like `"rgba(255, 0, 0, 1)"`
+- HSL strings like `"hsl(0, 100%, 50%)"`
+- HSLA strings like `"hsla(0, 100%, 50%, 1)"`
+- RGB objects like `{ r: 255, g: 0, b: 0 }`
+- RGBA objects like `{ r: 255, g: 0, b: 0, a: 1 }`
+- RGB arrays like `[255, 0, 0]`
+- RGBA arrays like `[255, 0, 0, 255]`
+- LAB strings like `"lab(50% 50 50)"`
+- ... anything else that CSS can parse as a single color value
 
 ### Format colors as CSS
 
-The `"css"` format outputs valid CSS for use in stylesheets, inline styles, CSS variables, css-in-js, etc. It returns the most compact representation of the color as a string.
+The `"css"` format outputs valid CSS for use in stylesheets, inline styles, CSS variables, or CSS-in-JS. It returns the most compact string representation of the color.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("red", "css"); // "red"
-Bun.color(0xff0000, "css"); // "#f000"
+Bun.color(0xff0000, "css"); // "red"
 Bun.color("#f00", "css"); // "red"
 Bun.color("#ff0000", "css"); // "red"
 Bun.color("rgb(255, 0, 0)", "css"); // "red"
@@ -78,9 +78,9 @@ If the input is unknown or fails to parse, `Bun.color` returns `null`.
 
 ### Format colors as ANSI (for terminals)
 
-The `"ansi"` format outputs ANSI escape codes for use in terminals to make text colorful.
+The `"ansi"` format outputs ANSI escape codes that color text in terminals.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("red", "ansi"); // "\u001b[38;2;255;0;0m"
 Bun.color(0xff0000, "ansi"); // "\u001b[38;2;255;0;0m"
 Bun.color("#f00", "ansi"); // "\u001b[38;2;255;0;0m"
@@ -95,15 +95,15 @@ Bun.color([255, 0, 0], "ansi"); // "\u001b[38;2;255;0;0m"
 Bun.color([255, 0, 0, 255], "ansi"); // "\u001b[38;2;255;0;0m"
 ```
 
-This gets the color depth of stdout and automatically chooses one of `"ansi-16m"`, `"ansi-256"`, `"ansi-16"` based on the environment variables. If stdout doesn't support any form of ANSI color, it returns an empty string. As with the rest of Bun's color API, if the input is unknown or fails to parse, it returns `null`.
+The `"ansi"` format detects the color depth of stdout from environment variables and picks `"ansi-16m"`, `"ansi-256"`, or `"ansi-16"` accordingly. If stdout doesn't support any form of ANSI color, it returns an empty string. As with the rest of Bun's color API, if the input is unknown or fails to parse, it returns `null`.
 
 #### 24-bit ANSI colors (`ansi-16m`)
 
-The `"ansi-16m"` format outputs 24-bit ANSI colors for use in terminals to make text colorful. 24-bit color means you can display 16 million colors on supported terminals, and requires a modern terminal that supports it.
+The `"ansi-16m"` format outputs 24-bit ANSI colors, which can display 16 million colors but require a modern terminal that supports them.
 
-This converts the input color to RGBA, and then outputs that as an ANSI color.
+Bun converts the input color to RGBA, then outputs that as an ANSI color.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("red", "ansi-16m"); // "\x1b[38;2;255;0;0m"
 Bun.color(0xff0000, "ansi-16m"); // "\x1b[38;2;255;0;0m"
 Bun.color("#f00", "ansi-16m"); // "\x1b[38;2;255;0;0m"
@@ -114,7 +114,7 @@ Bun.color("#ff0000", "ansi-16m"); // "\x1b[38;2;255;0;0m"
 
 The `"ansi-256"` format approximates the input color to the nearest of the 256 ANSI colors supported by some terminals.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("red", "ansi-256"); // "\u001b[38;5;196m"
 Bun.color(0xff0000, "ansi-256"); // "\u001b[38;5;196m"
 Bun.color("#f00", "ansi-256"); // "\u001b[38;5;196m"
@@ -127,20 +127,20 @@ To convert from RGBA to one of the 256 ANSI colors, we ported the algorithm that
 
 The `"ansi-16"` format approximates the input color to the nearest of the 16 ANSI colors supported by most terminals.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
-Bun.color("red", "ansi-16"); // "\u001b[38;5;\tm"
-Bun.color(0xff0000, "ansi-16"); // "\u001b[38;5;\tm"
-Bun.color("#f00", "ansi-16"); // "\u001b[38;5;\tm"
-Bun.color("#ff0000", "ansi-16"); // "\u001b[38;5;\tm"
+```ts
+Bun.color("red", "ansi-16"); // "\u001b[91m"
+Bun.color(0xff0000, "ansi-16"); // "\u001b[91m"
+Bun.color("#f00", "ansi-16"); // "\u001b[91m"
+Bun.color("#ff0000", "ansi-16"); // "\u001b[91m"
 ```
 
-This works by first converting the input to a 24-bit RGB color space, then to `ansi-256`, and then we convert that to the nearest 16 ANSI color.
+Bun converts the input to a 24-bit RGB color space, then to `ansi-256`, then to the nearest of the 16 ANSI colors.
 
 ### Format colors as numbers
 
-The `"number"` format outputs a 24-bit number for use in databases, configuration, or any other use case where a compact representation of the color is desired.
+The `"number"` format outputs the color as a 24-bit number, a compact representation for databases and configuration.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("red", "number"); // 16711680
 Bun.color(0xff0000, "number"); // 16711680
 Bun.color({ r: 255, g: 0, b: 0 }, "number"); // 16711680
@@ -153,13 +153,13 @@ Bun.color("hsla(0, 100%, 50%, 1)", "number"); // 16711680
 
 ### Get the red, green, blue, and alpha channels
 
-You can use the `"{rgba}"`, `"{rgb}"`, `"[rgba]"` and `"[rgb]"` formats to get the red, green, blue, and alpha channels as objects or arrays.
+The `"{rgba}"`, `"{rgb}"`, `"[rgba]"`, and `"[rgb]"` formats return the red, green, blue, and alpha channels as objects or arrays.
 
 #### `{rgba}` object
 
 The `"{rgba}"` format outputs an object with the red, green, blue, and alpha channels.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 type RGBAObject = {
   // 0 - 255
   r: number;
@@ -174,7 +174,7 @@ type RGBAObject = {
 
 Example:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("hsl(0, 0%, 50%)", "{rgba}"); // { r: 128, g: 128, b: 128, a: 1 }
 Bun.color("red", "{rgba}"); // { r: 255, g: 0, b: 0, a: 1 }
 Bun.color(0xff0000, "{rgba}"); // { r: 255, g: 0, b: 0, a: 1 }
@@ -182,11 +182,11 @@ Bun.color({ r: 255, g: 0, b: 0 }, "{rgba}"); // { r: 255, g: 0, b: 0, a: 1 }
 Bun.color([255, 0, 0], "{rgba}"); // { r: 255, g: 0, b: 0, a: 1 }
 ```
 
-To behave similarly to CSS, the `a` channel is a decimal number between `0` and `1`.
+As in CSS, the `a` channel is a decimal number between `0` and `1`.
 
 The `"{rgb}"` format is similar, but it doesn't include the alpha channel.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("hsl(0, 0%, 50%)", "{rgb}"); // { r: 128, g: 128, b: 128 }
 Bun.color("red", "{rgb}"); // { r: 255, g: 0, b: 0 }
 Bun.color(0xff0000, "{rgb}"); // { r: 255, g: 0, b: 0 }
@@ -198,14 +198,14 @@ Bun.color([255, 0, 0], "{rgb}"); // { r: 255, g: 0, b: 0 }
 
 The `"[rgba]"` format outputs an array with the red, green, blue, and alpha channels.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // All values are 0 - 255
 type RGBAArray = [number, number, number, number];
 ```
 
 Example:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("hsl(0, 0%, 50%)", "[rgba]"); // [128, 128, 128, 255]
 Bun.color("red", "[rgba]"); // [255, 0, 0, 255]
 Bun.color(0xff0000, "[rgba]"); // [255, 0, 0, 255]
@@ -217,7 +217,7 @@ Unlike the `"{rgba}"` format, the alpha channel is an integer between `0` and `2
 
 The `"[rgb]"` format is similar, but it doesn't include the alpha channel.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("hsl(0, 0%, 50%)", "[rgb]"); // [128, 128, 128]
 Bun.color("red", "[rgb]"); // [255, 0, 0]
 Bun.color(0xff0000, "[rgb]"); // [255, 0, 0]
@@ -227,9 +227,9 @@ Bun.color([255, 0, 0], "[rgb]"); // [255, 0, 0]
 
 ### Format colors as hex strings
 
-The `"hex"` format outputs a lowercase hex string for use in CSS or other contexts.
+The `"hex"` format outputs a lowercase hex string.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("hsl(0, 0%, 50%)", "hex"); // "#808080"
 Bun.color("red", "hex"); // "#ff0000"
 Bun.color(0xff0000, "hex"); // "#ff0000"
@@ -237,9 +237,9 @@ Bun.color({ r: 255, g: 0, b: 0 }, "hex"); // "#ff0000"
 Bun.color([255, 0, 0], "hex"); // "#ff0000"
 ```
 
-The `"HEX"` format is similar, but it outputs a hex string with uppercase letters instead of lowercase letters.
+The `"HEX"` format is the same, but uppercase.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 Bun.color("hsl(0, 0%, 50%)", "HEX"); // "#808080"
 Bun.color("red", "HEX"); // "#FF0000"
 Bun.color(0xff0000, "HEX"); // "#FF0000"
@@ -249,9 +249,9 @@ Bun.color([255, 0, 0], "HEX"); // "#FF0000"
 
 ### Bundle-time client-side color formatting
 
-Like many of Bun's APIs, you can use macros to invoke `Bun.color` at bundle-time for use in client-side JavaScript builds:
+Like many of Bun's APIs, you can invoke `Bun.color` at bundle time with a [macro](/bundler/macros) for use in client-side JavaScript builds:
 
-```ts client-side.ts theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts client-side.ts
 import { color } from "bun" with { type: "macro" };
 
 console.log(color("#f00", "css"));
@@ -259,13 +259,13 @@ console.log(color("#f00", "css"));
 
 Then, build the client-side code:
 
-```sh  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh
 bun build ./client-side.ts
 ```
 
-This will output the following to `client-side.js`:
+`bun build` prints the following to stdout:
 
-```js  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js
 // client-side.ts
 console.log("red");
 ```

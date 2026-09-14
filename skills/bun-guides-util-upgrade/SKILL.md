@@ -5,23 +5,23 @@ description: Upgrade Bun to the latest version
 
 # Upgrade Bun to the latest version
 
-Bun can upgrade itself using the built-in `bun upgrade` command. This is the fastest way to get the latest features and bug fixes.
+Bun upgrades itself with the built-in `bun upgrade` command.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun upgrade
 ```
 
-This downloads and installs the latest stable version of Bun, replacing the currently installed version.
+`bun upgrade` downloads and installs the latest stable version of Bun, replacing the currently installed version. If you're on a canary build, `bun upgrade` installs the latest canary build instead.
 
 <Note>To see the current version of Bun, run `bun --version`.</Note>
 
-***
+---
 
 ## Verify the upgrade
 
 After upgrading, verify the new version:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun --version
 # Output: 1.x.y
 
@@ -30,29 +30,29 @@ bun --revision
 # Output: 1.x.y+abc123def
 ```
 
-***
+---
 
 ## Upgrade to canary builds
 
-Canary builds are automatically released on every commit to the `main` branch. These are untested but useful for trying new features or verifying bug fixes before they're released.
+Canary builds are published automatically from the `main` branch once a commit's CI tests pass. They're useful for trying new features or verifying bug fixes before a release.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun upgrade --canary
 ```
 
 <Warning>Canary builds are not recommended for production use. They may contain bugs or breaking changes.</Warning>
 
-***
+---
 
 ## Switch back to stable
 
 If you're on a canary build and want to return to the latest stable release:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun upgrade --stable
 ```
 
-***
+---
 
 ## Install a specific version
 
@@ -60,35 +60,35 @@ To install a specific version of Bun, use the install script with a version tag:
 
 <Tabs>
   <Tab title="macOS & Linux">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.3"
     ```
   </Tab>
-
   <Tab title="Windows">
-    ```powershell PowerShell icon="windows" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```powershell PowerShell icon="windows"
     iex "& {$(irm https://bun.sh/install.ps1)} -Version 1.3.3"
     ```
   </Tab>
 </Tabs>
 
-***
+---
 
 ## Package manager users
 
-If you installed Bun via a package manager, use that package manager to upgrade instead of `bun upgrade` to avoid conflicts.
+If you installed Bun with a package manager, upgrade with that package manager instead of `bun upgrade` to avoid conflicts.
 
 <Tip>
-  **Homebrew users** <br />
-  To avoid conflicts with Homebrew, use `brew upgrade bun` instead.
+**Homebrew users** <br />
+Use `brew upgrade bun` instead.
 
-  **Scoop users** <br />
-  To avoid conflicts with Scoop, use `scoop update bun` instead.
+**Scoop users** <br />
+Use `scoop update bun` instead.
+
 </Tip>
 
-***
+---
 
 ## See also
 
-* [Installation](/installation) — Install Bun for the first time
-* [Update packages](/pm/cli/update) — Update dependencies to latest versions
+- [Installation](/installation) — Install Bun for the first time
+- [Update packages](/pm/cli/update) — Update dependencies to latest versions

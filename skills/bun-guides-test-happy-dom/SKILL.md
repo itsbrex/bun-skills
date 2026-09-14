@@ -5,42 +5,42 @@ description: Write browser DOM tests with Bun and happy-dom
 
 # Write browser DOM tests with Bun and happy-dom
 
-You can write and run browser tests with Bun's test runner in conjunction with [Happy DOM](https://github.com/capricorn86/happy-dom). Happy DOM implements mocked versions of browser APIs like `document` and `location`.
+Use [Happy DOM](https://github.com/capricorn86/happy-dom) to write browser tests with Bun's test runner. Happy DOM implements mocked versions of browser APIs like `document` and `location`.
 
-***
+---
 
-To get started, install `happy-dom`.
+Install `@happy-dom/global-registrator`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun add -d @happy-dom/global-registrator
 ```
 
-***
+---
 
-This module exports a "registrator" that injects the mocked browser APIs to the global scope.
+This module exports a "registrator" that injects the mocked browser APIs into the global scope.
 
-```ts happydom.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts happydom.ts icon="/icons/typescript.svg"
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
 GlobalRegistrator.register();
 ```
 
-***
+---
 
-We need to make sure this file is executed before any of our test files. That's a job for Bun's built-in [*preload*]() functionality. Create a `bunfig.toml` file in the root of your project (if it doesn't already exist) and add the following lines.
+This file needs to run before any of your test files. That's a job for Bun's built-in [_preload_](/runtime/bunfig#test-preload) option. Create a `bunfig.toml` file in the root of your project (if it doesn't already exist) and add the following lines.
 
-The `./happydom.ts` file should contain the registration code above.
+The `./happydom.ts` file should contain the registration code from the previous step.
 
-```toml bunfig.toml icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml bunfig.toml icon="settings"
 [test]
 preload = "./happydom.ts"
 ```
 
-***
+---
 
-Now running `bun test` inside our project will automatically execute `happydom.ts` first. We can start writing tests that use browser APIs.
+Now `bun test` executes `happydom.ts` before your test files, so you can write tests that use browser APIs.
 
-```ts dom.test.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts dom.test.ts icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("set button text", () => {
@@ -50,15 +50,15 @@ test("set button text", () => {
 });
 ```
 
-***
+---
 
-With Happy DOM properly configured, this test runs as expected.
+With Happy DOM registered, the test passes.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun test
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 
 dom.test.ts:
 ✓ set button text [0.82ms]
@@ -66,9 +66,9 @@ dom.test.ts:
  1 pass
  0 fail
  1 expect() calls
-Ran 1 tests across 1 files. 1 total [125.00ms]
+Ran 1 test across 1 file. [125.00ms]
 ```
 
-***
+---
 
-Refer to the [Happy DOM repo](https://github.com/capricorn86/happy-dom) and [Docs > Test runner > DOM](/test/dom) for complete documentation on writing browser tests with Bun.
+See the [Happy DOM repo](https://github.com/capricorn86/happy-dom) and [DOM testing](/test/dom).

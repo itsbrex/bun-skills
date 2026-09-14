@@ -1,17 +1,15 @@
 ---
 name: Bun Start a cluster of HTTP servers
-description: Run multiple HTTP servers concurrently via the "reusePort" option to share the same port across multiple processes
+description: Run multiple HTTP servers concurrently with the "reusePort" option to share the same port across multiple processes
 ---
 
 # Start a cluster of HTTP servers
 
-> Run multiple HTTP servers concurrently via the "reusePort" option to share the same port across multiple processes
+> Run multiple HTTP servers concurrently with the "reusePort" option to share the same port across multiple processes
 
-To run multiple HTTP servers concurrently, use the `reusePort` option in `Bun.serve()` which shares the same port across multiple processes.
+To run multiple HTTP servers concurrently, use the `reusePort` option in `Bun.serve()`. It shares one port across multiple processes, and incoming requests are load balanced across them.
 
-This automatically load balances incoming requests across multiple instances of Bun.
-
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 import { serve } from "bun";
 
 const id = Math.random().toString(36).slice(2);
@@ -30,18 +28,18 @@ serve({
 });
 ```
 
-***
+---
 
 <Note>
-  **Linux only** — Windows and macOS ignore the `reusePort` option. This is an operating system limitation with
-  `SO_REUSEPORT`, unfortunately.
+  **Linux only** &mdash; Windows and macOS ignore the `reusePort` option. This is an operating system limitation with
+  `SO_REUSEPORT`.
 </Note>
 
 After saving the file, start your servers on the same port.
 
-Under the hood, this uses the Linux `SO_REUSEPORT` and `SO_REUSEADDR` socket options to ensure fair load balancing across multiple processes. [Learn more about `SO_REUSEPORT` and `SO_REUSEADDR`](https://lwn.net/Articles/542629/)
+`reusePort` uses the Linux `SO_REUSEPORT` and `SO_REUSEADDR` socket options to ensure fair load balancing across processes. [Learn more about `SO_REUSEPORT` and `SO_REUSEADDR`](https://lwn.net/Articles/542629/)
 
-```ts cluster.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts cluster.ts icon="/icons/typescript.svg"
 import { spawn } from "bun";
 
 const cpus = navigator.hardwareConcurrency; // Number of CPU cores
@@ -66,6 +64,6 @@ process.on("SIGINT", kill);
 process.on("exit", kill);
 ```
 
-***
+---
 
-Bun has also implemented the `node:cluster` module, but this is a faster, simple, and limited alternative.
+Bun also implements the `node:cluster` module; `reusePort` is a faster but more limited alternative.

@@ -11,7 +11,7 @@ description: Monitor server activity with built-in metrics
 
 Monitor server activity with built-in counters:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const server = Bun.serve({
   fetch(req, server) {
     return new Response(
@@ -23,9 +23,9 @@ const server = Bun.serve({
 
 ### `server.subscriberCount(topic)`
 
-Get count of subscribers for a WebSocket topic:
+Get the number of subscribers for a WebSocket topic:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const server = Bun.serve({
   fetch(req, server) {
     const chatUsers = server.subscriberCount("chat");

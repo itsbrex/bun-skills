@@ -9,13 +9,13 @@ description: Containerize a Bun application with Docker
   This guide assumes you already have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed.
 </Note>
 
-[Docker](https://www.docker.com) is a platform for packaging and running an application as a lightweight, portable *container* that encapsulates all the necessary dependencies.
+[Docker](https://www.docker.com) is a platform for packaging and running an application as a lightweight, portable _container_ that encapsulates all the necessary dependencies.
 
-***
+---
 
-To *containerize* our application, we define a `Dockerfile`. This file contains a list of instructions to initialize the container, copy our local project files into it, install dependencies, and starts the application.
+To _containerize_ the application, define a `Dockerfile`. It lists the instructions to initialize the container, copy your local project files into it, install dependencies, and start the application.
 
-```docker Dockerfile icon="docker" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```docker Dockerfile icon="docker"
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
 FROM oven/bun:1 AS base
@@ -56,11 +56,11 @@ EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "index.ts" ]
 ```
 
-***
+---
 
-Now that you have your docker image, let's look at `.dockerignore` which has the same syntax as `.gitignore`, here you need to specify the files/directories that must not go in any stage of the docker build. An example for a ignore file is
+Next, add a `.dockerignore` file. It uses a syntax similar to `.gitignore` and lists the files and directories to exclude from every stage of the Docker build. For example:
 
-```txt .dockerignore icon="docker" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt .dockerignore icon="docker"
 node_modules
 Dockerfile*
 docker-compose*
@@ -78,17 +78,17 @@ helm-charts
 coverage*
 ```
 
-***
+---
 
-We'll now use `docker build` to convert this `Dockerfile` into a *Docker image*, a self-contained template containing all the dependencies and configuration required to run the application.
+Run `docker build` to convert this `Dockerfile` into a _Docker image_, a self-contained template containing all the dependencies and configuration required to run the application.
 
-The `-t` flag lets us specify a name for the image, and `--pull` tells Docker to automatically download the latest version of the base image (`oven/bun`). The initial build will take longer, as Docker will download all the base images and dependencies.
+The `-t` flag names the image, and `--pull` tells Docker to download the latest version of the base image (`oven/bun`). The initial build takes longer, since Docker downloads all the base images and dependencies.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 docker build --pull -t bun-hello-world .
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 [+] Building 0.9s (21/21) FINISHED
  => [internal] load build definition from Dockerfile                                                                                     0.0s
  => => transferring dockerfile: 37B                                                                                                      0.0s
@@ -106,47 +106,45 @@ docker build --pull -t bun-hello-world .
  => => naming to docker.io/library/bun-hello-world                                                                                       0.0s
 ```
 
-***
+---
 
-We've built a new *Docker image*. Now let's use that image to spin up an actual, running *container*.
+Now start a running _container_ from the `bun-hello-world` image with `docker run`. The `-d` flag runs it in _detached_ mode, and `-p 3000:3000` maps the container's port 3000 to port 3000 on your machine.
 
-We'll use `docker run` to start a new container using the `bun-hello-world` image. It will be run in *detached* mode (`-d`) and we'll map the container's port 3000 to our local machine's port 3000 (`-p 3000:3000`).
+The `run` command prints the _container ID_.
 
-The `run` command prints a string representing the *container ID*.
-
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 docker run -d -p 3000:3000 bun-hello-world
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 7f03e212a15ede8644379bce11a13589f563d3909a9640446c5bbefce993678d
 ```
 
-***
+---
 
-The container is now running in the background. Visit [localhost:3000](http://localhost:3000). You should see a `Hello, World!` message.
+The container is now running in the background. Visit [localhost:3000](http://localhost:3000). You should see your application's response.
 
-***
+---
 
-To stop the container, we'll use `docker stop <container-id>`.
+To stop the container, run `docker stop <container-id>`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 docker stop 7f03e212a15ede8644379bce11a13589f563d3909a9640446c5bbefce993678d
 ```
 
-***
+---
 
-If you can't find the container ID, you can use `docker ps` to list all running containers.
+If you can't find the container ID, `docker ps` lists all running containers.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 docker ps
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
 7f03e212a15e        bun-hello-world     "bun run index.ts"       2 minutes ago       Up 2 minutes        0.0.0.0:3000->3000/tcp   flamboyant_cerf
 ```
 
-***
+---
 
-That's it! Refer to the [Docker documentation](https://docs.docker.com/) for more advanced usage.
+See the [Docker documentation](https://docs.docker.com/) for more advanced usage.

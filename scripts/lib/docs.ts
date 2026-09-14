@@ -96,17 +96,6 @@ export function parseSkillFile(text: string): SkillFile {
   return { frontmatter: frontmatter as Record<string, unknown>, body: match[2] ?? "" };
 }
 
-export async function readSkillName(dir: string): Promise<string | null> {
-  const file = Bun.file(`${SKILLS_DIR}/${dir}/SKILL.md`);
-  if (!(await file.exists())) return null;
-  try {
-    const { name } = parseSkillFile(await file.text()).frontmatter;
-    return typeof name === "string" ? name : null;
-  } catch {
-    return null;
-  }
-}
-
 const needsQuoting = (value: string) => /: |\s#|^[\s[\]{}&*!|>'"%@`,?:-]|\s$/.test(value);
 const yamlScalar = (value: string) => (needsQuoting(value) ? JSON.stringify(value) : value);
 

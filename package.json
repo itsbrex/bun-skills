@@ -7,6 +7,7 @@
   "scripts": {
     "sync": "bun scripts/sync-skills.ts",
     "validate": "bun scripts/validate-skills.ts",
+    "validate:plugin": "claude plugin validate .claude-plugin/marketplace.json --strict && claude plugin validate .claude-plugin/plugin.json --strict && claude plugin validate skills",
     "update": "bun scripts/sync-skills.ts && bun scripts/validate-skills.ts",
     "lightpanda:install": "bun scripts/ensure-lightpanda.ts",
     "lightpanda:upgrade": "bun scripts/ensure-lightpanda.ts --upgrade",

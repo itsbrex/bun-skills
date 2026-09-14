@@ -13,10 +13,13 @@ const WRAPPER_CLI = `${REPO_ROOT}/node_modules/@lightpanda/browser/dist/cli/main
  */
 export async function ensureLightpanda({ upgrade = false } = {}): Promise<string> {
   const binary = lightpandaBinaryPath();
-  if (!upgrade && (await Bun.file(binary).exists())) return binary;
+  const exists = await Bun.file(binary).exists();
   if (process.env.LIGHTPANDA_EXECUTABLE_PATH) {
-    throw new Error(`LIGHTPANDA_EXECUTABLE_PATH=${binary} does not exist`);
+    if (upgrade) throw new Error(`LIGHTPANDA_EXECUTABLE_PATH is set; upgrade ${binary} directly`);
+    if (!exists) throw new Error(`LIGHTPANDA_EXECUTABLE_PATH=${binary} does not exist`);
+    return binary;
   }
+  if (exists && !upgrade) return binary;
   if (!(await Bun.file(WRAPPER_CLI).exists())) {
     throw new Error("@lightpanda/browser is not installed; run `bun install`");
   }

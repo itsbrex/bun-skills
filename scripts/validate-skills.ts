@@ -60,21 +60,29 @@ for (const dir of dirs) {
   }
   if (typeof description !== "string" || description === "") {
     problems.push(`${dir}: missing description`);
-  } else if (description.length > MAX_DESCRIPTION_LENGTH) {
-    problems.push(`${dir}: description is ${description.length} chars (max ${MAX_DESCRIPTION_LENGTH})`);
+  } else {
+    if (description.length > MAX_DESCRIPTION_LENGTH) {
+      problems.push(`${dir}: description is ${description.length} chars (max ${MAX_DESCRIPTION_LENGTH})`);
+    }
+    if (/[<>]/.test(description)) problems.push(`${dir}: description contains < or >`);
   }
   if (/^\s*<(!doctype|html)/i.test(body)) problems.push(`${dir}: body is an HTML page, not markdown`);
   else if (!body.trimStart().startsWith("#")) problems.push(`${dir}: body does not start with a markdown heading`);
 }
 
-// Plugin and marketplace manifests must parse and agree on name and version.
+// Plugin and marketplace manifests must parse, and every field the marketplace entry repeats must match plugin.json.
+const SHARED_MANIFEST_FIELDS = ["version", "description", "author", "homepage", "repository", "license", "keywords"];
 try {
   const plugin = await Bun.file(`${REPO_ROOT}/.claude-plugin/plugin.json`).json();
   const marketplace = await Bun.file(`${REPO_ROOT}/.claude-plugin/marketplace.json`).json();
   const listed = marketplace.plugins?.find((entry: { name?: string }) => entry.name === plugin.name);
   if (!listed) problems.push(`marketplace.json does not list plugin "${plugin.name}"`);
-  else if (listed.version && listed.version !== plugin.version) {
-    problems.push(`marketplace.json version ${listed.version} does not match plugin.json version ${plugin.version}`);
+  else {
+    for (const field of SHARED_MANIFEST_FIELDS) {
+      if (listed[field] !== undefined && !Bun.deepEquals(listed[field], plugin[field])) {
+        problems.push(`marketplace.json ${field} does not match plugin.json`);
+      }
+    }
   }
 } catch (error) {
   problems.push(`.claude-plugin manifests: ${errorMessage(error)}`);
@@ -82,11 +90,16 @@ try {
 
 let coverage = "skipped (--offline)";
 if (!args.offline) {
-  const expected = new Set((await loadDocIndex()).map((entry) => entry.dir));
-  const actual = new Set(dirs);
-  for (const dir of expected) if (!actual.has(dir)) problems.push(`missing skill for llms.txt page: ${dir} (run bun run sync)`);
-  for (const dir of actual) if (!expected.has(dir)) problems.push(`stale skill not in llms.txt: ${dir} (run bun run sync --prune)`);
-  coverage = `${expected.size} pages in llms.txt`;
+  try {
+    const expected = new Set((await loadDocIndex()).map((entry) => entry.dir));
+    const actual = new Set(dirs);
+    for (const dir of expected) if (!actual.has(dir)) problems.push(`missing skill for llms.txt page: ${dir} (run bun run sync)`);
+    for (const dir of actual) if (!expected.has(dir)) problems.push(`stale skill not in llms.txt: ${dir} (run bun run sync --prune)`);
+    coverage = `${expected.size} pages in llms.txt`;
+  } catch (error) {
+    problems.push(`coverage check failed: ${errorMessage(error)} (rerun with --offline to skip it)`);
+    coverage = "failed";
+  }
 }
 
 console.log(`skills: ${dirs.length} · coverage: ${coverage} · problems: ${problems.length}`);

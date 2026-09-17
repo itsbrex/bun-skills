@@ -1,0 +1,4 @@
+[install]
+# bun-types 1.4.2 imports undici-types through @types/node without declaring it.
+# A hoisted layout keeps these fetch types resolvable, including with global-store user settings.
+linker = "hoisted"

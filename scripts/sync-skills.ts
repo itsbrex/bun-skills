@@ -23,6 +23,7 @@ import {
   renderSkillFile,
 } from "./lib/docs";
 import { loadGuidesPage, renderGuidesIndexBody } from "./lib/guides";
+import { loadPluginConfig, syncPlugins } from "./lib/plugins";
 
 // Keyed by docs path. Pages whose `Bun <title>` name is over 64 characters or collides with another page's.
 const NAME_OVERRIDES: Record<string, string> = {
@@ -62,6 +63,9 @@ const warnings: string[] = [];
 
 // A leftover report from an earlier run must not be mistaken for this run's result.
 await rm(REPORT_PATH, { force: true });
+
+// Fail before downloading or writing skills when shared metadata is invalid.
+await loadPluginConfig();
 
 let entries: DocEntry[];
 try {
@@ -122,6 +126,7 @@ function descriptionFor(entry: DocEntry): string {
 type Outcome = "created" | "updated" | "unchanged" | "failed";
 const results: Record<Outcome, string[]> = { created: [], updated: [], unchanged: [], failed: [] };
 const pathsByName = new Map<string, string[]>();
+const projectedSkills = new Map<string, string>();
 
 async function syncEntry(entry: DocEntry) {
   const name = nameFor(entry);
@@ -142,6 +147,7 @@ async function syncEntry(entry: DocEntry) {
     return;
   }
   if (!dryRun) await Bun.write(file, content);
+  else projectedSkills.set(entry.dir, content);
   results[exists ? "updated" : "created"].push(entry.dir);
 }
 
@@ -185,7 +191,12 @@ const pruned = args.prune && !pruneRefused && !dryRun;
 if (pruned) for (const dir of stale) await removeSkillDir(dir);
 
 for (const list of Object.values(results)) list.sort();
-const report = { dryRun, guidesSource: guidesPage.source, ...results, stale, pruned, warnings };
+const succeeded = results.failed.length === 0 && !pruneRefused;
+const plugins = succeeded ? await syncPlugins({
+  dryRun,
+  ...(dryRun ? { projection: { updated: projectedSkills, removed: args.prune ? stale : [] } } : {}),
+}) : undefined;
+const report = { dryRun, guidesSource: guidesPage.source, ...results, stale, pruned, warnings, plugins };
 await mkdir(CACHE_DIR, { recursive: true });
 await Bun.write(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
 
@@ -206,4 +217,7 @@ if (warnings.length > 0) console.warn(`warnings:\n  ${warnings.join("\n  ")}`);
 if (results.failed.length > 0) console.error(`failed:\n  ${results.failed.join("\n  ")}`);
 console.log(`report: ${REPORT_PATH}`);
 
-process.exitCode = results.failed.length > 0 || pruneRefused ? 1 : 0;
+process.exitCode = succeeded ? 0 : 1;
+if (plugins) {
+  console.log(`plugins: Claude + Codex ${plugins.version} · ${plugins.changed.length} files ${dryRun ? "would change" : "changed"}`);
+}

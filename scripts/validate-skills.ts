@@ -13,12 +13,12 @@ import { parseArgs } from "node:util";
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SKILL_NAME_LENGTH,
-  REPO_ROOT,
   SKILLS_DIR,
   errorMessage,
   loadDocIndex,
   parseSkillFile,
 } from "./lib/docs";
+import { validatePlugins } from "./lib/plugins";
 
 const { values: args } = parseArgs({
   args: Bun.argv.slice(2),
@@ -70,23 +70,7 @@ for (const dir of dirs) {
   else if (!body.trimStart().startsWith("#")) problems.push(`${dir}: body does not start with a markdown heading`);
 }
 
-// Plugin and marketplace manifests must parse, and every field the marketplace entry repeats must match plugin.json.
-const SHARED_MANIFEST_FIELDS = ["version", "description", "author", "homepage", "repository", "license", "keywords"];
-try {
-  const plugin = await Bun.file(`${REPO_ROOT}/.claude-plugin/plugin.json`).json();
-  const marketplace = await Bun.file(`${REPO_ROOT}/.claude-plugin/marketplace.json`).json();
-  const listed = marketplace.plugins?.find((entry: { name?: string }) => entry.name === plugin.name);
-  if (!listed) problems.push(`marketplace.json does not list plugin "${plugin.name}"`);
-  else {
-    for (const field of SHARED_MANIFEST_FIELDS) {
-      if (listed[field] !== undefined && !Bun.deepEquals(listed[field], plugin[field])) {
-        problems.push(`marketplace.json ${field} does not match plugin.json`);
-      }
-    }
-  }
-} catch (error) {
-  problems.push(`.claude-plugin manifests: ${errorMessage(error)}`);
-}
+problems.push(...await validatePlugins());
 
 let coverage = "skipped (--offline)";
 if (!args.offline) {

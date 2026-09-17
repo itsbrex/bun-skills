@@ -2,17 +2,23 @@
   "name": "bun-skills",
   "private": true,
   "type": "module",
-  "description": "Bun documentation converted to AI agent skills and packaged as a Claude Code plugin",
+  "description": "Bun documentation converted to AI agent skills and packaged as Claude Code and Codex plugins",
   "license": "MIT",
   "scripts": {
     "sync": "bun scripts/sync-skills.ts",
+    "sync:plugins": "bun scripts/sync-plugins.ts",
+    "plugin:links": "bun scripts/plugin-links.ts",
     "validate": "bun scripts/validate-skills.ts",
-    "validate:plugin": "claude plugin validate .claude-plugin/marketplace.json --strict && claude plugin validate .claude-plugin/plugin.json --strict && claude plugin validate skills",
-    "update": "bun scripts/sync-skills.ts && bun scripts/validate-skills.ts",
+    "validate:plugins": "bun scripts/validate-plugins.ts",
+    "validate:claude": "claude plugin validate .claude-plugin/marketplace.json --strict && claude plugin validate .claude-plugin/plugin.json --strict && claude plugin validate skills",
+    "validate:codex": "bun scripts/validate-codex.ts",
+    "validate:plugin": "bun run validate:plugins && bun run validate:claude && bun run validate:codex",
+    "update": "bun scripts/update.ts",
     "lightpanda:install": "bun scripts/ensure-lightpanda.ts",
     "lightpanda:upgrade": "bun scripts/ensure-lightpanda.ts --upgrade",
     "typecheck": "tsc --noEmit",
-    "postinstall": "bun scripts/ensure-lightpanda.ts --soft"
+    "test": "bun test scripts",
+    "postinstall": "bun scripts/sync-plugins.ts && bun scripts/ensure-lightpanda.ts --soft"
   },
   "devDependencies": {
     "@lightpanda/browser": "1.6.0",

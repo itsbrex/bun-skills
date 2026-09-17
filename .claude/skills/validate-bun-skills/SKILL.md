@@ -18,10 +18,10 @@ Check that `skills/` and the plugin manifests are correct before committing or p
 - Each file is exactly `---`, a YAML mapping, `---`, a blank line, then the body.
 - Frontmatter has a `name` (unique, 64 characters or fewer) and a `description` (1024 characters or fewer, without `<` or `>`).
 - The body is markdown that starts with a heading, not an HTML error page.
-- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` parse, the marketplace lists a plugin with the same `name`, and every field that entry repeats from `plugin.json` (version, description, author, homepage, repository, license, keywords) matches.
+- Both `.claude-plugin/` manifests, `.codex-plugin/plugin.json`, and `.agents/plugins/marketplace.json` match `plugin.config.json` and `.plugin-sync.json`. Versions, metadata, marketplace sources, and assets must all be current. Placeholder values, invalid URLs/prompts, missing assets, and paths outside the plugin are rejected.
 - Coverage: `skills/` has exactly one directory per page in https://bun.com/docs/llms.txt. `--offline` skips this network check.
 
-`bun run validate:plugin` runs Claude Code's validator on the marketplace and plugin manifests (with `--strict`) and on the `skills/` directory.
+`bun run validate:plugin` runs shared checks, Claude Code's strict manifest and skill validators, and Codex's native read-only marketplace/plugin loader. Both `claude` and `codex` CLIs are required. `bun run validate:plugins` runs the portable checks without either CLI.
 
 ## Steps
 
@@ -45,9 +45,8 @@ Check that `skills/` and the plugin manifests are correct before committing or p
 | `bun-...: body does not start with a markdown heading` | Open the page's markdown export. If Bun changed the export format on purpose, update the check in `scripts/validate-skills.ts`. Otherwise list it for the user as an upstream docs issue and leave the file as generated. |
 | `bun-...: missing SKILL.md` | If the path is in llms.txt, follow `sync-bun-skills`. Otherwise move the directory out with `trash`. |
 | `bun-...: directory name is not bun-<kebab-case>` | If it matches an llms.txt path, normalize names in `skillDirFor` (`scripts/lib/docs.ts`) and follow `sync-bun-skills` with `--prune`. Otherwise move it out with `trash`. |
-| `marketplace.json does not list plugin "..."` | Make `plugins[].name` in `.claude-plugin/marketplace.json` match `name` in `.claude-plugin/plugin.json`. |
-| `marketplace.json <field> does not match plugin.json` | Make that field in the `plugins[]` entry of `.claude-plugin/marketplace.json` identical to `.claude-plugin/plugin.json`. For `version`, set both to the intended release version. |
-| `.claude-plugin manifests: ...` | A manifest is missing or is invalid JSON. Fix the file named in the error. |
+| `<path> is stale or missing (run bun run sync:plugins)` | Run `bun run sync:plugins` to regenerate both plugins together. Edit only `plugin.config.json` for metadata changes. |
+| `plugins: ...` | Fix shared metadata or the missing/invalid asset named in the error, then regenerate. Restore `.plugin-sync.json` from the last release if corrupted; never delete it to suppress version checks. |
 
 Never fix a problem by editing a generated `skills/bun-*/SKILL.md` by hand; the next sync reverts it.
 

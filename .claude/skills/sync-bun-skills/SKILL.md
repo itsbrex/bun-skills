@@ -19,23 +19,24 @@ Regenerate `skills/bun-*/SKILL.md` from the live Bun docs, then validate and com
 3. Generate `bun-guides-index`. Category headings come from https://bun.com/guides rendered by the Lightpanda binary that `@lightpanda/browser` downloads to `~/.cache/lightpanda-node/lightpanda` (override with `LIGHTPANDA_EXECUTABLE_PATH`). If Lightpanda fails, the script reads the page with a plain fetch. If both fail, it keeps the existing index skill and reports it as failed.
 4. Rewrite `<tag>` in descriptions as `{tag}`. Truncate names over 64 characters and descriptions over 1024 characters at a word boundary, with a warning.
 5. Write only files whose content changed. Report directories absent from llms.txt as stale. `--prune` deletes them (with the `trash` CLI when installed), but refuses when stale directories exceed 10% of pages, because that signals broken llms.txt parsing.
-6. Write `.cache/sync-report.json` with `dryRun`, `guidesSource`, `created`, `updated`, `unchanged`, `failed`, `stale`, `pruned`, and `warnings`. The script deletes the old report first, so a missing report means the run crashed.
+6. After a successful sync, regenerate both plugins and marketplaces from `plugin.config.json`. `.plugin-sync.json` fingerprints all packaged skills, metadata, and referenced assets; skill membership changes bump the minor version and content changes bump the patch version. Dry runs preview the same version against downloaded content. Failed syncs keep the previous release fingerprint so retries detect partial changes.
+7. Write `.cache/sync-report.json` with `dryRun`, `guidesSource`, `created`, `updated`, `unchanged`, `failed`, `stale`, `pruned`, `warnings`, and `plugins` (version, skill count, changed generated paths). The script deletes the old report first, so a missing report means the run crashed.
 
 ## Steps
 
 Append `--no-browser` and `--concurrency N` from `$ARGUMENTS` to every `bun run sync` command below.
 
 1. Run `git status --short`. If unrelated uncommitted changes exist, stop and ask.
-2. Run `bun install`. Postinstall downloads Lightpanda when missing.
+2. Run `bun install`. Postinstall regenerates both plugins and downloads Lightpanda when missing. For a read-only preview, use `bun install --ignore-scripts` instead.
 3. Preview with `bun run sync --dry-run`. Read the printed summary and `.cache/sync-report.json`. Confirm `guidesSource` is `lightpanda` (or `fetch` with `--no-browser`). If `$ARGUMENTS` contains `--dry-run` or the user only asked to check or preview, report the results and stop.
-4. If `created`, `updated`, `stale`, `failed`, and `warnings` are all empty, report that the skills are current and stop. Do not bump the version or commit.
+4. If `created`, `updated`, `stale`, `failed`, `warnings`, and `plugins.changed` are all empty, report that the skills and both plugins are current and stop. Do not bump the version or commit.
 5. Resolve warnings and failures with the tables below. After changing `scripts/`, run `bun run typecheck` and repeat step 3.
 6. Apply with `bun run sync`, adding `--prune` when the preview listed stale directories. Before pruning, spot-check one stale directory: search llms.txt for its last word (`curl -s https://bun.com/docs/llms.txt | grep -i '<word>'`). If the page is still listed, llms.txt parsing is broken; fix `LLMS_ENTRY_RE` and do not prune.
 7. Follow the `validate-bun-skills` skill: `bun run validate` must print `problems: 0` and `bun run validate:plugin` must pass.
 8. Review `git status --short` and `git diff --stat`. Open one created and one updated skill to spot-check the content.
 9. Update the `**319 skills**` and `all 190 guides` counts in `README.md` when skills or guides were added or removed.
-10. Bump `version` in `.claude-plugin/plugin.json` and the matching plugin entry in `.claude-plugin/marketplace.json`: minor for added or removed skills, patch for content-only refreshes.
-11. Commit in logical groups: script changes, removed skills, new skills, guides index, refreshed skills, then docs and the version bump.
+10. Verify the automatic version in `plugin.config.json`, `.plugin-sync.json`, and both generated plugin manifests. Do not bump or edit generated manifests by hand. For metadata-only changes, edit `plugin.config.json` and run `bun run sync:plugins`. Include all four generated manifests and the fingerprint file in the release commit.
+11. Commit independent script or documentation changes separately when useful, but keep changed packaged skills/assets, shared config, release fingerprint, and all four generated manifests in one coherent release commit. Do not split content from its version/fingerprint update. Follow the README release checklist.
 
 ## Warnings
 
@@ -74,7 +75,7 @@ Failed pages keep their existing `SKILL.md`, and the command exits with code 1.
 | `--no-browser` | Skip Lightpanda and read the guides page with a plain fetch |
 | `--concurrency N` | Parallel downloads, default 12 |
 
-`bun run update` runs sync and then validate, without flags. Validate does not run when sync exits with code 1.
+`bun run update` forwards all sync flags and then runs validation. Validation does not run after a dry run or failed sync.
 
 ## Report back
 

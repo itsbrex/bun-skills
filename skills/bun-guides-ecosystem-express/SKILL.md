@@ -5,22 +5,19 @@ description: Build an HTTP server using Express and Bun
 
 # Build an HTTP server using Express and Bun
 
-Express and other major Node.js HTTP libraries should work out of the box. Bun implements the [`node:http`](https://nodejs.org/api/http.html) and [`node:https`](https://nodejs.org/api/https.html) modules that these libraries rely on.
+Express and other major Node.js HTTP libraries should work in Bun without changes. Bun implements the [`node:http`](https://nodejs.org/api/http.html) and [`node:https`](https://nodejs.org/api/https.html) modules that these libraries rely on.
 
-<Note>
-  Refer to the [Runtime > Node.js APIs](/runtime/nodejs-compat#node-http) page for more detailed compatibility
-  information.
-</Note>
+<Note>See [Node.js compatibility](/runtime/nodejs-compat#node-http) for details.</Note>
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun add express
 ```
 
-***
+---
 
-To define a simple HTTP route and start a server with Express:
+To define an HTTP route and start a server with Express:
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 import express from "express";
 
 const app = express();
@@ -35,10 +32,10 @@ app.listen(port, () => {
 });
 ```
 
-***
+---
 
 To start the server on `localhost`:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun server.ts
 ```

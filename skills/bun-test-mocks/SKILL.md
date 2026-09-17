@@ -7,13 +7,13 @@ description: Learn how to create and use mock functions, spies, and module mocks
 
 > Learn how to create and use mock functions, spies, and module mocks in Bun tests
 
-Mocking is essential for testing by allowing you to replace dependencies with controlled implementations. Bun provides comprehensive mocking capabilities including function mocks, spies, and module mocks.
+Mocking replaces a dependency with a controlled implementation. Bun supports function mocks, spies, and module mocks.
 
 ## Basic Function Mocks
 
 Create mocks with the `mock` function.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 const random = mock(() => Math.random());
@@ -28,9 +28,9 @@ test("random", () => {
 
 ### Jest Compatibility
 
-Alternatively, you can use the `jest.fn()` function, as in Jest. It behaves identically.
+You can also use `jest.fn()`, as in Jest. It behaves identically.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, jest } from "bun:test";
 
 const random = jest.fn(() => Math.random());
@@ -45,9 +45,9 @@ test("random", () => {
 
 ## Mock Function Properties
 
-The result of `mock()` is a new function that's been decorated with some additional properties.
+`mock()` returns a new function decorated with additional properties.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { mock } from "bun:test";
 
 const random = mock((multiplier: number) => multiplier * Math.random());
@@ -67,14 +67,14 @@ random.mock.results;
 
 ### Available Properties and Methods
 
-The following properties and methods are implemented on mock functions:
+Mock functions implement the following properties and methods:
 
 | Property/Method                           | Description                                    |
 | ----------------------------------------- | ---------------------------------------------- |
 | `mockFn.getMockName()`                    | Returns the mock name                          |
 | `mockFn.mock.calls`                       | Array of call arguments for each invocation    |
 | `mockFn.mock.results`                     | Array of return values for each invocation     |
-| `mockFn.mock.instances`                   | Array of `this` contexts for each invocation   |
+| `mockFn.mock.instances`                   | Array of instances created with `new`          |
 | `mockFn.mock.contexts`                    | Array of `this` contexts for each invocation   |
 | `mockFn.mock.lastCall`                    | Arguments of the most recent call              |
 | `mockFn.mockClear()`                      | Clears call history                            |
@@ -96,7 +96,7 @@ The following properties and methods are implemented on mock functions:
 
 #### Basic Mock Usage
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 test("mock function behavior", () => {
@@ -126,7 +126,7 @@ test("mock function behavior", () => {
 
 #### Dynamic Mock Implementations
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 test("dynamic mock implementations", () => {
@@ -146,7 +146,7 @@ test("dynamic mock implementations", () => {
 
 #### Async Mocks
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 test("async mock functions", async () => {
@@ -169,9 +169,9 @@ test("async mock functions", async () => {
 
 ## Spies with spyOn()
 
-It's possible to track calls to a function without replacing it with a mock. Use `spyOn()` to create a spy; these spies can be passed to `.toHaveBeenCalled()` and `.toHaveBeenCalledTimes()`.
+Use `spyOn()` to track calls to a function without replacing it with a mock. You can pass spies to `.toHaveBeenCalled()` and `.toHaveBeenCalledTimes()`.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, spyOn } from "bun:test";
 
 const ringo = {
@@ -192,8 +192,8 @@ test("spyon", () => {
 
 ### Advanced Spy Usage
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-import { test, expect, spyOn, afterEach } from "bun:test";
+```ts title="test.ts" icon="/icons/typescript.svg"
+import { test, expect, spyOn, afterEach, jest } from "bun:test";
 
 class UserService {
   async getUser(id: string) {
@@ -244,9 +244,9 @@ test("spy with mock implementation", async () => {
 
 ## Module Mocks with mock.module()
 
-Module mocking lets you override the behavior of a module. Use `mock.module(path: string, callback: () => Object)` to mock a module.
+Use `mock.module(path: string, callback: () => Object)` to override the behavior of a module.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 mock.module("./module", () => {
@@ -268,9 +268,9 @@ Like the rest of Bun, module mocks support both `import` and `require`.
 
 ### Overriding Already Imported Modules
 
-If you need to override a module that's already been imported, there's nothing special you need to do. Just call `mock.module()` and the module will be overridden.
+Calling `mock.module()` overrides the module even if it has already been imported.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 // The module we're going to mock is here:
@@ -296,11 +296,31 @@ test("mock.module", async () => {
 });
 ```
 
+When the factory returns a promise that is still pending, Bun updates the already-imported module once the promise settles. In that case `mock.module()` returns a promise that resolves after the update, and otherwise it returns `undefined`. `await mock.module(...)` inside a test or hook covers both. At the top level of a test file, Bun waits for pending module mocks before it runs the file's tests.
+
+```ts title="test.ts" icon="/icons/typescript.svg"
+import { test, expect, mock } from "bun:test";
+import { foo } from "./module";
+
+mock.module("./module", async () => {
+  const { default: fixture } = await import("./fixture.json");
+  return { foo: fixture.foo };
+});
+
+test("async factory", () => {
+  expect(foo).toBe("baz");
+});
+```
+
+```json title="fixture.json" icon="file-json"
+{ "foo": "baz" }
+```
+
 ### Hoisting & Preloading
 
-If you need to ensure a module is mocked before it's imported, you should use `--preload` to load your mocks before your tests run.
+To make sure a module is mocked before it's imported, use `--preload` to load your mocks before your tests run.
 
-```ts title="my-preload.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="my-preload.ts" icon="/icons/typescript.svg"
 import { mock } from "bun:test";
 
 mock.module("./module", () => {
@@ -310,13 +330,13 @@ mock.module("./module", () => {
 });
 ```
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun test --preload ./my-preload
 ```
 
-To make your life easier, you can put preload in your `bunfig.toml`:
+To avoid typing `--preload` every time you run tests, add it to your `bunfig.toml`:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [test]
 # Load these modules before running tests.
 preload = ["./my-preload"]
@@ -326,15 +346,13 @@ preload = ["./my-preload"]
 
 #### When to Use Preload
 
-**What happens if I mock a module that's already been imported?**
+Mocking a module that's already been imported updates the module cache, so anything that imports it gets the mocked version. Bun has already evaluated the original module, though, so its side effects have already happened.
 
-If you mock a module that's already been imported, the module will be updated in the module cache. This means that any modules that import the module will get the mocked version, BUT the original module will still have been evaluated. That means that any side effects from the original module will still have happened.
-
-If you want to prevent the original module from being evaluated, you should use `--preload` to load your mocks before your tests run.
+To prevent the original module from being evaluated at all, use `--preload` to load your mocks before your tests run.
 
 #### Practical Module Mock Examples
 
-```ts title="api-client.test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="api-client.test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock, beforeEach } from "bun:test";
 
 // Mock the API client module
@@ -358,7 +376,7 @@ test("user service with mocked API", async () => {
 
 #### Mocking External Dependencies
 
-```ts title="database.test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="database.test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 // Mock external database library
@@ -388,9 +406,9 @@ test("database operations", async () => {
 
 ### Clear All Mocks
 
-Reset all mock function state (calls, results, etc.) without restoring their original implementation:
+`mock.clearAllMocks()` resets the `.mock.calls`, `.mock.instances`, `.mock.contexts`, and `.mock.results` properties of every mock. Unlike `mock.restore()`, it does not restore the original implementation:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { expect, mock, test } from "bun:test";
 
 const random1 = mock(() => Math.random());
@@ -414,13 +432,32 @@ test("clearing all mocks", () => {
 });
 ```
 
-This resets the `.mock.calls`, `.mock.instances`, `.mock.contexts`, and `.mock.results` properties of all mocks, but unlike `mock.restore()`, it does not restore the original implementation.
+### Reset All Mocks
+
+`jest.resetAllMocks()` (and its `vi.resetAllMocks()` alias) calls `mockFn.mockReset()` on every mock. On top of what `clearAllMocks()` does, it drops the implementations set by `mockImplementation()`, `mockReturnValue()` and friends. It does not restore the original implementation of a spy:
+
+```ts title="test.ts" icon="/icons/typescript.svg"
+import { expect, jest, test } from "bun:test";
+
+const random = jest.fn(() => Math.random());
+
+test("resetting all mocks", () => {
+  random();
+  expect(random).toHaveBeenCalledTimes(1);
+
+  jest.resetAllMocks();
+
+  expect(random).toHaveBeenCalledTimes(0);
+  // unlike clearAllMocks(), the implementation is gone
+  expect(random()).toBeUndefined();
+});
+```
 
 ### Restore All Mocks
 
-Instead of manually restoring each mock individually with `mockFn.mockRestore()`, restore all mocks with one command by calling `mock.restore()`. Doing so does not reset the value of modules overridden with `mock.module()`.
+`mock.restore()` restores every mock at once, instead of calling `mockFn.mockRestore()` on each one. It does not reset modules overridden with `mock.module()`.
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { expect, mock, spyOn, test } from "bun:test";
 
 import * as fooModule from "./foo.ts";
@@ -455,13 +492,13 @@ test("foo, bar, baz", () => {
 });
 ```
 
-Using `mock.restore()` can reduce the amount of code in your tests by adding it to `afterEach` blocks in each test file or even in your test preload code.
+Call `mock.restore()` in an `afterEach` block, or in your test preload script, instead of repeating cleanup in every test.
 
 ## Vitest Compatibility
 
 For added compatibility with tests written for Vitest, Bun provides the `vi` object as an alias for parts of the Jest mocking API:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, vi } from "bun:test";
 
 // Using the 'vi' alias similar to Vitest
@@ -476,15 +513,14 @@ test("vitest compatibility", () => {
   // vi.spyOn
   // vi.mock
   // vi.restoreAllMocks
+  // vi.resetAllMocks
   // vi.clearAllMocks
 });
 ```
 
-This makes it easier to port tests from Vitest to Bun without having to rewrite all your mocks.
+You can port tests from Vitest without rewriting your mocks.
 
 ## Implementation Details
-
-Understanding how `mock.module()` works helps you use it more effectively:
 
 ### Cache Interaction
 
@@ -492,32 +528,32 @@ Module mocks interact with both ESM and CommonJS module caches.
 
 ### Lazy Evaluation
 
-The mock factory callback is only evaluated when the module is actually imported or required.
+Bun evaluates the mock factory callback only when the module is imported or required.
 
 ### Path Resolution
 
-Bun automatically resolves the module specifier as though you were doing an import, supporting:
+Bun resolves the module specifier the same way it resolves an `import`, supporting:
 
-* Relative paths (`'./module'`)
-* Absolute paths (`'/path/to/module'`)
-* Package names (`'lodash'`)
+- Relative paths (`'./module'`)
+- Absolute paths (`'/path/to/module'`)
+- Package names (`'lodash'`)
 
 ### Import Timing Effects
 
-* **When mocking before first import**: No side effects from the original module occur
-* **When mocking after import**: The original module's side effects have already happened
+- **When mocking before first import**: No side effects from the original module occur
+- **When mocking after import**: The original module's side effects have already happened
 
-For this reason, using `--preload` is recommended for mocks that need to prevent side effects.
+For this reason, use `--preload` for mocks that need to prevent side effects.
 
 ### Live Bindings
 
-Mocked ESM modules maintain live bindings, so changing the mock will update all existing imports.
+Mocked ESM modules maintain live bindings, so changing the mock updates all existing imports.
 
 ## Advanced Patterns
 
 ### Factory Functions
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { mock } from "bun:test";
 
 function createMockUser(overrides = {}) {
@@ -538,7 +574,7 @@ const mockUserService = {
 
 ### Conditional Mocking
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, mock } from "bun:test";
 
 const shouldUseMockApi = process.env.NODE_ENV === "test";
@@ -561,8 +597,8 @@ test("conditional API usage", async () => {
 
 ### Mock Cleanup Patterns
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-import { afterEach, beforeEach } from "bun:test";
+```ts title="test.ts" icon="/icons/typescript.svg"
+import { afterEach, beforeEach, mock } from "bun:test";
 
 beforeEach(() => {
   // Set up common mocks
@@ -574,7 +610,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  // Clean up all mocks
+  // Restore spies and clear call history; neither call resets the mock.module() override
   mock.restore();
   mock.clearAllMocks();
 });
@@ -584,7 +620,7 @@ afterEach(() => {
 
 ### Keep Mocks Simple
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Good: Simple, focused mock
 const mockUserApi = {
   getUser: mock(async id => ({ id, name: "Test User" })),
@@ -603,7 +639,7 @@ const complexMock = mock(input => {
 
 ### Use Type-Safe Mocks
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 interface UserService {
   getUser(id: string): Promise<User>;
   createUser(data: CreateUserData): Promise<User>;
@@ -617,7 +653,7 @@ const mockUserService: UserService = {
 
 ### Test Mock Behavior
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 test("service calls API correctly", async () => {
   const mockApi = { fetchUser: mock(async () => ({ id: "1" })) };
 
@@ -634,8 +670,8 @@ test("service calls API correctly", async () => {
 
 ### Auto-mocking
 
-`__mocks__` directory and auto-mocking are not supported yet. If this is blocking you from switching to Bun, please [file an issue](https://github.com/oven-sh/bun/issues).
+Bun does not support the `__mocks__` directory or auto-mocking. If this is blocking you from switching to Bun, [file an issue](https://github.com/oven-sh/bun/issues).
 
 ### ESM vs CommonJS
 
-Module mocks have different implementations for ESM and CommonJS modules. For ES Modules, Bun has added patches to JavaScriptCore that allow Bun to override export values at runtime and update live bindings recursively.
+Module mocks have different implementations for ESM and CommonJS modules. For ES modules, Bun patches JavaScriptCore so it can override export values at runtime and update live bindings recursively.

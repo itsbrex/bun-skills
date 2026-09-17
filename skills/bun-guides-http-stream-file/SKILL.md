@@ -5,19 +5,19 @@ description: Stream a file as an HTTP Response
 
 # Stream a file as an HTTP Response
 
-This snippet reads a file from disk using [`Bun.file()`](/runtime/file-io#reading-files-bun-file). This returns a `BunFile` instance, which can be passed directly into the `new Response` constructor.
+[`Bun.file()`](/runtime/file-io#reading-files-bun-file) accepts a path and returns a lazily-loaded `BunFile` instance, which you can pass directly to the `new Response` constructor.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 const path = "/path/to/file.txt";
 const file = Bun.file(path);
 const resp = new Response(file);
 ```
 
-***
+---
 
-The `Content-Type` is read from the file and automatically set on the `Response`.
+Bun determines the `Content-Type` from the file extension and sets it on the `Response`.
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 new Response(Bun.file("./package.json")).headers.get("Content-Type");
 // => application/json;charset=utf-8
 
@@ -31,11 +31,11 @@ new Response(Bun.file("./img.png")).headers.get("Content-Type");
 // => image/png
 ```
 
-***
+---
 
 Putting it all together with [`Bun.serve()`](/runtime/http/server).
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 // static file server
 Bun.serve({
   async fetch(req) {
@@ -46,6 +46,6 @@ Bun.serve({
 });
 ```
 
-***
+---
 
-See [Docs > API > File I/O](/runtime/file-io#writing-files-bun-write) for complete documentation of `Bun.write()`.
+See [`Bun.write()`](/runtime/file-io#writing-files-bun-write).

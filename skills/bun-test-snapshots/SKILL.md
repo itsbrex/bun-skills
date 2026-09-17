@@ -7,13 +7,13 @@ description: Learn how to use snapshot testing in Bun to save and compare output
 
 > Learn how to use snapshot testing in Bun to save and compare output between test runs
 
-Snapshot testing saves the output of a value and compares it against future test runs. This is particularly useful for UI components, complex objects, or any output that needs to remain consistent.
+Snapshot testing saves the output of a value and compares it against future test runs. Use it for UI components, complex objects, or any output that needs to remain consistent.
 
 ## Basic Snapshots
 
-Snapshot tests are written using the `.toMatchSnapshot()` matcher:
+Write snapshot tests with the `.toMatchSnapshot()` matcher:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("snap", () => {
@@ -21,13 +21,13 @@ test("snap", () => {
 });
 ```
 
-The first time this test is run, the argument to `expect` will be serialized and written to a special snapshot file in a `__snapshots__` directory alongside the test file.
+The first time this test runs, Bun serializes the argument to `expect` and writes it to a snapshot file in a `__snapshots__` directory alongside the test file.
 
 ### Snapshot Files
 
-After running the test above, Bun will create:
+After the first run, Bun creates:
 
-```text title="directory structure" icon="file-directory" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="directory structure" icon="file-directory"
 your-project/
 ├── snap.test.ts
 └── __snapshots__/
@@ -36,33 +36,29 @@ your-project/
 
 The snapshot file contains:
 
-```ts title="__snapshots__/snap.test.ts.snap" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
-// Bun Snapshot v1, https://bun.com/docs/test/snapshots
+```ts title="__snapshots__/snap.test.ts.snap" icon="file-code"
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`snap 1`] = `"foo"`;
 ```
 
-On future runs, the argument is compared against the snapshot on disk.
+On future runs, Bun compares the argument against the snapshot on disk.
 
 ## Updating Snapshots
 
-Snapshots can be re-generated with the following command:
+Regenerate snapshots with:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun test --update-snapshots
 ```
 
-This is useful when:
-
-* You've intentionally changed the output
-* You're adding new snapshot tests
-* The expected output has legitimately changed
+Do this when you've intentionally changed the output. In CI environments, Bun does not write new snapshots unless you pass this flag.
 
 ## Inline Snapshots
 
-For smaller values, you can use inline snapshots with `.toMatchInlineSnapshot()`. These snapshots are stored directly in your test file:
+For smaller values, use `.toMatchInlineSnapshot()`. Bun stores inline snapshots directly in your test file:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("inline snapshot", () => {
@@ -73,15 +69,15 @@ test("inline snapshot", () => {
 
 After the first run, Bun automatically updates your test file:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("inline snapshot", () => {
   expect({ hello: "world" }).toMatchInlineSnapshot(`
-{
-  "hello": "world",
-}
-`);
+    {
+      "hello": "world",
+    }
+  `);
 });
 ```
 
@@ -90,15 +86,13 @@ test("inline snapshot", () => {
 1. Write your test with `.toMatchInlineSnapshot()`
 2. Run the test once
 3. Bun automatically updates your test file with the snapshot
-4. On subsequent runs, the value will be compared against the inline snapshot
-
-Inline snapshots are particularly useful for small, simple values where it's helpful to see the expected output right in the test file.
+4. On subsequent runs, Bun compares the value against the inline snapshot
 
 ## Error Snapshots
 
-You can also snapshot error messages using `.toThrowErrorMatchingSnapshot()` and `.toThrowErrorMatchingInlineSnapshot()`:
+You can also snapshot error messages with `.toThrowErrorMatchingSnapshot()` and `.toThrowErrorMatchingInlineSnapshot()`:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("error snapshot", () => {
@@ -114,7 +108,7 @@ test("error snapshot", () => {
 
 After running, the inline version becomes:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 test("error snapshot", () => {
   expect(() => {
     throw new Error("Something went wrong");
@@ -132,7 +126,7 @@ test("error snapshot", () => {
 
 Snapshots work well with complex nested objects:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("complex object snapshot", () => {
@@ -158,7 +152,7 @@ test("complex object snapshot", () => {
 
 Arrays are also well-suited for snapshot testing:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("array snapshot", () => {
@@ -171,7 +165,7 @@ test("array snapshot", () => {
 
 Snapshot the output of functions:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 function generateReport(data: any[]) {
@@ -194,9 +188,9 @@ test("report generation", () => {
 
 ## React Component Snapshots
 
-Snapshots are particularly useful for React components:
+Snapshots work well for React components:
 
-```tsx title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```tsx title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 import { render } from "@testing-library/react";
 
@@ -217,7 +211,7 @@ test("Button component snapshots", () => {
 
 For values that change between test runs (like timestamps or IDs), use property matchers:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("snapshot with dynamic values", () => {
@@ -234,9 +228,9 @@ test("snapshot with dynamic values", () => {
 });
 ```
 
-The snapshot will store:
+The snapshot file stores:
 
-```txt title="snapshot file" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt title="snapshot file" icon="file-code"
 exports[`snapshot with dynamic values 1`] = `
 {
   "createdAt": Any<String>,
@@ -246,34 +240,11 @@ exports[`snapshot with dynamic values 1`] = `
 `;
 ```
 
-## Custom Serializers
-
-You can customize how objects are serialized in snapshots:
-
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
-import { test, expect } from "bun:test";
-
-// Custom serializer for Date objects
-expect.addSnapshotSerializer({
-  test: val => val instanceof Date,
-  serialize: val => `"${val.toISOString()}"`,
-});
-
-test("custom serializer", () => {
-  const event = {
-    name: "Meeting",
-    date: new Date("2024-01-01T10:00:00Z"),
-  };
-
-  expect(event).toMatchSnapshot();
-});
-```
-
 ## Best Practices
 
 ### Keep Snapshots Small
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Good: Focused snapshots
 test("user name formatting", () => {
   const formatted = formatUserName("john", "doe");
@@ -289,7 +260,7 @@ test("entire page render", () => {
 
 ### Use Descriptive Test Names
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Good: Clear what the snapshot represents
 test("formats currency with USD symbol", () => {
   expect(formatCurrency(99.99)).toMatchInlineSnapshot(`"$99.99"`);
@@ -303,7 +274,7 @@ test("format test", () => {
 
 ### Group Related Snapshots
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { describe, test, expect } from "bun:test";
 
 describe("Button component", () => {
@@ -326,7 +297,7 @@ describe("Button component", () => {
 
 ### Handle Dynamic Data
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Good: Normalize dynamic data
 test("API response format", () => {
   const response = {
@@ -359,7 +330,7 @@ test("API response with matchers", () => {
 
 When snapshots change, carefully review them:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # See what changed
 git diff __snapshots__/
 
@@ -371,22 +342,11 @@ git add __snapshots__/
 git commit -m "Update snapshots after UI changes"
 ```
 
-### Cleaning Up Unused Snapshots
-
-Bun will warn about unused snapshots:
-
-```txt title="warning" icon="warning" theme={"theme":{"light":"github-light","dark":"dracula"}}
-Warning: 1 unused snapshot found:
-  my-test.test.ts.snap: "old test that no longer exists 1"
-```
-
-Remove unused snapshots by deleting them from the snapshot files or by running tests with cleanup flags if available.
-
 ### Organizing Large Snapshot Files
 
 For large projects, consider organizing tests to keep snapshot files manageable:
 
-```text title="directory structure" icon="file-directory" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```text title="directory structure" icon="file-directory"
 tests/
 ├── components/
 │   ├── Button.test.tsx
@@ -402,30 +362,30 @@ tests/
 
 ### Snapshot Failures
 
-When snapshots fail, you'll see a diff:
+When snapshots fail, Bun shows a diff:
 
-```diff title="diff" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
-- Expected
-+ Received
-
-  Object {
+```diff title="diff" icon="file-code"
+  {
 -   "name": "John",
 +   "name": "Jane",
   }
+
+- Expected  - 1
++ Received  + 1
 ```
 
 Common causes:
 
-* Intentional changes (update with `--update-snapshots`)
-* Unintentional changes (fix the code)
-* Dynamic data (use property matchers)
-* Environment differences (normalize the data)
+- Intentional changes (update with `--update-snapshots`)
+- Unintentional changes (fix the code)
+- Dynamic data (use property matchers)
+- Environment differences (normalize the data)
 
 ### Platform Differences
 
 Be aware of platform-specific differences:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 // Paths might differ between Windows/Unix
 test("file operations", () => {
   const result = processFile("./test.txt");

@@ -5,18 +5,18 @@ description: Build an app with SolidStart and Bun
 
 # Build an app with SolidStart and Bun
 
-Initialize a SolidStart app with `create-solid`. You can specify the `--solidstart` flag to create a SolidStart project, and `--ts` for TypeScript support. When prompted for a template, select `basic` for a minimal starter app.
+Initialize a SolidStart app with `create-solid`. Pass the `--solidstart` flag to create a SolidStart project and `--ts` for TypeScript support. When prompted for a SolidStart version, select `2 (Stable)`. When prompted for a template, select `basic` for a minimal starter app.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun create solid my-app --solidstart --ts
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 ┌
- Create-Solid v0.6.11
+ Create-Solid v0.9.0
 │
-◇  Project Name
-│  my-app
+◇  Which version of SolidStart?
+│  2 (Stable)
 │
 ◇  Which template would you like to use?
 │  basic
@@ -32,32 +32,32 @@ bun create solid my-app --solidstart --ts
 ├────────────────────────╯
 ```
 
-***
+---
 
-As instructed by the `create-solid` CLI, install the dependencies.
+Install the dependencies.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 cd my-app
 bun install
 ```
 
 Then run the development server with `bun dev`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun dev
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-$ vinxi dev
-vinxi v0.5.8
-vinxi starting dev server
+```txt
+$ vite dev
 
-  ➜ Local:    http://localhost:3000/
-  ➜ Network:  use --host to expose
+  VITE v8.1.4  ready in 818 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
 ```
 
-Open [localhost:3000](http://localhost:3000). Any changes you make to `src/routes/index.tsx` will be hot-reloaded automatically.
+Open [localhost:3000](http://localhost:3000). The development server automatically hot-reloads changes you make to `src/routes/index.tsx`.
 
-***
+---
 
-Refer to the [SolidStart website](https://docs.solidjs.com/solid-start) for complete framework documentation.
+See the [SolidStart docs](https://docs.solidjs.com/solid-start) to learn more.

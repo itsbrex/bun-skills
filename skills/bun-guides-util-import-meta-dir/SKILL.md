@@ -5,12 +5,12 @@ description: Get the directory of the current file
 
 # Get the directory of the current file
 
-Bun provides a handful of module-specific utilities on the [`import.meta`](/runtime/module-resolution#import-meta) object.
+Bun provides a handful of module-specific utilities on the [`import.meta`](/runtime/module-resolution#import-meta) object. Use `import.meta.dir` to retrieve the absolute path to the directory containing the current file.
 
-```ts /a/b/c.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts /a/b/c.ts icon="/icons/typescript.svg"
 import.meta.dir; // => "/a/b"
 ```
 
-***
+---
 
-See [Docs > API > import.meta](/runtime/module-resolution#import-meta) for complete documentation.
+See [`import.meta`](/runtime/module-resolution#import-meta).

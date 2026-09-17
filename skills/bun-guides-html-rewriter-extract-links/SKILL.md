@@ -7,9 +7,9 @@ description: Extract links from a webpage using HTMLRewriter
 
 ## Extract links from a webpage
 
-Bun's [HTMLRewriter](/runtime/html-rewriter) API can be used to efficiently extract links from HTML content. It works by chaining together CSS selectors to match the elements, text, and attributes you want to process. This is a simple example of how to extract links from a webpage. You can pass `.transform` a `Response`, `Blob`, or `string`.
+Bun's [HTMLRewriter](/runtime/html-rewriter) API extracts links from HTML. Chain CSS selectors to match the elements, text, and attributes you want to process. Then pass `.transform` a `Response`, `ArrayBuffer`, or `string`.
 
-```ts extract-links.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts extract-links.ts icon="/icons/typescript.svg"
 async function extractLinks(url: string) {
   const links = new Set<string>();
   const response = await fetch(url);
@@ -32,13 +32,14 @@ async function extractLinks(url: string) {
 await extractLinks("https://bun.com");
 ```
 
-***
+---
 
 ## Convert relative URLs to absolute
 
-When scraping websites, you often want to convert relative URLs (like `/docs`) to absolute URLs. Here's how to handle URL resolution:
+When scraping websites, you often want to convert relative URLs (like `/docs`) to absolute URLs:
 
-```ts extract-links.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+{/* prettier-ignore */}
+```ts extract-links.ts icon="/icons/typescript.svg"
 async function extractLinksFromURL(url: string) {
   const response = await fetch(url);
   const links = new Set<string>();
@@ -66,6 +67,6 @@ async function extractLinksFromURL(url: string) {
 const websiteLinks = await extractLinksFromURL("https://example.com");
 ```
 
-***
+---
 
-See [Docs > API > HTMLRewriter](/runtime/html-rewriter) for complete documentation on HTML transformation with Bun.
+See [`HTMLRewriter`](/runtime/html-rewriter).

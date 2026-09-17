@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "bun-skills",
+  "version": "1.1.0",
+  "description": "Bun documentation as agent skills for the runtime, bundler, test runner, package manager, and guides, synced from bun.com/docs/llms.txt.",
+  "author": {
+    "name": "Brian Roach",
+    "url": "https://github.com/itsbrex"
+  },
+  "homepage": "https://github.com/itsbrex/bun-skills#readme",
+  "repository": "https://github.com/itsbrex/bun-skills",
+  "license": "MIT",
+  "keywords": [
+    "bun",
+    "javascript",
+    "typescript",
+    "runtime",
+    "bundler",
+    "test-runner",
+    "package-manager",
+    "documentation",
+    "agent-skills",
+    "claude-code",
+    "codex"
+  ],
+  "displayName": "Bun Skills",
+  "skills": "./skills/"
+}

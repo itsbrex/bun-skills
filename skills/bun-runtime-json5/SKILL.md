@@ -9,17 +9,17 @@ description: Use Bun's built-in support for JSON5 files through both runtime API
 
 In Bun, JSON5 is a first-class citizen alongside JSON, TOML, and YAML. You can:
 
-* Parse and stringify JSON5 with `Bun.JSON5.parse` and `Bun.JSON5.stringify`
-* `import` & `require` JSON5 files as modules at runtime (including hot reloading & watch mode support)
-* `import` & `require` JSON5 files in frontend apps via Bun's bundler
+- Parse and stringify JSON5 with `Bun.JSON5.parse` and `Bun.JSON5.stringify`
+- `import` & `require` JSON5 files as modules at runtime (including hot reloading & watch mode support)
+- `import` & `require` JSON5 files in frontend apps with Bun's bundler
 
-***
+---
 
 ## Conformance
 
-Bun's JSON5 parser passes 100% of the [official JSON5 test suite](https://github.com/json5/json5-tests). The parser is written in Zig for optimal performance. You can view our [translated test suite](https://github.com/oven-sh/bun/blob/main/test/js/bun/json5/json5-test-suite.test.ts) to see every test case.
+Bun's JSON5 parser is written in Rust and passes 100% of the [official JSON5 test suite](https://github.com/json5/json5-tests). The [translated test suite](https://github.com/oven-sh/bun/blob/main/test/js/bun/json5/json5-test-suite.test.ts) lists every test case.
 
-***
+---
 
 ## Runtime API
 
@@ -27,7 +27,7 @@ Bun's JSON5 parser passes 100% of the [official JSON5 test suite](https://github
 
 Parse a JSON5 string into a JavaScript value.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 import { JSON5 } from "bun";
 
 const data = JSON5.parse(`{
@@ -53,17 +53,17 @@ console.log(data);
 
 JSON5 is a superset of JSON based on ECMAScript 5.1 syntax. It supports:
 
-* **Comments**: single-line (`//`) and multi-line (`/* */`)
-* **Trailing commas**: in objects and arrays
-* **Unquoted keys**: valid ECMAScript 5.1 identifiers can be used as keys
-* **Single-quoted strings**: in addition to double-quoted strings
-* **Multi-line strings**: using backslash line continuations
-* **Hex numbers**: `0xFF`
-* **Leading & trailing decimal points**: `.5` and `5.`
-* **Infinity and NaN**: positive and negative
-* **Explicit plus sign**: `+42`
+- **Comments**: single-line (`//`) and multi-line (`/* */`)
+- **Trailing commas**: in objects and arrays
+- **Unquoted keys**: any valid ECMAScript 5.1 identifier
+- **Single-quoted strings**: in addition to double-quoted strings
+- **Multi-line strings**: using backslash line continuations
+- **Hex numbers**: `0xFF`
+- **Leading & trailing decimal points**: `.5` and `5.`
+- **Infinity and NaN**: positive and negative
+- **Explicit plus sign**: `+42`
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const data = JSON5.parse(`{
   // Unquoted keys
   unquoted: 'keys work',
@@ -91,7 +91,7 @@ line 2',
 
 `Bun.JSON5.parse()` throws a `SyntaxError` if the input is invalid JSON5:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 try {
   JSON5.parse("{invalid}");
 } catch (error) {
@@ -103,7 +103,7 @@ try {
 
 Stringify a JavaScript value to a JSON5 string.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 import { JSON5 } from "bun";
 
 const str = JSON5.stringify({ name: "my-app", version: "1.0.0" });
@@ -115,7 +115,7 @@ console.log(str);
 
 Pass a `space` argument to format the output with indentation:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const pretty = JSON5.stringify(
   {
     name: "my-app",
@@ -137,9 +137,9 @@ console.log(pretty);
 // }
 ```
 
-The `space` argument can be a number (number of spaces) or a string (used as the indent character):
+The `space` argument can be a number (number of spaces) or a string (used as the indent string for each level):
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 // Tab indentation
 JSON5.stringify(data, null, "\t");
 ```
@@ -148,12 +148,12 @@ JSON5.stringify(data, null, "\t");
 
 Unlike `JSON.stringify`, `JSON5.stringify` preserves special numeric values:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 JSON5.stringify({ inf: Infinity, ninf: -Infinity, nan: NaN });
 // {inf:Infinity,ninf:-Infinity,nan:NaN}
 ```
 
-***
+---
 
 ## Module Import
 
@@ -161,7 +161,7 @@ JSON5.stringify({ inf: Infinity, ninf: -Infinity, nan: NaN });
 
 You can import JSON5 files directly as ES modules:
 
-```json5 config.json5 theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json5 config.json5
 {
   // Database configuration
   database: {
@@ -180,7 +180,7 @@ You can import JSON5 files directly as ES modules:
 
 #### Default Import
 
-```ts app.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts app.ts icon="/icons/typescript.svg"
 import config from "./config.json5";
 
 console.log(config.database.host); // "localhost"
@@ -191,7 +191,7 @@ console.log(config.features.auth); // true
 
 You can destructure top-level properties as named imports:
 
-```ts app.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts app.ts icon="/icons/typescript.svg"
 import { database, features } from "./config.json5";
 
 console.log(database.host); // "localhost"
@@ -200,9 +200,9 @@ console.log(features.rateLimit); // true
 
 ### CommonJS
 
-JSON5 files can also be required in CommonJS:
+You can also `require` JSON5 files in CommonJS:
 
-```ts app.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts app.ts icon="/icons/typescript.svg"
 const config = require("./config.json5");
 console.log(config.database.name); // "myapp"
 
@@ -210,13 +210,13 @@ console.log(config.database.name); // "myapp"
 const { database, features } = require("./config.json5");
 ```
 
-***
+---
 
 ## Hot Reloading with JSON5
 
-When you run your application with `bun --hot`, changes to JSON5 files are automatically detected and reloaded:
+When you run your application with `bun --hot`, Bun reloads JSON5 files when they change:
 
-```json5 config.json5 theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json5 config.json5
 {
   server: {
     port: 3000,
@@ -229,7 +229,7 @@ When you run your application with `bun --hot`, changes to JSON5 files are autom
 }
 ```
 
-```ts server.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts server.ts icon="/icons/typescript.svg"
 import { server, features } from "./config.json5";
 
 Bun.serve({
@@ -246,30 +246,30 @@ Bun.serve({
 
 Run with hot reloading:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun --hot server.ts
 ```
 
-***
+---
 
 ## Bundler Integration
 
-When you import JSON5 files and bundle with Bun, the JSON5 is parsed at build time and included as a JavaScript module:
+When you bundle with Bun, the bundler parses imported JSON5 files at build time and includes them as JavaScript modules:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun build app.ts --outdir=dist
 ```
 
-This means:
+Parsing at build time means:
 
-* Zero runtime JSON5 parsing overhead in production
-* Smaller bundle sizes
-* Tree-shaking support for unused properties (named imports)
+- Zero runtime JSON5 parsing overhead in production
+- Smaller bundle sizes
+- Tree shaking of unused properties (named imports)
 
 ### Dynamic Imports
 
-JSON5 files can be dynamically imported:
+You can import JSON5 files dynamically:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
-const config = await import("./config.json5");
+```ts
+const { default: config } = await import("./config.json5");
 ```

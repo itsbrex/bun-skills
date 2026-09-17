@@ -1,42 +1,62 @@
 ---
 name: Bun bun update
-description: Update dependencies to latest versions
+description: Update dependencies to the newest versions their ranges allow
 ---
 
 # bun update
 
-> Update dependencies to latest versions
+> Update dependencies to the newest versions their ranges allow
 
 <Note>To upgrade your Bun CLI version, see [`bun upgrade`](/installation#upgrading).</Note>
 
-To update all dependencies to the latest version:
+`bun update` (alias `bun up`) updates every dependency, direct and transitive, to the newest version allowed by the ranges that request it. It then rewrites `package.json` and `bun.lock`. To ignore your declared ranges, use [`--latest`](#--latest).
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun update
 ```
 
-To update a specific dependency to the latest version:
+To update specific packages, pass their names. Names can be glob patterns, and `!` excludes:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun update [package]
+```sh terminal icon="terminal"
+bun update zod
+bun update jquery@3            # move the package.json entry to the newest 3.x
+bun update '@types/*'
+bun update '@babel/*' '!@babel/core'
 ```
+
+`bun update <package>` updates `<package>` everywhere it appears in `bun.lock` and leaves everything else alone. This works for transitive dependencies too — `bun update caniuse-lite` picks up a nested fix without adding it to your `package.json`. A name that isn't in `bun.lock` is an error.
+
+Updated packages appear in the install summary as `↑ name old → new`, with `(v3.0.0 available)` when a newer major is out of range. Use `--dry-run` to preview.
+
+### How `package.json` is rewritten
+
+- `^1.1.0` → `^1.2.0`, `~1.1.0` → `~1.1.5`. Bun preserves the operator. With [`install.exact`](/runtime/bunfig#install-exact) or `--exact`, Bun writes an exact version instead.
+- Exact pins, dist-tags (`"latest"`, `"next"`), and other range forms (`*`, `1.x`, `>=1.0.0`) are left as written; only `bun.lock` moves. `--latest` rewrites them.
+- Bun never rewrites `catalog:` references; it updates the catalog entry in the root `package.json` instead.
+- `--no-save` updates `node_modules` only, leaving `package.json` and `bun.lock` untouched.
+
+### What is held back
+
+- Bun never widens ranges. A package that depends on `foo@^1.0.0` never gets `foo@2.x`.
+- Versions in `patchedDependencies` stay put as long as their range allows. Bun reports them as `kept name@version (patched, v1.2.3 available)`. `--latest` and [`bun audit fix`](/pm/cli/audit#bun-audit-fix) do move them; re-create the patch with [`bun patch`](/pm/cli/patch) afterwards.
+- If a registry request for a transitive package fails, that package keeps its locked version and Bun prints a warning. A failed request for a direct dependency is an error.
 
 ## `--interactive`
 
-For a more controlled update experience, use the `--interactive` flag to select which packages to update:
+Use the `--interactive` flag to choose which packages to update:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun update --interactive
 bun update -i
 ```
 
-This launches an interactive terminal interface that shows all outdated packages with their current and target versions. You can then select which packages to update.
+`--interactive` opens a terminal interface listing every outdated direct dependency. Bun updates the packages you select as if you had run `bun update <name> ...`; everything else keeps its locked version.
 
 ### Interactive Interface
 
 The interface displays packages grouped by dependency type:
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 ? Select packages to update - Space to toggle, Enter to confirm, a to select all, n to select none, i to invert, l to toggle latest
 
   dependencies                Current  Target   Latest
@@ -53,80 +73,115 @@ The interface displays packages grouped by dependency type:
 
 **Sections:**
 
-* Packages are grouped under section headers: `dependencies`, `devDependencies`, `peerDependencies`, `optionalDependencies`
-* Each section shows column headers aligned with the package data
+- Packages are grouped under section headers: `dependencies`, `devDependencies`, `peerDependencies`, `optionalDependencies`
+- Each section shows column headers aligned with the package data
 
 **Columns:**
 
-* **Package**: Package name (may have suffix like ` dev`, ` peer`, ` optional` for clarity)
-* **Current**: Currently installed version
-* **Target**: Version that would be installed (respects semver constraints)
-* **Latest**: Latest available version
+- **Package**: Package name (may have a suffix such as ` dev`, ` peer`, or ` optional`)
+- **Current**: Currently installed version
+- **Target**: Version that would be installed (respects semver constraints)
+- **Latest**: Latest available version
 
 ### Keyboard Controls
 
 **Selection:**
 
-* **Space**: Toggle package selection
-* **Enter**: Confirm selections and update
-* **a/A**: Select all packages
-* **n/N**: Select none
-* **i/I**: Invert selection
+- **Space**: Toggle package selection
+- **Enter**: Confirm selections and update
+- **a/A**: Select all packages
+- **n/N**: Select none
+- **i/I**: Invert selection
 
 **Navigation:**
 
-* **↑/↓ Arrow keys** or **j/k**: Move cursor
-* **l/L**: Toggle between target and latest version for current package
+- **↑/↓ Arrow keys** or **j/k**: Move cursor
+- **l/L**: Toggle between target and latest version for current package
 
 **Exit:**
 
-* **Ctrl+C** or **Ctrl+D**: Cancel without updating
+- **Ctrl+C** or **Ctrl+D**: Cancel without updating
 
 ### Visual Indicators
 
-* **☑** Selected packages (will be updated)
-* **□** Unselected packages
-* **>** Current cursor position
-* **Colors**: Red (major), yellow (minor), green (patch) version changes
-* **Underlined**: Currently selected update target
+- **■** Selected packages (will be updated)
+- **□** Unselected packages
+- **❯** Current cursor position
+- **Colors**: Red (major), yellow (minor), green (patch) version changes
+- **Underlined**: Currently selected update target
 
 ### Package Grouping
 
 Packages are organized in sections by dependency type:
 
-* **dependencies** - Regular runtime dependencies
-* **devDependencies** - Development dependencies
-* **peerDependencies** - Peer dependencies
-* **optionalDependencies** - Optional dependencies
+- **dependencies** - Regular runtime dependencies
+- **devDependencies** - Development dependencies
+- **peerDependencies** - Peer dependencies
+- **optionalDependencies** - Optional dependencies
 
-Within each section, individual packages may have additional suffixes (` dev`, ` peer`, ` optional`) for extra clarity.
+Within each section, individual packages may have a suffix (` dev`, ` peer`, ` optional`).
 
-## `--recursive`
+## `--recursive` and `--filter`
 
-Use the `--recursive` flag with `--interactive` to update dependencies across all workspaces in a monorepo:
+In a monorepo, `bun update` only rewrites the `package.json` of the workspace you run it in. From the root, it still updates the transitive dependencies of every workspace in `bun.lock`.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun update --interactive --recursive
+- `--recursive` (`-r`) updates every workspace's `package.json`.
+- `--filter <pattern>` (`-F`) updates only the matching workspaces, using the [filter syntax](/pm/filter). As with `bun install --filter`, Bun links only the selected workspaces afterwards.
+
+Both combine with package names, `--latest`, `--dry-run`, and `--interactive` (which adds a "Workspace" column).
+
+```sh terminal icon="terminal"
+bun update --recursive
+bun update --filter './packages/*'
 bun update -i -r
+bun update zod -r
+bun update zod --filter '...^ui'
 ```
 
-This displays an additional "Workspace" column showing which workspace each dependency belongs to.
+## `--dev`, `--prod`, `--no-optional`
+
+Restrict which `package.json` entries Bun updates:
+
+- `--dev` (`-D`) updates `devDependencies` only.
+- `--prod` (`-P`) updates `dependencies` and `optionalDependencies` only.
+- `--no-optional` skips `optionalDependencies`.
+
+They combine with names, patterns, `--latest`, and `--interactive`.
+
+These flags only select what to update — `bun update --prod` still installs `devDependencies`.
+
+```sh terminal icon="terminal"
+bun update --dev
+bun update --prod --latest
+bun update -D '@types/*'
+bun update -i --prod
+```
+
+## `--global`
+
+`bun update -g` updates packages installed with `bun add -g`:
+
+```sh terminal icon="terminal"
+bun update -g
+bun update -g typescript
+```
 
 ## `--latest`
 
-By default, `bun update` will update to the latest version of a dependency that satisfies the version range specified in your `package.json`.
+By default, `bun update` updates each dependency to the latest version that satisfies the version range in your `package.json`.
 
-To update to the latest version, regardless of if it's compatible with the current version range, use the `--latest` flag:
+To update direct dependencies to the latest version regardless of the declared range, use `--latest` (`-L`). Bun rewrites the `package.json` entry to a range of the same style on the new version. Transitive dependencies still respect the ranges their dependents declare. Bun does not downgrade a dependency that is already ahead of `latest` (e.g. a prerelease).
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun update --latest
+bun update -L
 ```
 
-In interactive mode, you can toggle individual packages between their target version (respecting semver) and latest version using the **l** key.
+In interactive mode, press **l** to toggle a package between its target version (respecting semver) and the latest version.
 
 For example, with the following `package.json`:
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "dependencies": {
     "react": "^17.0.2"
@@ -134,31 +189,41 @@ For example, with the following `package.json`:
 }
 ```
 
-* `bun update` would update to a version that matches `17.x`.
-* `bun update --latest` would update to a version that matches `18.x` or later.
+- `bun update` would update to a version that matches `17.x`.
+- `bun update --latest` would update to a version that matches `18.x` or later.
 
-***
+---
 
 ## CLI Usage
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun update <package> <version>
+```bash terminal icon="terminal"
+bun update [<name>[@<version>] | <pattern>]...
+bun up
 ```
 
 ### Update Strategy
 
 <ParamField path="--force" type="boolean">
-  Always request the latest versions from the registry & reinstall all dependencies. Alias: <code>-f</code>
+  Always request the latest versions from the registry &amp; reinstall all dependencies. Alias: <code>-f</code>
 </ParamField>
 
 <ParamField path="--latest" type="boolean">
-  Update packages to their latest versions
+  Update packages to their latest versions. Alias: <code>-L</code>
 </ParamField>
 
 ### Dependency Scope
 
-<ParamField path="--production" type="boolean">
-  Don't install devDependencies. Alias: <code>-p</code>
+<ParamField path="--dev" type="boolean">
+  Only update <code>devDependencies</code>. Alias: <code>-D</code>
+</ParamField>
+
+<ParamField path="--prod" type="boolean">
+  Only update <code>dependencies</code> and <code>optionalDependencies</code>. Aliases: <code>-P</code>,{" "}
+  <code>--production</code>
+</ParamField>
+
+<ParamField path="--no-optional" type="boolean">
+  Don't update <code>optionalDependencies</code>
 </ParamField>
 
 <ParamField path="--global" type="boolean">
@@ -216,7 +281,7 @@ bun update <package> <version>
 ### Caching
 
 <ParamField path="--cache-dir" type="string">
-  Store & load cached data from a specific directory path
+  Store &amp; load cached data from a specific directory path
 </ParamField>
 
 <ParamField path="--no-cache" type="boolean">
@@ -244,11 +309,11 @@ bun update <package> <version>
 ### Script Execution
 
 <ParamField path="--ignore-scripts" type="boolean">
-  Skip lifecycle scripts in the project's <code>package.json</code> (dependency scripts are never run)
+  Skip lifecycle scripts for all packages, including the project's <code>package.json</code> and trusted dependencies
 </ParamField>
 
-<ParamField path="--concurrent-scripts" type="number" default="5">
-  Maximum number of concurrent jobs for lifecycle scripts (default 5)
+<ParamField path="--concurrent-scripts" type="number">
+  Maximum number of concurrent jobs for lifecycle scripts (default: 2x CPU cores)
 </ParamField>
 
 ### Installation Controls
@@ -261,9 +326,9 @@ bun update <package> <version>
   Add to <code>trustedDependencies</code> in the project's <code>package.json</code> and install the package(s)
 </ParamField>
 
-<ParamField path="--backend" type="string" default="clonefile">
-  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default),{" "}
-  <code>hardlink</code>, <code>symlink</code>, <code>copyfile</code>
+<ParamField path="--backend" type="string">
+  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default on
+  macOS), <code>hardlink</code> (default on Linux and Windows), <code>symlink</code>, <code>copyfile</code>
 </ParamField>
 
 ### General & Environment
@@ -273,7 +338,8 @@ bun update <package> <version>
 </ParamField>
 
 <ParamField path="--dry-run" type="boolean">
-  Don't install anything
+  Resolve updates but don't install packages, update <code>package.json</code>, or save a lockfile (the project's own
+  lifecycle scripts still run)
 </ParamField>
 
 <ParamField path="--cwd" type="string">

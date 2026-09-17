@@ -1,0 +1,29 @@
+{
+  "name": "bun-skills",
+  "version": "1.1.0",
+  "description": "Bun documentation as agent skills for the runtime, bundler, test runner, package manager, and guides, synced from bun.com/docs/llms.txt.",
+  "author": {
+    "name": "Brian Roach",
+    "url": "https://github.com/itsbrex"
+  },
+  "homepage": "https://github.com/itsbrex/bun-skills#readme",
+  "repository": "https://github.com/itsbrex/bun-skills",
+  "license": "MIT",
+  "keywords": ["bun", "javascript", "typescript", "runtime", "bundler", "test-runner", "package-manager", "documentation", "agent-skills", "claude-code", "codex"],
+  "interface": {
+    "displayName": "Bun Skills",
+    "shortDescription": "Bun documentation for coding agents",
+    "longDescription": "Use Bun's documentation and guides while building, testing, bundling, and managing JavaScript and TypeScript projects. Includes one skill per documentation page and a categorized guides index. Maintained by Brian Roach; documentation and brand assets belong to the Bun team. This is a community plugin.",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "defaultPrompt": [
+      "Use Bun Skills to build a Bun HTTP server.",
+      "Use Bun Skills to write and run tests with bun test.",
+      "Use Bun Skills to migrate this project to Bun."
+    ],
+    "brandColor": "#F472B6",
+    "composerIcon": "./assets/bun-icon.svg",
+    "logo": "./assets/bun-logo.png",
+    "logoDark": "./assets/bun-logo.png"
+  }
+}

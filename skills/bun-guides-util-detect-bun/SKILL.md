@@ -5,24 +5,25 @@ description: Detect when code is executed with Bun
 
 # Detect when code is executed with Bun
 
-The recommended way to detect when code is being executed with Bun is to check `process.versions.bun`. This works in both JavaScript and TypeScript without requiring any additional type definitions.
+Check `process.versions.bun` to detect whether code is running in Bun. This works in both JavaScript and TypeScript without extra type definitions.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 if (process.versions.bun) {
   // this code will only run when the file is run with Bun
 }
 ```
 
-***
+---
 
-Alternatively, you can check for the existence of the `Bun` global. This is similar to how you'd check for the existence of the `window` variable to detect when code is being executed in a browser.
+Alternatively, check for the `Bun` global, the same way you'd check for `window` to detect a browser.
 
 <Note>
-  This approach will result in a type error in TypeScript unless `@types/bun` is installed. You can install it with `bun
-    add -d @types/bun`.
+  In TypeScript, this check is a type error unless `@types/bun` is installed. Install it with `bun add -d @types/bun`.
+  If you're using TypeScript 6.0 or later, you also need `"types": ["bun"]` in your `compilerOptions`. See [TypeScript 6
+  and 7](/typescript-6) for details.
 </Note>
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 if (typeof Bun !== "undefined") {
   // this code will only run when the file is run with Bun
 }

@@ -7,24 +7,24 @@ description: Persistently patch node_modules packages in a git-friendly way
 
 > Persistently patch node_modules packages in a git-friendly way
 
-`bun patch` lets you persistently patch node\_modules in a maintainable, git-friendly way.
+`bun patch` persistently patches packages in `node_modules` in a maintainable, git-friendly way.
 
-Sometimes, you need to make a small change to a package in `node_modules/` to fix a bug or add a feature. `bun patch` makes it easy to do this without vendoring the entire package and reuse the patch across multiple installs, multiple projects, and multiple machines.
+Sometimes you need a small change to a package in `node_modules/` to fix a bug or add a feature. `bun patch` lets you do this without vendoring the entire package.
 
 Features:
 
-* Generates `.patch` files applied to dependencies in `node_modules` on install
-* `.patch` files can be committed to your repository, reused across multiple installs, projects, and machines
-* `"patchedDependencies"` in `package.json` keeps track of patched packages
-* `bun patch` lets you patch packages in `node_modules/` while preserving the integrity of Bun's [Global Cache](/pm/global-cache)
-* Test your changes locally before committing them with `bun patch --commit <pkg>`
-* To preserve disk space and keep `bun install` fast, patched packages are committed to the Global Cache and shared across projects where possible
+- Generates `.patch` files that Bun applies to dependencies in `node_modules` on install
+- You can commit `.patch` files to your repository and reuse them across installs, projects, and machines
+- `"patchedDependencies"` in `package.json` keeps track of patched packages
+- Patches packages in `node_modules/` while preserving the integrity of Bun's [Global Cache](/pm/global-cache)
+- Test your changes locally before committing them with `bun patch --commit <pkg>`
+- To preserve disk space and keep `bun install` fast, Bun commits patched packages to the Global Cache and shares them across projects where possible
 
 #### Step 1. Prepare the package for patching
 
-To get started, use `bun patch <pkg>` to prepare the package for patching:
+Use `bun patch <pkg>` to prepare the package for patching:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # you can supply the package name
 bun patch react
 
@@ -36,22 +36,23 @@ bun patch node_modules/react
 ```
 
 <Note>
-  Don't forget to call `bun patch <pkg>`! This ensures the package folder in `node_modules/` contains a fresh copy of the package with no symlinks/hardlinks to Bun's cache.
+Always run `bun patch <pkg>` first. It ensures the package folder in `node_modules/` contains a fresh copy of the package with no symlinks or hardlinks to Bun's cache.
 
-  If you forget to do this, you might end up editing the package globally in the cache!
+If you skip it, you might end up editing the package globally in the cache.
+
 </Note>
 
 #### Step 2. Test your changes locally
 
-`bun patch <pkg>` makes it safe to edit the `<pkg>` in `node_modules/` directly, while preserving the integrity of Bun's [Global Cache](/pm/global-cache). This works by re-creating an unlinked clone of the package in `node_modules/` and diffing it against the original package in the Global Cache.
+`bun patch <pkg>` makes it safe to edit `<pkg>` in `node_modules/` directly, while preserving the integrity of Bun's [Global Cache](/pm/global-cache). It works by re-creating an unlinked clone of the package in `node_modules/`. `bun patch --commit <pkg>` then diffs that clone against the original package in the Global Cache.
 
 #### Step 3. Commit your changes
 
 Once you're happy with your changes, run `bun patch --commit <path or pkg>`.
 
-Bun will generate a patch file in `patches/`, update your `package.json` and lockfile, and Bun will start using the patched package:
+Bun generates a patch file in `patches/`, updates your `package.json` and lockfile, and starts using the patched package:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # you can supply the path to the patched package
 bun patch --commit node_modules/react
 
@@ -65,11 +66,11 @@ bun patch --commit react --patches-dir=mypatches
 bun patch-commit react
 ```
 
-***
+---
 
 # CLI Usage
 
-```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash
 bun patch <package>@<version>
 ```
 
@@ -90,7 +91,7 @@ bun patch <package>@<version>
 </ParamField>
 
 <ParamField path="--ignore-scripts" type="boolean">
-  Skip lifecycle scripts in the project's <code>package.json</code> (dependency scripts are never run)
+  Skip lifecycle scripts for all packages, including the project's <code>package.json</code> and trusted dependencies
 </ParamField>
 
 <ParamField path="--trust" type="boolean">
@@ -105,7 +106,7 @@ bun patch <package>@<version>
   Exclude <code>dev</code>, <code>optional</code>, or <code>peer</code> dependencies from install
 </ParamField>
 
-### Project Files & Lockfiles
+### Project Files &amp; Lockfiles
 
 <ParamField path="--yarn" type="boolean">
   Write a <code>yarn.lock</code> file (yarn v1). Alias: <code>-y</code>
@@ -133,28 +134,33 @@ bun patch <package>@<version>
 
 ### Installation Control
 
-<ParamField path="--backend" type="string" default="clonefile">
-  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default),{" "}
-  <code>hardlink</code>, <code>symlink</code>, <code>copyfile</code>
+<ParamField path="--backend" type="string">
+  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default on
+  macOS), <code>hardlink</code> (default on Linux and Windows), <code>symlink</code>, <code>copyfile</code>
 </ParamField>
 
 <ParamField path="--linker" type="string">
   Linker strategy (one of <code>isolated</code> or <code>hoisted</code>)
 </ParamField>
 
+<ParamField path="--minimum-release-age" type="number">
+  Only install packages published at least N seconds ago (security feature)
+</ParamField>
+
 <ParamField path="--dry-run" type="boolean">
-  Don't install anything
+  Don't install packages, update <code>package.json</code>, or save a lockfile. The package is still copied into{" "}
+  <code>node_modules</code> for patching, and <code>--commit</code> still writes the patch file
 </ParamField>
 
 <ParamField path="--force" type="boolean">
-  Always request the latest versions from the registry & reinstall all dependencies. Alias: <code>-f</code>
+  Always request the latest versions from the registry &amp; reinstall all dependencies. Alias: <code>-f</code>
 </ParamField>
 
 <ParamField path="--no-verify" type="boolean">
   Skip verifying integrity of newly downloaded packages
 </ParamField>
 
-### Network & Registry
+### Network &amp; Registry
 
 <ParamField path="--ca" type="string">
   Provide a Certificate Authority signing certificate
@@ -173,30 +179,30 @@ bun patch <package>@<version>
   Maximum number of concurrent network requests (default 48)
 </ParamField>
 
-### Performance & Resource
+### Performance &amp; Resource
 
-<ParamField path="--concurrent-scripts" type="number" default="5">
-  Maximum number of concurrent jobs for lifecycle scripts (default 5)
+<ParamField path="--concurrent-scripts" type="number">
+  Maximum number of concurrent jobs for lifecycle scripts (default: 2x CPU cores)
 </ParamField>
 
 ### Caching
 
 <ParamField path="--cache-dir" type="string">
-  Store & load cached data from a specific directory path
+  Store &amp; load cached data from a specific directory path
 </ParamField>
 
 <ParamField path="--no-cache" type="boolean">
   Ignore manifest cache entirely
 </ParamField>
 
-### Output & Logging
+### Output &amp; Logging
 
 <ParamField path="--silent" type="boolean">
   Don't log anything
 </ParamField>
 
 <ParamField path="--quiet" type="boolean">
-  Only show tarball name when packing
+  Disable the progress bar
 </ParamField>
 
 <ParamField path="--verbose" type="boolean">
@@ -214,16 +220,16 @@ bun patch <package>@<version>
 ### Platform Targeting
 
 <ParamField path="--cpu" type="string">
-  Override CPU architecture for optional dependencies (e.g., <code>x64</code>, <code>arm64</code>, <code>\*</code> for
+  Override CPU architecture for optional dependencies (e.g., <code>x64</code>, <code>arm64</code>, <code>*</code> for
   all)
 </ParamField>
 
 <ParamField path="--os" type="string">
-  Override operating system for optional dependencies (e.g., <code>linux</code>, <code>darwin</code>, <code>\*</code> for
+  Override operating system for optional dependencies (e.g., <code>linux</code>, <code>darwin</code>, <code>*</code> for
   all)
 </ParamField>
 
-### Global Configuration & Context
+### Global Configuration &amp; Context
 
 <ParamField path="--config" type="string">
   Specify path to config file (<code>bunfig.toml</code>). Alias: <code>-c</code>

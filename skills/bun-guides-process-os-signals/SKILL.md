@@ -7,17 +7,22 @@ description: Listen to OS signals
 
 Bun supports the Node.js `process` global, including the `process.on()` method for listening to OS signals.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 process.on("SIGINT", () => {
   console.log("Received SIGINT");
 });
 ```
 
-***
+---
 
-If you don't know which signal to listen for, you listen to the [`"beforeExit"`](https://nodejs.org/api/process.html#event-beforeexit) and [`"exit"`](https://nodejs.org/api/process.html#event-exit) events.
+To run code when the process exits, listen for these events:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+- [`"beforeExit"`](https://nodejs.org/api/process.html#event-beforeexit): Bun emits this event when the event loop empties.
+- [`"exit"`](https://nodejs.org/api/process.html#event-exit): Bun emits this event when the event loop empties or when `process.exit()` is called.
+
+Neither event is emitted when the process is killed by a signal it has no listener for. To run cleanup on a signal, listen for that signal and call `process.exit()` from the listener.
+
+```ts
 process.on("beforeExit", code => {
   console.log(`Event loop is empty!`);
 });
@@ -27,6 +32,6 @@ process.on("exit", code => {
 });
 ```
 
-***
+---
 
-See [Docs > API > Utils](/runtime/utils) for more useful utilities.
+See [Utils](/runtime/utils) for more utilities.

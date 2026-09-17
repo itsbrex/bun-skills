@@ -7,15 +7,15 @@ description: Add a tarball dependency
 
 Bun's package manager can install any publicly available tarball URL as a dependency of your project.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun add zod@https://registry.npmjs.org/zod/-/zod-3.21.4.tgz
 ```
 
-***
+---
 
-Running this command will download, extract, and install the tarball to your project's `node_modules` directory. It will also add the following line to your `package.json`:
+This command downloads, extracts, and installs the tarball into your project's `node_modules` directory, and adds the following line to your `package.json`:
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "dependencies": {
     "zod": "https://registry.npmjs.org/zod/-/zod-3.21.4.tgz" // [!code ++]
@@ -23,14 +23,14 @@ Running this command will download, extract, and install the tarball to your pro
 }
 ```
 
-***
+---
 
-The package `"zod"` can now be imported as usual.
+You can now import `zod` as usual.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 import { z } from "zod";
 ```
 
-***
+---
 
-See [Docs > Package manager](/pm/cli/install) for complete documentation of Bun's package manager.
+See [`bun install`](/pm/cli/install).

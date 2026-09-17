@@ -9,13 +9,13 @@ description: Link local packages for development
 
 Use `bun link` in a local directory to register the current package as a "linkable" package.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 cd /path/to/cool-pkg
 cat package.json
 bun link
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 bun link v1.3.3 (7416672e)
 Success! Registered "cool-pkg"
 
@@ -26,16 +26,16 @@ Or add it in dependencies in your package.json file:
   "cool-pkg": "link:cool-pkg"
 ```
 
-This package can now be "linked" into other projects using `bun link cool-pkg`. This will create a symlink in the `node_modules` directory of the target project, pointing to the local directory.
+You can now "link" this package into other projects using `bun link cool-pkg`. This command creates a symlink in the target project's `node_modules` directory pointing to the local directory.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 cd /path/to/my-app
 bun link cool-pkg
 ```
 
-In addition, the `--save` flag can be used to add `cool-pkg` to the `dependencies` field of your app's package.json with a special version specifier that tells Bun to load from the registered local directory instead of installing from `npm`:
+The `--save` flag also adds `cool-pkg` to the `dependencies` field of your app's package.json, with a version specifier that tells Bun to load from the registered local directory instead of installing from `npm`:
 
-```json package.json icon="file-json" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```json package.json icon="file-json"
 {
   "name": "my-app",
   "version": "1.0.0",
@@ -49,20 +49,21 @@ In addition, the `--save` flag can be used to add `cool-pkg` to the `dependencie
 
 Use `bun unlink` in the root directory to unregister a local package.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 cd /path/to/cool-pkg
 bun unlink
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 bun unlink v1.3.3 (7416672e)
+success: unlinked package "cool-pkg"
 ```
 
-***
+---
 
 # CLI Usage
 
-```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash
 bun link <packages>
 ```
 
@@ -82,7 +83,7 @@ bun link <packages>
   Exclude <code>dev</code>, <code>optional</code>, or <code>peer</code> dependencies from install
 </ParamField>
 
-### Project Files & Lockfiles
+### Project Files &amp; Lockfiles
 
 <ParamField path="--yarn" type="boolean">
   Write a <code>yarn.lock</code> file (yarn v1). Alias: <code>-y</code>
@@ -101,11 +102,11 @@ bun link <packages>
 </ParamField>
 
 <ParamField path="--no-save" type="boolean">
-  Don't update <code>package.json</code> or save a lockfile
+  Has no effect. <code>bun link</code> updates <code>package.json</code> and the lockfile only with <code>--save</code>
 </ParamField>
 
-<ParamField path="--save" type="boolean" default="true">
-  Save to <code>package.json</code> (true by default)
+<ParamField path="--save" type="boolean">
+  Save to <code>package.json</code>
 </ParamField>
 
 <ParamField path="--trust" type="boolean">
@@ -115,16 +116,16 @@ bun link <packages>
 ### Installation Control
 
 <ParamField path="--force" type="boolean">
-  Always request the latest versions from the registry & reinstall all dependencies. Alias: <code>-f</code>
+  Always request the latest versions from the registry &amp; reinstall all dependencies. Alias: <code>-f</code>
 </ParamField>
 
 <ParamField path="--no-verify" type="boolean">
   Skip verifying integrity of newly downloaded packages
 </ParamField>
 
-<ParamField path="--backend" type="string" default="clonefile">
-  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default),{" "}
-  <code>hardlink</code>, <code>symlink</code>, <code>copyfile</code>
+<ParamField path="--backend" type="string">
+  Platform-specific optimizations for installing dependencies. One of <code>clonefile</code>, <code>hardlink</code>,{" "}
+  <code>symlink</code>, or <code>copyfile</code>
 </ParamField>
 
 <ParamField path="--linker" type="string">
@@ -132,14 +133,15 @@ bun link <packages>
 </ParamField>
 
 <ParamField path="--dry-run" type="boolean">
-  Don't install anything
+  With <code>bun link &lt;package&gt;</code>, resolve but don't install packages, update <code>package.json</code>, or
+  save a lockfile. Has no effect on bare <code>bun link</code>, which still registers the current package
 </ParamField>
 
 <ParamField path="--ignore-scripts" type="boolean">
-  Skip lifecycle scripts in the project's <code>package.json</code> (dependency scripts are never run)
+  Skip lifecycle scripts for all packages, including the project's <code>package.json</code> and trusted dependencies
 </ParamField>
 
-### Network & Registry
+### Network &amp; Registry
 
 <ParamField path="--ca" type="string">
   Provide a Certificate Authority signing certificate
@@ -155,33 +157,33 @@ bun link <packages>
 </ParamField>
 
 <ParamField path="--network-concurrency" type="number" default="48">
-  Maximum number of concurrent network requests (default 48)
+  Maximum number of concurrent network requests
 </ParamField>
 
-### Performance & Resource
+### Performance &amp; Resource
 
-<ParamField path="--concurrent-scripts" type="number" default="5">
-  Maximum number of concurrent jobs for lifecycle scripts (default 5)
+<ParamField path="--concurrent-scripts" type="number">
+  Maximum number of concurrent jobs for lifecycle scripts (default: 2x CPU cores)
 </ParamField>
 
 ### Caching
 
 <ParamField path="--cache-dir" type="string">
-  Store & load cached data from a specific directory path
+  Store &amp; load cached data from a specific directory path
 </ParamField>
 
 <ParamField path="--no-cache" type="boolean">
   Ignore manifest cache entirely
 </ParamField>
 
-### Output & Logging
+### Output &amp; Logging
 
 <ParamField path="--silent" type="boolean">
   Don't log anything
 </ParamField>
 
 <ParamField path="--quiet" type="boolean">
-  Only show tarball name when packing
+  Disable the progress bar
 </ParamField>
 
 <ParamField path="--verbose" type="boolean">
@@ -199,16 +201,16 @@ bun link <packages>
 ### Platform Targeting
 
 <ParamField path="--cpu" type="string">
-  Override CPU architecture for optional dependencies (e.g., <code>x64</code>, <code>arm64</code>, <code>\*</code> for
+  Override CPU architecture for optional dependencies (e.g., <code>x64</code>, <code>arm64</code>, <code>*</code> for
   all)
 </ParamField>
 
 <ParamField path="--os" type="string">
-  Override operating system for optional dependencies (e.g., <code>linux</code>, <code>darwin</code>, <code>\*</code> for
+  Override operating system for optional dependencies (e.g., <code>linux</code>, <code>darwin</code>, <code>*</code> for
   all)
 </ParamField>
 
-### Global Configuration & Context
+### Global Configuration &amp; Context
 
 <ParamField path="--config" type="string">
   Specify path to config file (<code>bunfig.toml</code>). Alias: <code>-c</code>

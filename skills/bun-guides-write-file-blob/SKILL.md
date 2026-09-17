@@ -5,20 +5,19 @@ description: Write a Blob to a file
 
 # Write a Blob to a file
 
-This code snippet writes a `Blob` to disk at a particular path.
+Use [`Bun.write()`](/runtime/file-io#writing-files-bun-write) to write a `Blob` to disk. The first argument is a _destination_, like an absolute path or `BunFile` instance. The second argument is the _data_ to write.
 
-It uses the fast [`Bun.write()`](/runtime/file-io#writing-files-bun-write) API to efficiently write data to disk. The first argument is a *destination*, like an absolute path or `BunFile` instance. The second argument is the *data* to write.
-
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const path = "/path/to/file.txt";
-await Bun.write(path, "Lorem ipsum");
+const data = new Blob(["Lorem ipsum"]);
+await Bun.write(path, data);
 ```
 
-***
+---
 
 The `BunFile` class extends `Blob`, so you can pass a `BunFile` directly into `Bun.write()` as well.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const path = "./out.txt";
 const data = Bun.file("./in.txt");
 
@@ -26,6 +25,6 @@ const data = Bun.file("./in.txt");
 await Bun.write(path, data);
 ```
 
-***
+---
 
-See [Docs > API > File I/O](/runtime/file-io#writing-files-bun-write) for complete documentation of `Bun.write()`.
+See [`Bun.write()`](/runtime/file-io#writing-files-bun-write).

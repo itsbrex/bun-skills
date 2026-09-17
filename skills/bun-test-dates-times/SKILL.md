@@ -11,17 +11,15 @@ description: Learn how to manipulate time and dates in your Bun tests using setS
 
 This works with any of the following:
 
-* `Date.now`
-* `new Date()`
-* `new Intl.DateTimeFormat().format()`
-
-<Note>Timers are not impacted yet, but may be in a future release of Bun.</Note>
+- `Date.now`
+- `new Date()`
+- `new Intl.DateTimeFormat().format()`
 
 ## setSystemTime
 
 To change the system time, use `setSystemTime`:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { setSystemTime, beforeAll, test, expect } from "bun:test";
 
 beforeAll(() => {
@@ -33,9 +31,9 @@ test("it is 2020", () => {
 });
 ```
 
-To support existing tests that use Jest's `useFakeTimers` and `useRealTimers`, you can use `useFakeTimers` and `useRealTimers`:
+`bun:test` also supports Jest's `useFakeTimers` and `useRealTimers`, so existing tests that use them keep working:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 test("just like in jest", () => {
   jest.useFakeTimers();
   jest.setSystemTime(new Date("2020-01-01T00:00:00.000Z"));
@@ -60,15 +58,11 @@ test("unlike in jest", () => {
 });
 ```
 
-<Warning>
-  **Timers** — Note that we have not implemented builtin support for mocking timers yet, but this is on the roadmap.
-</Warning>
-
 ## Reset the system time
 
 To reset the system time, pass no arguments to `setSystemTime`:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { setSystemTime, expect, test } from "bun:test";
 
 test("it was 2020, for a moment.", () => {
@@ -85,9 +79,9 @@ test("it was 2020, for a moment.", () => {
 
 ## Get mocked time with jest.now()
 
-When you're using mocked time (with `setSystemTime` or `useFakeTimers`), you can use `jest.now()` to get the current mocked timestamp:
+When the time is mocked (with `setSystemTime` or `useFakeTimers`), `jest.now()` returns the current mocked timestamp:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect, jest } from "bun:test";
 
 test("get the current mocked time", () => {
@@ -101,33 +95,33 @@ test("get the current mocked time", () => {
 });
 ```
 
-This is useful when you need to access the mocked time directly without creating a new Date object.
+Use it to read the mocked time without creating a new `Date` object.
 
 ## Set the time zone
 
-By default, the time zone for all `bun test` runs is set to UTC (`Etc/UTC`) unless overridden. To change the time zone, either pass the `$TZ` environment variable to `bun test`:
+By default, `bun test` runs in UTC (`Etc/UTC`). To change the time zone, either pass the `TZ` environment variable to `bun test`:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 TZ=America/Los_Angeles bun test
 ```
 
 Or set `process.env.TZ` at runtime:
 
-```ts title="test.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="test.ts" icon="/icons/typescript.svg"
 import { test, expect } from "bun:test";
 
 test("Welcome to California!", () => {
   process.env.TZ = "America/Los_Angeles";
-  expect(new Date().getTimezoneOffset()).toBe(420);
+  expect(new Date("2020-07-01T00:00:00.000Z").getTimezoneOffset()).toBe(420);
   expect(new Intl.DateTimeFormat().resolvedOptions().timeZone).toBe("America/Los_Angeles");
 });
 
 test("Welcome to New York!", () => {
   // Unlike in Jest, you can set the timezone multiple times at runtime and it will work.
   process.env.TZ = "America/New_York";
-  expect(new Date().getTimezoneOffset()).toBe(240);
+  expect(new Date("2020-07-01T00:00:00.000Z").getTimezoneOffset()).toBe(240);
   expect(new Intl.DateTimeFormat().resolvedOptions().timeZone).toBe("America/New_York");
 });
 ```
 
-<Info>Unlike in Jest, you can set the timezone multiple times at runtime and it will work.</Info>
+<Info>Unlike in Jest, you can change the time zone multiple times at runtime.</Info>

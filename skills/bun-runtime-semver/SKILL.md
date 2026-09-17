@@ -7,13 +7,13 @@ description: Use Bun's semantic versioning API
 
 > Use Bun's semantic versioning API
 
-Bun implements a semantic versioning API which can be used to compare versions and determine if a version is compatible with another range of versions. The versions and ranges are designed to be compatible with `node-semver`, which is used by npm clients.
+`Bun.semver` compares semantic versions and checks whether a version is compatible with a range of versions. Versions and ranges are designed to be compatible with `node-semver`, which npm clients use.
 
-It's about 20x faster than `node-semver`.
+`Bun.semver` is about 20x faster than `node-semver`.
 
 <Frame>![Benchmark](https://github.com/oven-sh/bun/assets/709451/94746adc-8aba-4baf-a143-3c355f8e0f78)</Frame>
 
-Currently, this API provides two functions:
+The API provides two functions:
 
 ## `Bun.semver.satisfies(version: string, range: string): boolean`
 
@@ -21,7 +21,7 @@ Returns `true` if `version` satisfies `range`, otherwise `false`.
 
 Example:
 
-```typescript  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```typescript
 import { semver } from "bun";
 
 semver.satisfies("1.0.0", "^1.0.0"); // true
@@ -38,7 +38,7 @@ semver.satisfies("1.0.0", "1.0.0 - 2.0.0"); // true
 semver.satisfies("1.0.0", "1.0.0 - 1.0.1"); // true
 ```
 
-If `range` is invalid, it returns false. If `version` is invalid, it returns false.
+`satisfies` returns `false` if `version` is invalid, or if either argument contains a non-ASCII character. Bun ignores the parts of `range` that it cannot parse. A `range` with no parseable part behaves like `*`.
 
 ## `Bun.semver.order(versionA: string, versionB: string): 0 | 1 | -1`
 
@@ -46,7 +46,7 @@ Returns `0` if `versionA` and `versionB` are equal, `1` if `versionA` is greater
 
 Example:
 
-```typescript  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```typescript
 import { semver } from "bun";
 
 semver.order("1.0.0", "1.0.0"); // 0
@@ -58,4 +58,4 @@ unsorted.sort(semver.order); // ["1.0.0-alpha", "1.0.0-beta", "1.0.0-rc", "1.0.0
 console.log(unsorted);
 ```
 
-If you need other semver functions, feel free to open an issue or pull request.
+If you need other semver functions, open an issue or pull request.

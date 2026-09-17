@@ -7,13 +7,13 @@ description: Check for outdated dependencies
 
 > Check for outdated dependencies
 
-Use `bun outdated` to check for outdated dependencies in your project. This command displays a table of dependencies that have newer versions available.
+`bun outdated` displays a table of the dependencies in your project that have newer versions available.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package                        | Current | Update    | Latest     |
 | ------------------------------ | ------- | --------- | ---------- |
 | @sinclair/typebox              | 0.34.15 | 0.34.16   | 0.34.16    |
@@ -32,35 +32,32 @@ bun outdated
 
 The output table shows three version columns:
 
-* **Current**: The version currently installed
-* **Update**: The latest version that satisfies your package.json version range
-* **Latest**: The latest version published to the registry
+- **Current**: The version currently installed
+- **Update**: The latest version that satisfies your package.json version range
+- **Latest**: The latest version published to the registry
 
 ### Dependency Filters
 
-`bun outdated` supports searching for outdated dependencies by package names and glob patterns.
+To check a specific dependency, pass its name as a positional argument:
 
-To check if specific dependencies are outdated, pass the package names as positional arguments:
-
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun outdated eslint-plugin-security eslint-plugin-sonarjs
+```sh terminal icon="terminal"
+bun outdated eslint-plugin-security
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package                        | Current | Update | Latest    |
 | ------------------------------ | ------- | ------ | --------- |
 | eslint-plugin-security (dev)   | 2.1.1   | 2.1.1  | 3.0.1     |
-| eslint-plugin-sonarjs (dev)    | 0.23.0  | 0.23.0 | 3.0.1     |
 
 ```
 
-You can also pass glob patterns to check for outdated packages:
+Glob patterns work too:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated 'eslint*'
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package                        | Current | Update | Latest     |
 | ------------------------------ | ------- | ------ | ---------- |
 | eslint (dev)                   | 8.57.1  | 8.57.1 | 9.20.0     |
@@ -70,11 +67,11 @@ bun outdated 'eslint*'
 
 For example, to check for outdated `@types/*` packages:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated '@types/*'
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package            | Current | Update | Latest |
 | ------------------ | ------- | ------ | ------ |
 | @types/bun (dev)   | 1.3.0   | 1.3.3  | 1.3.3 |
@@ -82,11 +79,11 @@ bun outdated '@types/*'
 
 Or to exclude all `@types/*` packages:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated '!@types/*'
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package                        | Current | Update    | Latest     |
 | ------------------------------ | ------- | --------- | ---------- |
 | @sinclair/typebox              | 0.34.15 | 0.34.16   | 0.34.16    |
@@ -103,41 +100,24 @@ bun outdated '!@types/*'
 
 Use the `--filter` flag to check for outdated dependencies in a different workspace package:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated --filter='@monorepo/types'
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package            | Current | Update | Latest |
 | ------------------ | ------- | ------ | ------ |
 | tsup (dev)         | 8.3.5   | 8.3.6  | 8.3.6  |
 | typescript (dev)   | 5.7.2   | 5.7.3  | 5.7.3  |
 ```
 
-You can pass multiple `--filter` flags to check multiple workspaces:
+`--filter` accepts glob patterns to match multiple workspaces:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
-bun outdated --filter @monorepo/types --filter @monorepo/cli
-```
-
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
-| Package                        | Current | Update | Latest     |
-| ------------------------------ | ------- | ------ | ---------- |
-| eslint (dev)                 	 | 8.57.1  | 8.57.1 | 9.20.0     |
-| eslint-plugin-security (dev)   | 2.1.1   | 2.1.1  | 3.0.1      |
-| eslint-plugin-sonarjs (dev)    | 0.23.0  | 0.23.0 | 3.0.1      |
-| expect-type (dev)              | 0.16.0  | 0.16.0 | 1.1.0      |
-| tsup (dev)                     | 8.3.5   | 8.3.6  | 8.3.6      |
-| typescript (dev)               | 5.7.2   | 5.7.3  | 5.7.3      |
-```
-
-You can also pass glob patterns to filter by workspace names:
-
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated --filter='@monorepo/{types,cli}'
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 | Package                        | Current | Update | Latest     |
 | ------------------------------ | ------- | ------ | ---------- |
 | eslint (dev)                   | 8.57.1  | 8.57.1 | 9.20.0     |
@@ -150,13 +130,13 @@ bun outdated --filter='@monorepo/{types,cli}'
 
 ### Catalog Dependencies
 
-`bun outdated` supports checking catalog dependencies defined in`package.json`:
+`bun outdated` also checks [catalog](/pm/catalogs) dependencies defined in `package.json`:
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun outdated -r
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 ┌────────────────────┬─────────┬─────────┬─────────┬────────────────────────────────┐
 │ Package            │ Current │ Update  │ Latest  │ Workspace                      │
 ├────────────────────┼─────────┼─────────┼─────────┼────────────────────────────────┤
@@ -170,7 +150,7 @@ bun outdated -r
 ├────────────────────┼─────────┼─────────┼─────────┼────────────────────────────────┤
 │ axios              │ 0.21.0  │ 0.21.0  │ 1.12.2  │ catalog (@test/app)            │
 ├────────────────────┼─────────┼─────────┼─────────┼────────────────────────────────┤
-│ lodash             │ 4.17.15 │ 4.17.15 │ 4.17.21 │ catalog (@test/app, @test/app) │
+│ lodash             │ 4.17.15 │ 4.17.15 │ 4.17.21 │ catalog (@test/app)            │
 ├────────────────────┼─────────┼─────────┼─────────┼────────────────────────────────┤
 │ react              │ 17.0.0  │ 17.0.0  │ 19.1.1  │ catalog (@test/app)            │
 ├────────────────────┼─────────┼─────────┼─────────┼────────────────────────────────┤
@@ -194,11 +174,11 @@ bun outdated -r
 └────────────────────┴─────────┴─────────┴─────────┴────────────────────────────────┘
 ```
 
-***
+---
 
 ## CLI Usage
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun outdated <filter>
 ```
 
@@ -218,6 +198,10 @@ bun outdated <filter>
 
 <ParamField path="-F, --filter" type="string">
   Display outdated dependencies for each matching workspace
+</ParamField>
+
+<ParamField path="-r, --recursive" type="boolean">
+  Check outdated packages in all workspaces
 </ParamField>
 
 ### Output & Logging
@@ -303,7 +287,7 @@ bun outdated <filter>
 ### Caching
 
 <ParamField path="--cache-dir" type="string">
-  Store & load cached data from a specific directory path
+  Store &amp; load cached data from a specific directory path
 </ParamField>
 
 <ParamField path="--no-cache" type="boolean">
@@ -313,11 +297,11 @@ bun outdated <filter>
 ### Execution Behavior
 
 <ParamField path="--dry-run" type="boolean">
-  Don't install anything
+  Has no effect. <code>bun outdated</code> is read-only
 </ParamField>
 
 <ParamField path="-f, --force" type="boolean">
-  Always request the latest versions from the registry & reinstall all dependencies
+  Always request the latest versions from the registry &amp; reinstall all dependencies
 </ParamField>
 
 <ParamField path="--no-verify" type="boolean">
@@ -325,14 +309,14 @@ bun outdated <filter>
 </ParamField>
 
 <ParamField path="--ignore-scripts" type="boolean">
-  Skip lifecycle scripts in the project's <code>package.json</code> (dependency scripts are never run)
+  Skip lifecycle scripts for all packages, including the project's <code>package.json</code> and trusted dependencies
 </ParamField>
 
-<ParamField path="--backend" type="string" default="clonefile">
-  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default),{" "}
-  <code>hardlink</code>, <code>symlink</code>, <code>copyfile</code>
+<ParamField path="--backend" type="string">
+  Platform-specific optimizations for installing dependencies. Possible values: <code>clonefile</code> (default on
+  macOS), <code>hardlink</code> (default on Linux and Windows), <code>symlink</code>, <code>copyfile</code>
 </ParamField>
 
-<ParamField path="--concurrent-scripts" type="number" default="5">
-  Maximum number of concurrent jobs for lifecycle scripts (default 5)
+<ParamField path="--concurrent-scripts" type="number">
+  Maximum number of concurrent jobs for lifecycle scripts (default: 2x CPU cores)
 </ParamField>

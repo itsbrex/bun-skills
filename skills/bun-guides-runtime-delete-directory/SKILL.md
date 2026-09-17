@@ -7,23 +7,23 @@ description: Delete directories
 
 To recursively delete a directory and all its contents, use `rm` from `node:fs/promises`. This is like running `rm -rf` in JavaScript.
 
-```ts delete-directory.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts delete-directory.ts icon="/icons/typescript.svg"
 import { rm } from "node:fs/promises";
 
 // Delete a directory and all its contents
 await rm("path/to/directory", { recursive: true, force: true });
 ```
 
-***
+---
 
 These options configure the deletion behavior:
 
-* `recursive: true` - Delete subdirectories and their contents
-* `force: true` - Don't throw errors if the directory doesn't exist
+- `recursive: true` - Delete subdirectories and their contents
+- `force: true` - Don't throw errors if the directory doesn't exist
 
-You can also use it without `force` to ensure the directory exists:
+Omit `force` to get an error if the directory doesn't exist:
 
-```ts delete-directory.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts delete-directory.ts icon="/icons/typescript.svg"
 try {
   await rm("path/to/directory", { recursive: true });
 } catch (error) {
@@ -35,6 +35,6 @@ try {
 }
 ```
 
-***
+---
 
-See [Docs > API > FileSystem](/runtime/file-io) for more filesystem operations.
+See [File I/O](/runtime/file-io) for more filesystem operations.

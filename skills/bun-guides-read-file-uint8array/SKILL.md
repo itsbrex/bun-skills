@@ -5,20 +5,20 @@ description: Read a file to a Uint8Array
 
 # Read a file to a Uint8Array
 
-The `Bun.file()` function accepts a path and returns a `BunFile` instance. The `BunFile` class extends `Blob` and allows you to lazily read the file in a variety of formats.
+The `Bun.file()` function accepts a path and returns a `BunFile` instance. `BunFile` extends `Blob`, so you can read the file lazily in a variety of formats.
 
-To read the file into a `Uint8Array` instance, retrieve the contents of the `BunFile` with `.bytes()`.
+To read the file into a `Uint8Array`, use `.bytes()`.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 const path = "/path/to/package.json";
 const file = Bun.file(path);
 
 const byteArray = await file.bytes();
 
-byteArray[0]; // first byteArray
+byteArray[0]; // first byte
 byteArray.length; // length of byteArray
 ```
 
-***
+---
 
-Refer to [API > Binary data > Typed arrays](/runtime/binary-data#typedarray) for more information on working with `Uint8Array` and other binary data formats in Bun.
+See [Typed arrays](/runtime/binary-data#typedarray) for more on working with `Uint8Array` and other binary data formats in Bun.

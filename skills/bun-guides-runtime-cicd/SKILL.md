@@ -7,7 +7,7 @@ description: Install and run Bun in GitHub Actions
 
 Use the official [`setup-bun`](https://github.com/oven-sh/setup-bun) GitHub Action to install `bun` in your GitHub Actions runner.
 
-```yaml workflow.yml icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```yaml workflow.yml icon="file-code"
 name: my-workflow
 jobs:
   my-job:
@@ -24,11 +24,11 @@ jobs:
       - run: bun run build # [!code ++]
 ```
 
-***
+---
 
 To specify a version of Bun to install:
 
-```yaml workflow.yml icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```yaml workflow.yml icon="file-code"
 name: my-workflow
 jobs:
   my-job:
@@ -38,9 +38,9 @@ jobs:
       # ...
       - uses: oven-sh/setup-bun@v2
         with: # [!code ++]
-          bun-version: 1.3.3 # or "latest", "canary", <sha> # [!code ++]
+          bun-version: 1.3.3 # or "latest", "canary", "1.3.x" # [!code ++]
 ```
 
-***
+---
 
-Refer to the [README.md](https://github.com/oven-sh/setup-bun) for complete documentation of the `setup-bun` GitHub Action.
+See the [`setup-bun` README](https://github.com/oven-sh/setup-bun) for all options.

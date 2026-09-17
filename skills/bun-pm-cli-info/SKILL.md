@@ -11,25 +11,25 @@ description: Display package metadata from the npm registry
 
 ## Usage
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun info react
 ```
 
-This will display information about the `react` package, including its latest version, description, homepage, dependencies, and more.
+`bun info react` prints the package's latest version, description, homepage, dependencies, and other metadata.
 
 ## Viewing specific versions
 
 To view information about a specific version:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun info react@18.0.0
 ```
 
 ## Viewing specific properties
 
-You can also query specific properties from the package metadata:
+To print specific properties from the package metadata:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun info react version
 bun info react dependencies
 bun info react repository.url
@@ -39,7 +39,7 @@ bun info react repository.url
 
 To get the output in JSON format, use the `--json` flag:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun info react --json
 ```
 
@@ -47,13 +47,13 @@ bun info react --json
 
 `bun pm view` is an alias for `bun info`:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun pm view react  # equivalent to: bun info react
 ```
 
 ## Examples
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # View basic package information
 bun info is-number
 

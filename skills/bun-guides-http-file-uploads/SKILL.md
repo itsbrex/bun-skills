@@ -5,9 +5,9 @@ description: Upload files via HTTP using FormData
 
 # Upload files via HTTP using FormData
 
-To upload files via HTTP with Bun, use the [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) API. Let's start with a HTTP server that serves a simple HTML web form.
+To upload files over HTTP with Bun, use the [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) API. Start with an HTTP server that serves an HTML form.
 
-```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts index.ts icon="/icons/typescript.svg"
 const server = Bun.serve({
   port: 4000,
   async fetch(req) {
@@ -28,11 +28,11 @@ const server = Bun.serve({
 console.log(`Listening on http://localhost:${server.port}`);
 ```
 
-***
+---
 
-We can define our HTML form in another file, `index.html`.
+Define the HTML form in another file, `index.html`.
 
-```html index.html icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```html index.html icon="file-code"
 <!DOCTYPE html>
 <html>
   <head>
@@ -49,24 +49,25 @@ We can define our HTML form in another file, `index.html`.
 </html>
 ```
 
-***
+---
 
-At this point, we can run the server and visit [`localhost:4000`](http://localhost:4000) to see our form.
+Run the server and visit [`localhost:4000`](http://localhost:4000) to see the form.
 
-```bash  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash
 bun run index.ts
 Listening on http://localhost:4000
 ```
 
-***
+---
 
-Our form will send a `POST` request to the `/action` endpoint with the form data. Let's handle that request in our server.
+The form sends a `POST` request with the form data to the `/action` endpoint. Handle that request in the server.
 
-First we use the [`.formData()`](https://developer.mozilla.org/en-US/docs/Web/API/Request/formData) method on the incoming `Request` to asynchronously parse its contents to a `FormData` instance. Then we can use the [`.get()`](https://developer.mozilla.org/en-US/docs/Web/API/FormData/get) method to extract the value of the `name` and `profilePicture` fields. Here `name` corresponds to a `string` and `profilePicture` is a `Blob`.
+First, call [`.formData()`](https://developer.mozilla.org/en-US/docs/Web/API/Request/formData) on the incoming `Request` to asynchronously parse its contents into a `FormData` instance. Then use [`.get()`](https://developer.mozilla.org/en-US/docs/Web/API/FormData/get) to extract the `name` and `profilePicture` fields; `name` is a `string` and `profilePicture` is a `Blob`.
 
-Finally, we write the `Blob` to disk using [`Bun.write()`](/runtime/file-io#writing-files-bun-write).
+Finally, write the `Blob` to disk with [`Bun.write()`](/runtime/file-io#writing-files-bun-write).
 
-```ts index.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+{/* prettier-ignore */}
+```ts index.ts icon="/icons/typescript.svg"
 const server = Bun.serve({
   port: 4000,
   async fetch(req) {

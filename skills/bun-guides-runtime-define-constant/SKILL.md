@@ -5,18 +5,18 @@ description: Define and replace static globals & constants
 
 # Define and replace static globals & constants
 
-The `--define` flag lets you declare statically-analyzable constants and globals. It replace all usages of an identifier or property in a JavaScript or TypeScript file with a constant value. This feature is supported at runtime and also in `bun build`. This is sort of similar to `#define` in C/C++, except for JavaScript.
+The `--define` flag declares statically-analyzable constants and globals. It replaces all usages of an identifier or property in a JavaScript or TypeScript file with a constant value, and works both at runtime and in `bun build`. It's similar to `#define` in C/C++, but for JavaScript.
 
-```sh terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
 bun --define process.env.NODE_ENV="'production'" src/index.ts # Runtime
 bun build --define process.env.NODE_ENV="'production'" src/index.ts # Build
 ```
 
-***
+---
 
-These statically-known values are used by Bun for dead code elimination and other optimizations.
+Bun uses these statically-known values for dead code elimination and other optimizations.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 if (process.env.NODE_ENV === "production") {
   console.log("Production mode");
 } else {
@@ -24,11 +24,12 @@ if (process.env.NODE_ENV === "production") {
 }
 ```
 
-***
+---
 
 Before the code reaches the JavaScript engine, Bun replaces `process.env.NODE_ENV` with `"production"`.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+{/* prettier-ignore */}
+```ts
 if ("production" === "production") { // [!code ++]
   console.log("Production mode");
 } else {
@@ -36,29 +37,32 @@ if ("production" === "production") { // [!code ++]
 }
 ```
 
-***
+---
 
-It doesn't stop there. Bun's optimizing transpiler is smart enough to do some basic constant folding.
+Bun's optimizing transpiler also does basic constant folding.
 
-Since `"production" === "production"` is always `true`, Bun replaces the entire expression with the `true` value.
+Since `"production" === "production"` is always `true`, Bun replaces the entire expression with the `true` value and drops the unreachable `else` branch.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+{/* prettier-ignore */}
+```ts
 if (true) { // [!code ++]
   console.log("Production mode");
-} else {
-  console.log("Development mode");
 }
 ```
 
-***
+---
 
-And finally, Bun detects the `else` branch is not reachable, and eliminates it.
+To also collapse the surrounding `if` scaffolding down to the following output, pass `--minify-syntax` (also enabled by `--minify`):
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh terminal icon="terminal"
+bun build --define process.env.NODE_ENV="'production'" --minify-syntax src/index.ts
+```
+
+```ts
 console.log("Production mode");
 ```
 
-***
+---
 
 ## What types of values are supported?
 
@@ -66,15 +70,15 @@ Values can be strings, identifiers, properties, or JSON.
 
 ### Replace global identifiers
 
-To make all usages of `window` be `undefined`, you can use the following command.
+To replace all usages of `window` with `undefined`:
 
-```sh  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh
 bun --define window="undefined" src/index.ts
 ```
 
-This can be useful when Server-Side Rendering (SSR) or when you want to make sure that the code doesn't depend on the `window` object.
+This replacement is useful for server-side rendering (SSR), or to make sure code doesn't depend on the `window` object.
 
-```js  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js
 if (typeof window !== "undefined") {
   console.log("Client-side code");
 } else {
@@ -82,67 +86,67 @@ if (typeof window !== "undefined") {
 }
 ```
 
-You can also set the value to be another identifier. For example, to make all usages of `global` be `globalThis`, you can use the following command.
+The value can also be another identifier. For example, to replace all usages of `global` with `globalThis`:
 
-```sh  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh
 bun --define global="globalThis" src/index.ts
 ```
 
-`global` is a global object in Node.js, but not in web browsers. So, you can use this to fix some cases where the code assumes that `global` is available.
+`global` is a global object in Node.js, but not in web browsers, so this replacement fixes code that assumes `global` is available.
 
 ### Replace values with JSON
 
-`--define` can also be used to replace values with JSON objects and arrays.
+`--define` can also replace values with JSON objects and arrays.
 
-To replace all usages of `AWS` with the JSON object `{"ACCESS_KEY":"abc","SECRET_KEY":"def"}`, you can use the following command.
+To replace all usages of `AWS` with the JSON object `{"ACCESS_KEY":"abc","SECRET_KEY":"def"}`:
 
-```sh  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh
 # JSON
 bun --define AWS='{"ACCESS_KEY":"abc","SECRET_KEY":"def"}' src/index.ts
 ```
 
-Those will be transformed into the equivalent JavaScript code.
+Bun transforms these into the equivalent JavaScript code.
 
 From:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 console.log(AWS.ACCESS_KEY); // => "abc"
 ```
 
 To:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
-console.log("abc");
+```ts
+console.log({ ACCESS_KEY: "abc", SECRET_KEY: "def" }.ACCESS_KEY);
 ```
 
 ### Replace values with other properties
 
 You can also pass properties to the `--define` flag.
 
-For example, to replace all usages of `console.write` with `console.log`, you can use the following command
+For example, to replace all usages of `console.write` with `console.log`:
 
-```sh  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```sh
 bun --define console.write=console.log src/index.ts
 ```
 
 That transforms the following input:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 console.write("Hello, world!");
 ```
 
 Into the following output:
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 console.log("Hello, world!");
 ```
 
 ## How is this different than setting a variable?
 
-You can also set `process.env.NODE_ENV` to `"production"` in your code, but that won't help with dead code elimination. In JavaScript, property accesses can have side effects. Getters & setters can be functions, and even dynamically defined (due to prototype chains and Proxy). Even if you set `process.env.NODE_ENV` to `"production"`, on the next line, it is not safe for static analysis tools to assume that `process.env.NODE_ENV`is`"production"`.
+You can also set `process.env.NODE_ENV` to `"production"` in your code, but that doesn't help with dead code elimination. In JavaScript, property accesses can have side effects. Getters & setters can be functions, and even dynamically defined (due to prototype chains and Proxy). Even if you set `process.env.NODE_ENV` to `"production"`, static analysis tools can't assume it is still `"production"` on the next line.
 
 ## How is this different than find-and-replace or string replacement?
 
-The `--define` flag operates on the AST (Abstract Syntax Tree) level, not on the text level. It happens during the transpilation process, which means it can be used in optimizations like dead code elimination.
+The `--define` flag operates on the AST (Abstract Syntax Tree), not on text. The replacement happens during transpilation, so it participates in optimizations like dead code elimination.
 
 String replacement tools tend to have escaping issues and replace unintended parts of the code.

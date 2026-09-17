@@ -5,14 +5,14 @@ description: Configure a private registry for an organization scope with bun ins
 
 # Configure a private registry for an organization scope with bun install
 
-Private registries can be configured using either [`.npmrc`](/pm/npmrc) or [`bunfig.toml`](/runtime/bunfig#install-registry). While both are supported, we recommend using **bunfig.toml** for enhanced flexibility and Bun-specific options.
+You can configure private registries in [`.npmrc`](/pm/npmrc) or [`bunfig.toml`](/runtime/bunfig#install-registry). Both work; we recommend `bunfig.toml` for its Bun-specific options.
 
 To configure a registry for a particular npm scope:
 
-```toml bunfig.toml icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml bunfig.toml icon="settings"
 [install.scopes]
 # as a string
-"@myorg1" = "https://usertitle:password@registry.myorg.com/"
+"@myorg1" = "https://username:password@registry.myorg.com/"
 
 # as an object with username/password
 # you can reference environment variables
@@ -27,15 +27,15 @@ To configure a registry for a particular npm scope:
 
 ```
 
-***
+---
 
-Your `bunfig.toml` can reference environment variables. Bun automatically loads environment variables from `.env.local`, `.env.[NODE_ENV]`, and `.env`. See [Docs > Environment variables](/runtime/environment-variables) for more information.
+Your `bunfig.toml` can reference environment variables. `bun install` automatically loads environment variables from `.env.production.local`, `.env.local`, `.env.production`, and `.env`, regardless of `NODE_ENV`. It does not read `.env.development` or `.env.test`. See [Environment variables](/runtime/environment-variables).
 
-```toml bunfig.toml icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml bunfig.toml icon="settings"
 [install.scopes]
 "@myorg3" = { token = "$npm_token", url = "https://registry.myorg.com/" }
 ```
 
-***
+---
 
-See [Docs > Package manager](/pm/cli/install) for complete documentation of Bun's package manager.
+See [`bun install`](/pm/cli/install).

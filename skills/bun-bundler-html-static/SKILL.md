@@ -7,9 +7,9 @@ description: Build static sites, landing pages, and web applications with Bun's 
 
 > Build static sites, landing pages, and web applications with Bun's bundler
 
-Bun's bundler has first-class support for HTML. Build static sites, landing pages, and web applications with zero configuration. Just point Bun at your HTML file and it handles everything else.
+Bun's bundler has first-class support for HTML. Build static sites, landing pages, and web applications with zero configuration: point Bun at your HTML file and it bundles the scripts, stylesheets, and assets the file references.
 
-```html title="index.html" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```html title="index.html" icon="file-code"
 <!doctype html>
 <html>
   <head>
@@ -24,7 +24,7 @@ Bun's bundler has first-class support for HTML. Build static sites, landing page
 
 To get started, pass HTML files to `bun`.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun ./index.html
 ```
 
@@ -35,22 +35,22 @@ ready in 6.62ms
 Press h + Enter to show shortcuts
 ```
 
-Bun's development server provides powerful features with zero configuration:
+With no configuration, Bun's development server provides:
 
-* **Automatic Bundling** - Bundles and serves your HTML, JavaScript, and CSS
-* **Multi-Entry Support** - Handles multiple HTML entry points and glob entry points
-* **Modern JavaScript** - TypeScript & JSX support out of the box
-* **Smart Configuration** - Reads `tsconfig.json` for paths, JSX options, experimental decorators, and more
-* **Plugins** - Plugins for TailwindCSS and more
-* **ESM & CommonJS** - Use ESM and CommonJS in your JavaScript, TypeScript, and JSX files
-* **CSS Bundling & Minification** - Bundles CSS from `<link>` tags and `@import` statements
-* **Asset Management** - Automatic copying & hashing of images and assets; Rewrites asset paths in JavaScript, CSS, and HTML
+- **Automatic Bundling** - Bundles and serves your HTML, JavaScript, and CSS
+- **Multi-Entry Support** - Handles multiple HTML entry points and glob entry points
+- **Modern JavaScript** - TypeScript & JSX support by default
+- **Smart Configuration** - Reads `tsconfig.json` for paths, JSX options, and experimental decorators
+- **Plugins** - Plugin support, including TailwindCSS
+- **ESM & CommonJS** - Use ESM and CommonJS in your JavaScript, TypeScript, and JSX files
+- **CSS Bundling & Minification** - Bundles CSS from `<link>` tags and `@import` statements
+- **Asset Management** - Copies and hashes images and assets, and rewrites asset paths in JavaScript, CSS, and HTML
 
 ## Single Page Apps (SPA)
 
-When you pass a single `.html` file to Bun, Bun will use it as a fallback route for all paths. This makes it perfect for single page apps that use client-side routing:
+When you pass a single `.html` file to Bun, Bun uses it as a fallback route for all paths. This suits single page apps that use client-side routing:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun index.html
 ```
 
@@ -61,9 +61,9 @@ ready in 6.62ms
 Press h + Enter to show shortcuts
 ```
 
-Your React or other SPA will work out of the box — no configuration needed. All routes like `/about`, `/users/123`, etc. will serve the same HTML file, letting your client-side router handle the navigation.
+Your React or other SPA works with no configuration. Routes like `/about` and `/users/123` serve the same HTML file, so your client-side router handles the navigation.
 
-```html title="index.html" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```html title="index.html" icon="file-code"
 <!doctype html>
 <html>
   <head>
@@ -80,11 +80,11 @@ Your React or other SPA will work out of the box — no configuration needed. Al
 
 Some projects have several separate routes or HTML files as entry points. To support multiple entry points, pass them all to `bun`:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun ./index.html ./about.html
 ```
 
-```txt  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```txt
 Bun v1.3.3
 ready in 6.62ms
 → http://localhost:3000/
@@ -94,16 +94,16 @@ Routes:
 Press h + Enter to show shortcuts
 ```
 
-This will serve:
+This serves:
 
-* `index.html` at `/`
-* `about.html` at `/about`
+- `index.html` at `/`
+- `about.html` at `/about`
 
 ### Glob patterns
 
-To specify multiple files, you can use glob patterns that end in `.html`:
+To specify multiple files, use a glob pattern that ends in `.html`:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun ./**/*.html
 ```
 
@@ -119,9 +119,9 @@ Press h + Enter to show shortcuts
 
 ### Path normalization
 
-The base path is chosen from the longest common prefix among all the files.
+Bun chooses the base path from the longest common prefix among all the files.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun ./index.html ./about/index.html ./about/foo/index.html
 ```
 
@@ -138,45 +138,47 @@ Press h + Enter to show shortcuts
 
 ## JavaScript, TypeScript, and JSX
 
-Bun's transpiler natively implements JavaScript, TypeScript, and JSX support. Learn more about loaders in Bun.
+Bun's transpiler natively implements JavaScript, TypeScript, and JSX support. See [loaders](/bundler/loaders).
 
-<Note>Bun's transpiler is also used at runtime.</Note>
+<Note>Bun also uses the same transpiler at runtime.</Note>
 
 ### ES Modules & CommonJS
 
-You can use ESM and CJS in your JavaScript, TypeScript, and JSX files. Bun will handle the transpilation and bundling automatically.
+You can use ESM and CommonJS in your JavaScript, TypeScript, and JSX files. Bun transpiles and bundles them automatically.
 
-There is no pre-build or separate optimization step. It's all done at the same time.
+There is no pre-build or separate optimization step. Bun does it all at the same time.
 
-Learn more about module resolution in Bun.
+See [module resolution](/runtime/module-resolution).
 
 ## CSS
 
-Bun's CSS parser is also natively implemented (clocking in around 58,000 lines of Zig).
+Bun's CSS parser is also natively implemented (about 70,000 lines of Rust).
 
 It's also a CSS bundler. You can use `@import` in your CSS files to import other CSS files.
 
 For example:
 
 <CodeGroup>
-  ```css styles.css icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  @import "./abc.css";
 
-  .container {
-    background-color: blue;
-  }
-  ```
+```css styles.css icon="file-code"
+@import "./abc.css";
 
-  ```css abc.css icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
-  body {
-    background-color: red;
-  }
-  ```
+.container {
+  background-color: blue;
+}
+```
+
+```css abc.css icon="file-code"
+body {
+  background-color: red;
+}
+```
+
 </CodeGroup>
 
 This outputs:
 
-```css styles.css icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```css styles.css icon="file-code"
 body {
   background-color: red;
 }
@@ -188,17 +190,15 @@ body {
 
 ### Referencing local assets in CSS
 
-You can reference local assets in your CSS files.
-
-```css styles.css icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```css styles.css icon="file-code"
 body {
   background-image: url("./logo.png");
 }
 ```
 
-This will copy `./logo.png` to the output directory and rewrite the path in the CSS file to include a content hash.
+Bun copies `./logo.png` to the output directory and rewrites the path in the CSS file to include a content hash.
 
-```css styles.css icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```css styles.css icon="file-code"
 body {
   background-image: url("./logo-[ABC123].png");
 }
@@ -206,14 +206,14 @@ body {
 
 ### Importing CSS in JavaScript
 
-To associate a CSS file with a JavaScript file, you can import it in your JavaScript file.
+To associate a CSS file with a JavaScript file, import it from the JavaScript file.
 
-```ts app.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts app.ts icon="/icons/typescript.svg"
 import "./styles.css";
 import "./more-styles.css";
 ```
 
-This generates `./app.css` and `./app.js` in the output directory. All CSS files imported from JavaScript will be bundled into a single CSS file per entry point. If you import the same CSS file from multiple JavaScript files, it will only be included once in the output CSS file.
+This generates `./app.css` and `./app.js` in the output directory. Bun bundles all CSS files imported from JavaScript into a single CSS file per entry point. If you import the same CSS file from multiple JavaScript files, Bun includes it only once in the output CSS file.
 
 ## Plugins
 
@@ -223,52 +223,56 @@ The dev server supports plugins.
 
 To use TailwindCSS, install the `bun-plugin-tailwind` plugin:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 # Or any npm client
 bun install --dev bun-plugin-tailwind
 ```
 
 Then, add the plugin to your `bunfig.toml`:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [serve.static]
 plugins = ["bun-plugin-tailwind"]
 ```
 
-Then, reference TailwindCSS in your HTML via `<link>` tag, `@import` in CSS, or import in JavaScript.
+Then, reference TailwindCSS in your HTML with a `<link>` tag, an `@import` in CSS, or an import in JavaScript.
 
 <Tabs>
   <Tab title="index.html">
-    ```html title="index.html" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+
+    ```html title="index.html" icon="file-code"
     <!-- Reference TailwindCSS in your HTML -->
     <link rel="stylesheet" href="tailwindcss" />
     ```
-  </Tab>
 
+  </Tab>
   <Tab title="styles.css">
-    ```css title="styles.css" icon="file-code" theme={"theme":{"light":"github-light","dark":"dracula"}}
+
+    ```css title="styles.css" icon="file-code"
     @import "tailwindcss";
     ```
-  </Tab>
 
+  </Tab>
   <Tab title="app.ts">
-    ```ts title="app.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+
+    ```ts title="app.ts" icon="/icons/typescript.svg"
     import "tailwindcss";
     ```
+
   </Tab>
 </Tabs>
 
-<Info>Only one of those are necessary, not all three.</Info>
+<Info>Only one of these is necessary, not all three.</Info>
 
 ## Inline environment variables
 
-Bun can replace `process.env.*` references in your JavaScript and TypeScript with their actual values at build time. This is useful for injecting configuration like API URLs or feature flags into your frontend code.
+Bun can replace `process.env.*` references in your JavaScript and TypeScript with their actual values at build time. Use this to inject configuration like API URLs or feature flags into your frontend code.
 
 ### Dev server (runtime)
 
 To inline environment variables when using `bun ./index.html`, configure the `env` option in your `bunfig.toml`:
 
-```toml title="bunfig.toml" icon="settings" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```toml title="bunfig.toml" icon="settings"
 [serve.static]
 env = "PUBLIC_*"  # only inline env vars starting with PUBLIC_ (recommended)
 # env = "inline"  # inline all environment variables
@@ -276,16 +280,17 @@ env = "PUBLIC_*"  # only inline env vars starting with PUBLIC_ (recommended)
 ```
 
 <Note>
-  This only works with literal `process.env.FOO` references, not `import.meta.env` or indirect access like `const env =
-    process.env; env.FOO`.
+  Inlining only works with literal `process.env.FOO` references, not `import.meta.env` or indirect access like `const env =
+  process.env; env.FOO`.
 
-  If an environment variable is not set, you may see runtime errors like `ReferenceError: process
-    is not defined` in the browser.
+If an environment variable is not set, you may see runtime errors like `ReferenceError: process
+  is not defined` in the browser.
+
 </Note>
 
 Then run the dev server:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 PUBLIC_API_URL=https://api.example.com bun ./index.html
 ```
 
@@ -295,17 +300,17 @@ When building static HTML for production, use the `env` option to inline environ
 
 <Tabs>
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     # Inline all environment variables
     bun build ./index.html --outdir=dist --env=inline
 
     # Only inline env vars with a specific prefix (recommended)
     bun build ./index.html --outdir=dist --env=PUBLIC_*
     ```
-  </Tab>
 
+  </Tab>
   <Tab title="API">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     // Inline all environment variables
     await Bun.build({
       entrypoints: ["./index.html"],
@@ -320,6 +325,7 @@ When building static HTML for production, use the `env` option to inline environ
       env: "PUBLIC_*", // [!code highlight]
     });
     ```
+
   </Tab>
 </Tabs>
 
@@ -327,31 +333,29 @@ When building static HTML for production, use the `env` option to inline environ
 
 Given this source file:
 
-```ts title="app.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="app.ts" icon="/icons/typescript.svg"
 const apiUrl = process.env.PUBLIC_API_URL;
 console.log(`API URL: ${apiUrl}`);
 ```
 
 And running with `PUBLIC_API_URL=https://api.example.com`:
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 PUBLIC_API_URL=https://api.example.com bun build ./index.html --outdir=dist --env=PUBLIC_*
 ```
 
-The bundled output will contain:
+The bundled output contains:
 
-```js title="dist/app.js" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/javascript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=dd7b5268d2e9410910a69804de702737" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```js title="dist/app.js" icon="/icons/javascript.svg"
 const apiUrl = "https://api.example.com";
 console.log(`API URL: ${apiUrl}`);
 ```
 
 ## Echo console logs from browser to terminal
 
-Bun's dev server supports streaming console logs from the browser to the terminal.
+Bun's dev server can stream console logs from the browser to the terminal. To enable this, pass the `--console` CLI flag.
 
-To enable, pass the `--console` CLI flag.
-
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun ./index.html --console
 ```
 
@@ -362,21 +366,21 @@ ready in 6.62ms
 Press h + Enter to show shortcuts
 ```
 
-Each call to `console.log` or `console.error` will be broadcast to the terminal that started the server. This is useful to see errors from the browser in the same place you run your server. This is also useful for AI agents that watch terminal output.
+Bun broadcasts each `console.log` or `console.error` call to the terminal that started the server, so browser errors show up in the same place you run your server. This also helps AI agents that watch terminal output.
 
-Internally, this reuses the existing WebSocket connection from hot module reloading to send the logs.
+Internally, Bun reuses the existing WebSocket connection from hot module replacement (HMR) to send the logs.
 
 ## Edit files in the browser
 
-Bun's frontend dev server has support for Automatic Workspace Folders in Chrome DevTools, which lets you save edits to files in the browser.
+Bun's frontend dev server supports Automatic Workspace Folders in Chrome DevTools, so you can save edits to files from the browser.
 
 ## Keyboard Shortcuts
 
 While the server is running:
 
-* `o + Enter` - Open in browser
-* `c + Enter` - Clear console
-* `q + Enter` (or `Ctrl+C`) - Quit server
+- `o + Enter` - Open in browser
+- `c + Enter` - Clear console
+- `q + Enter` (or `Ctrl+C`) - Quit server
 
 ## Build for Production
 
@@ -384,13 +388,12 @@ When you're ready to deploy, use `bun build` to create optimized production bund
 
 <Tabs>
   <Tab title="CLI">
-    ```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```bash terminal icon="terminal"
     bun build ./index.html --minify --outdir=dist
     ```
   </Tab>
-
   <Tab title="API">
-    ```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+    ```ts title="build.ts" icon="/icons/typescript.svg"
     await Bun.build({
       entrypoints: ["./index.html"],
       outdir: "./dist",
@@ -401,22 +404,21 @@ When you're ready to deploy, use `bun build` to create optimized production bund
 </Tabs>
 
 <Warning>
-  Currently, plugins are only supported through `Bun.build`'s API or through `bunfig.toml` with the frontend dev server
-
-  * not yet supported in `bun build`'s CLI.
+  Plugins are only supported through `Bun.build`'s API or through `bunfig.toml` with the frontend dev server, not
+  through `bun build`'s CLI.
 </Warning>
 
 ### Watch Mode
 
-You can run `bun build --watch` to watch for changes and rebuild automatically. This works nicely for library development.
+Run `bun build --watch` to watch for changes and rebuild automatically. This works well for library development.
 
 <Info>You've never seen a watch mode this fast.</Info>
 
 ## Plugin API
 
-Need more control? Configure the bundler through the JavaScript API and use Bun's builtin `HTMLRewriter` to preprocess HTML.
+For more control, configure the bundler through the JavaScript API and use Bun's built-in `HTMLRewriter` to preprocess HTML.
 
-```ts title="build.ts" icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts title="build.ts" icon="/icons/typescript.svg"
 await Bun.build({
   entrypoints: ["./index.html"],
   outdir: "./dist",
@@ -456,33 +458,34 @@ await Bun.build({
 
 Bun automatically handles all common web assets:
 
-* **Scripts** (`<script src>`) are run through Bun's JavaScript/TypeScript/JSX bundler
-* **Stylesheets** (`<link rel="stylesheet">`) are run through Bun's CSS parser & bundler
-* **Images** (`<img>`, `<picture>`) are copied and hashed
-* **Media** (`<video>`, `<audio>`, `<source>`) are copied and hashed
-* Any `<link>` tag with an `href` attribute pointing to a local file is rewritten to the new path, and hashed
+- **Scripts** (`<script src>`) are run through Bun's JavaScript/TypeScript/JSX bundler
+- **Stylesheets** (`<link rel="stylesheet">`) are run through Bun's CSS parser & bundler
+- **Images** (`<img>`, `<picture>`) are copied and hashed
+- **Media** (`<video>`, `<audio>`, `<source>`) are copied and hashed
+- Any `<link>` tag with an `href` attribute pointing to a local file is rewritten to the new path, and hashed
 
-All paths are resolved relative to your HTML file, making it easy to organize your project however you want.
+Bun resolves all paths relative to your HTML file, so you can organize your project however you want.
 
 <Warning>
-  **This is a work in progress**
+**This is a work in progress**
+- Need more plugins
+- Need more configuration options for things like asset handling
+- Need a way to configure CORS, headers, etc.
 
-  * Need more plugins
-  * Need more configuration options for things like asset handling
-  * Need a way to configure CORS, headers, etc.
+{/* todo: find the correct link to link to as this 404's and there isn't any similar files */}
+{/* If you want to submit a PR, most of the code is [here](https://github.com/oven-sh/bun/blob/main/src/runtime/api/bun/html-rewriter.ts). You could even copy paste that file into your project and use it as a starting point. */}
 
-  {/* If you want to submit a PR, most of the code is [here](https://github.com/oven-sh/bun/blob/main/src/bun.js/api/bun/html-rewriter.ts). You could even copy paste that file into your project and use it as a starting point. */}
 </Warning>
 
 ## How this works
 
-This is a small wrapper around Bun's support for HTML imports in JavaScript.
+The dev server is a small wrapper around Bun's support for [HTML imports](/bundler/fullstack) in JavaScript.
 
 ## Standalone HTML
 
-You can bundle your entire frontend into a **single self-contained `.html` file** with no external dependencies using `--compile --target=browser`. All JavaScript, CSS, and images are inlined directly into the HTML.
+You can bundle your entire frontend into a **single self-contained `.html` file** with no external dependencies using `--compile --target=browser`. Bun inlines all JavaScript, CSS, and images directly into the HTML.
 
-```bash terminal icon="terminal" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```bash terminal icon="terminal"
 bun build --compile --target=browser ./index.html --outdir=dist
 ```
 
@@ -490,6 +493,4 @@ Learn more in the [Standalone HTML docs](/bundler/standalone-html).
 
 ## Adding a backend to your frontend
 
-To add a backend to your frontend, you can use the "routes" option in `Bun.serve`.
-
-Learn more in the full-stack docs.
+To add a backend to your frontend, use the `routes` option in `Bun.serve`. See the [full-stack docs](/bundler/fullstack).

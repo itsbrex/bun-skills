@@ -5,9 +5,9 @@ description: Streaming HTTP Server with Async Iterators
 
 # Streaming HTTP Server with Async Iterators
 
-In Bun, [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects can accept an async generator function as their body. This allows you to stream data to the client as it becomes available, rather than waiting for the entire response to be ready.
+In Bun, a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) accepts an async generator function as its body, so you can stream data to the client as it becomes available rather than waiting for the entire response to be ready.
 
-```ts stream-iterator.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts stream-iterator.ts icon="/icons/typescript.svg"
 Bun.serve({
   port: 3000,
   fetch(req) {
@@ -27,11 +27,11 @@ Bun.serve({
 });
 ```
 
-***
+---
 
 You can pass any async iterable directly to `Response`:
 
-```ts stream-iterator.ts icon="https://mintcdn.com/bun-1dd33a4e/nIz6GtMH5K-dfXeV/icons/typescript.svg?fit=max&auto=format&n=nIz6GtMH5K-dfXeV&q=85&s=5d73d76daf7eb7b158469d8c30d349b0" theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts stream-iterator.ts icon="/icons/typescript.svg"
 Bun.serve({
   port: 3000,
   fetch(req) {

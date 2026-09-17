@@ -7,7 +7,7 @@ description: Spy on methods in `bun test`
 
 Use the `spyOn` utility to track method calls with Bun's test runner.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+```ts
 import { test, expect, spyOn } from "bun:test";
 
 const leo = {
@@ -20,11 +20,12 @@ const leo = {
 const spy = spyOn(leo, "sayHi");
 ```
 
-***
+---
 
-Once the spy is created, it can be used to write `expect` assertions relating to method calls.
+Once you've created the spy, use it in `expect` assertions about method calls.
 
-```ts  theme={"theme":{"light":"github-light","dark":"dracula"}}
+{/* prettier-ignore */}
+```ts
 import { test, expect, spyOn } from "bun:test";
 
 const leo = {
@@ -44,6 +45,6 @@ test("turtles", () => { // [!code ++]
 }); // [!code ++]
 ```
 
-***
+---
 
-See [Docs > Test Runner > Mocks](/test/mocks) for complete documentation on mocking with the Bun test runner.
+See [Mocks](/test/mocks).

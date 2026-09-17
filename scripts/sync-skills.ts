@@ -70,6 +70,15 @@ await loadPluginConfig();
 let entries: DocEntry[];
 try {
   entries = await loadDocIndex();
+  const pathsByName = new Map<string, string[]>();
+  for (const entry of entries) {
+    const name = nameFor(entry);
+    pathsByName.set(name, [...(pathsByName.get(name) ?? []), entry.path]);
+  }
+  const collisions = [...pathsByName]
+    .filter(([, paths]) => paths.length > 1)
+    .map(([name, paths]) => `duplicate skill name "${name}": ${paths.join(", ")} (add NAME_OVERRIDES entries keyed by docs path)`);
+  if (collisions.length > 0) throw new Error(collisions.join("\n"));
 } catch (error) {
   console.error(`error: ${errorMessage(error)}; nothing was written`);
   process.exit(1);
@@ -125,13 +134,10 @@ function descriptionFor(entry: DocEntry): string {
 
 type Outcome = "created" | "updated" | "unchanged" | "failed";
 const results: Record<Outcome, string[]> = { created: [], updated: [], unchanged: [], failed: [] };
-const pathsByName = new Map<string, string[]>();
 const projectedSkills = new Map<string, string>();
 
 async function syncEntry(entry: DocEntry) {
   const name = nameFor(entry);
-  pathsByName.set(name, [...(pathsByName.get(name) ?? []), entry.path]);
-
   let content: string;
   try {
     content = renderSkillFile({ name, description: descriptionFor(entry), body: await bodyFor(entry) });
@@ -157,12 +163,6 @@ await Promise.all(
     for (let entry = queue.shift(); entry; entry = queue.shift()) await syncEntry(entry);
   }),
 );
-
-for (const [name, paths] of pathsByName) {
-  if (paths.length > 1) {
-    warnings.push(`duplicate skill name "${name}": ${paths.join(", ")} (add NAME_OVERRIDES entries keyed by docs path)`);
-  }
-}
 
 const expected = new Set(entries.map((entry) => entry.dir));
 const stale = (await readdir(SKILLS_DIR, { withFileTypes: true }))

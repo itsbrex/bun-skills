@@ -69,6 +69,14 @@ export function parseLlmsTxt(text: string): DocEntry[] {
       dir: skillDirFor(path),
     });
   }
+  const byDir = new Map<string, string>();
+  for (const entry of byPath.values()) {
+    const previous = byDir.get(entry.dir);
+    if (previous !== undefined) {
+      throw new Error(`duplicate skill directory "${entry.dir}": ${previous}, ${entry.path}`);
+    }
+    byDir.set(entry.dir, entry.path);
+  }
   return [...byPath.values()];
 }
 
